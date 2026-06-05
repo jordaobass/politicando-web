@@ -1,9 +1,10 @@
 name: CI
 
 # Valida lint, tipos e build a cada push/PR — barreira de qualidade antes do deploy da Vercel.
+# main = produção · develop = desenvolvimento.
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
 
 # Cancela execuções antigas da mesma ref quando chega um novo push.

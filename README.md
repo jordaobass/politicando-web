@@ -1,7 +1,6 @@
 # Politicando — Frontend
 
 [![CI](https://github.com/300-Software/politicando-web/actions/workflows/ci.yml/badge.svg)](https://github.com/300-Software/politicando-web/actions/workflows/ci.yml)
-[![Quality Gate](http://localhost:9000/api/project_badges/measure?project=politicando-web&metric=alert_status)](http://localhost:9000/dashboard?id=politicando-web)
 
 Frontend da plataforma de match eleitoral **Politicando** (Eleições 2026, Brasil).
 Conecta eleitores a candidatos por meio de um quiz de afinidade que gera um
@@ -36,6 +35,15 @@ npm run typecheck  # checagem de tipos (tsc --noEmit)
 ```
 
 Abra http://localhost:3000 no navegador.
+
+## Branches e deploy
+
+- **`main`** — produção. Deploy de produção da Vercel sai daqui. Não recebe commit direto.
+- **`develop`** — desenvolvimento (branch de integração). Features saem dela e voltam via PR.
+
+Fluxo: `feature/*` → PR para **`develop`** → PR de **`develop`** para **`main`** (release).
+O CI (lint + typecheck + build) roda em push para `main`/`develop` e em todo PR; a Vercel
+gera _preview_ por PR e _produção_ ao integrar na `main`.
 
 ## Estrutura
 
