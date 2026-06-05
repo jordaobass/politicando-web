@@ -1,0 +1,122 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { MenuIcon, VoteIcon, XIcon } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+
+const LINKS = [
+  { href: "/quiz", rotulo: "Quiz" },
+  { href: "/candidatos", rotulo: "Candidatos" },
+  { href: "/comparar", rotulo: "Comparar" },
+  { href: "/partidos", rotulo: "Partidos" },
+];
+
+/** Barra de navegação global (tema navy do protótipo) com links e CTA de login. */
+export function Navbar() {
+  const pathname = usePathname();
+  const [aberto, setAberto] = useState(false);
+  const [rolou, setRolou] = useState(false);
+
+  // Esconde a navbar no topo da home; revela ao rolar (ou abrir o menu).
+  useEffect(() => {
+    const aoRolar = () => setRolou(window.scrollY > 8);
+    aoRolar();
+    window.addEventListener("scroll", aoRolar, { passive: true });
+    return () => window.removeEventListener("scroll", aoRolar);
+  }, []);
+
+  const ehAtivo = (href: string) =>
+    pathname === href || pathname.startsWith(`${href}/`);
+
+  const escondida = pathname === "/" && !rolou && !aberto;
+
+  return (
+    <header
+      className={cn(
+        "sticky top-0 z-40 w-full bg-primary text-primary-foreground shadow-sm transition-transform duration-300",
+        escondida ? "-translate-y-full" : "translate-y-0",
+      )}
+    >
+      <nav className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-4 px-4">
+        <Link href="/" className="flex items-center gap-2 text-lg font-bold">
+          <VoteIcon className="size-5 text-accent" aria-hidden="true" />
+          Politicando
+        </Link>
+
+        <ul className="hidden items-center gap-1 md:flex">
+          {LINKS.map((link) => (
+            <li key={link.href}>
+              <Link
+                href={link.href}
+                className={cn(
+                  "rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-white/10",
+                  ehAtivo(link.href)
+                    ? "text-white"
+                    : "text-primary-foreground/75 hover:text-white",
+                )}
+              >
+                {link.rotulo}
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        <div className="hidden items-center gap-2 md:flex">
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="text-primary-foreground hover:bg-white/10 hover:text-white"
+          >
+            <Link href="/login">Entrar</Link>
+          </Button>
+          <Button
+            asChild
+            size="sm"
+            className="bg-accent text-accent-foreground hover:bg-accent/90"
+          >
+            <Link href="/login">Cadastrar</Link>
+          </Button>
+        </div>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-primary-foreground hover:bg-white/10 md:hidden"
+          aria-label={aberto ? "Fechar menu" : "Abrir menu"}
+          aria-expanded={aberto}
+          onClick={() => setAberto((valor) => !valor)}
+        >
+          {aberto ? <XIcon /> : <MenuIcon />}
+        </Button>
+      </nav>
+
+      {aberto && (
+        <div className="border-t border-white/10 md:hidden">
+          <ul className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-3">
+            {[...LINKS, { href: "/login", rotulo: "Entrar" }].map((link) => (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  onClick={() => setAberto(false)}
+                  className={cn(
+                    "block rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-white/10",
+                    ehAtivo(link.href)
+                      ? "text-white"
+                      : "text-primary-foreground/75",
+                  )}
+                >
+                  {link.rotulo}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </header>
+  );
+}

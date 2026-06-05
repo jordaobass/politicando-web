@@ -1,0 +1,34 @@
+import Link from "next/link";
+
+import { CartaoCandidato } from "@/components/comum/cartao-candidato";
+import type { CandidaturaDetalhe, CandidaturaResumo } from "@/lib/types";
+
+/** Coluna de comparação: card pôster (igual ao da home) com link para o perfil. */
+export function ColunaCandidato({ dado }: { dado: CandidaturaDetalhe }) {
+  const resumo: CandidaturaResumo = {
+    id: dado.id,
+    nomeUrna: dado.politico.nomeUrna,
+    partidoSigla: dado.partidoSigla,
+    partidoLogoUrl: dado.partidoLogoUrl,
+    cargo: dado.cargo,
+    uf: dado.uf,
+    numeroUrna: "",
+    fotoUrl: dado.politico.fotoUrl,
+    origem: dado.origem,
+    scores: [],
+  };
+
+  return (
+    <Link
+      href={`/candidatos/${dado.id}`}
+      className="group mx-auto block w-full max-w-xs"
+      aria-label={`Ver perfil de ${dado.politico.nomeUrna}`}
+    >
+      <CartaoCandidato
+        candidato={resumo}
+        comHover
+        className="transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-xl"
+      />
+    </Link>
+  );
+}

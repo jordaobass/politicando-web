@@ -1,7 +1,23 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Build enxuto para container (gera .next/standalone com server.js)
+  output: "standalone",
+  // Um único domínio público: /api/* é reescrito para o backend (rede interna).
+  // Evita CORS e dispensa um segundo subdomínio. O destino vem de BACKEND_INTERNAL_URL
+  // (ex.: http://backend:8080 dentro do docker compose); fallback p/ dev local.
+  async rewrites() {
+    const backend = process.env.BACKEND_INTERNAL_URL ?? "http://localhost:5080";
+    return [{ source: "/api/:path*", destination: `${backend}/api/:path*` }];
+  },
+  images: {
+    // Fotos de candidatos e logos de partidos vêm de fontes externas (ex.: TSE).
+    // Liberamos qualquer origem HTTPS/HTTP de forma genérica via remotePatterns.
+    remotePatterns: [
+      { protocol: "https", hostname: "**" },
+      { protocol: "http", hostname: "**" },
+    ],
+  },
 };
 
 export default nextConfig;

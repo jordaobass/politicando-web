@@ -1,0 +1,57 @@
+import { Card, CardContent } from "@/components/ui/card";
+import { RadarComparacao } from "@/components/landing/radar-comparacao";
+import type { CandidaturaDetalhe } from "@/lib/types";
+
+/** Cores fixas das séries A e B (usadas no radar, na legenda e no detalhe). */
+export const CORES_COMPARACAO = { a: "#2563eb", b: "#ea580c" } as const;
+
+/** Lista de categorias na ordem de A, completada com as exclusivas de B. */
+export function categoriasUnidas(a: CandidaturaDetalhe, b: CandidaturaDetalhe): string[] {
+  const nomes = a.scores.map((s) => s.categoria);
+  for (const s of b.scores) if (!nomes.includes(s.categoria)) nomes.push(s.categoria);
+  return nomes;
+}
+
+function valoresPor(categorias: string[], dado: CandidaturaDetalhe): number[] {
+  // Radar usa o Engajamento (0..5, em pontos como no perfil/lista), escalado para a régua 0..100
+  // do gráfico (×20). Sem engajamento calculado, fica 0 (sem atuação no tema).
+  const mapa = new Map(dado.scores.map((s) => [s.categoria, s.engajamento]));
+  return categorias.map((c) => (mapa.get(c) ?? 0) * 20);
+}
+
+/** Rótulos curtos só para o radar (evita cortar texto); o detalhe usa o nome completo. */
+const ABREVIACAO: Record<string, string> = {
+  "Meio Ambiente": "Meio Amb.",
+  "Direitos Humanos": "Dir. Hum.",
+};
+
+/** Gráfico estrela com as posições de A e B sobrepostas + legenda. */
+export function ComparacaoRadar({ a, b }: { a: CandidaturaDetalhe; b: CandidaturaDetalhe }) {
+  const categorias = categoriasUnidas(a, b);
+  if (categorias.length === 0) return null;
+
+  return (
+    <Card>
+      <CardContent className="flex flex-col items-center gap-4">
+        <RadarComparacao
+          categorias={categorias.map((c) => ABREVIACAO[c] ?? c)}
+          series={[
+            { nome: a.politico.nomeUrna, cor: CORES_COMPARACAO.a, valores: valoresPor(categorias, a) },
+            { nome: b.politico.nomeUrna, cor: CORES_COMPARACAO.b, valores: valoresPor(categorias, b) },
+          ]}
+        />
+        <div className="flex flex-wrap items-center justify-center gap-4 text-sm font-medium">
+          {[
+            { nome: a.politico.nomeUrna, cor: CORES_COMPARACAO.a },
+            { nome: b.politico.nomeUrna, cor: CORES_COMPARACAO.b },
+          ].map((s) => (
+            <span key={s.cor} className="inline-flex items-center gap-1.5">
+              <span className="size-3 rounded-full" style={{ backgroundColor: s.cor }} />
+              {s.nome}
+            </span>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
