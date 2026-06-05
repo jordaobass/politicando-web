@@ -4,9 +4,9 @@ import { ChevronLeftIcon } from "lucide-react";
 import { DetalheCandidato } from "@/components/candidatos/detalhe-candidato";
 import { Button } from "@/components/ui/button";
 
-export default async function CandidatoPage(
-  props: PageProps<"/candidatos/[id]">,
-) {
+export default async function CandidatoPage(props: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await props.params;
 
   return (

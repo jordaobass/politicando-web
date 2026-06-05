@@ -8,7 +8,9 @@ export const metadata: Metadata = {
   description: "Compare dois candidatos lado a lado por categoria temática.",
 };
 
-export default async function CompararPage(props: PageProps<"/comparar">) {
+export default async function CompararPage(props: {
+  searchParams: Promise<{ a?: string; b?: string }>;
+}) {
   const { a, b } = await props.searchParams;
   const aInicial = typeof a === "string" ? a : "";
   const bInicial = typeof b === "string" ? b : "";
