@@ -1,5 +1,8 @@
 # Politicando — Frontend
 
+[![CI](https://github.com/300-Software/politicando-web/actions/workflows/ci.yml/badge.svg)](https://github.com/300-Software/politicando-web/actions/workflows/ci.yml)
+[![Quality Gate](http://localhost:9000/api/project_badges/measure?project=politicando-web&metric=alert_status)](http://localhost:9000/dashboard?id=politicando-web)
+
 Frontend da plataforma de match eleitoral **Politicando** (Eleições 2026, Brasil).
 Conecta eleitores a candidatos por meio de um quiz de afinidade que gera um
 percentual de compatibilidade por categoria temática.
@@ -26,9 +29,10 @@ NEXT_PUBLIC_API_URL=http://localhost:5080/api
 ## Comandos
 
 ```bash
-npm run dev     # ambiente de desenvolvimento
-npm run build   # build de produção (Turbopack)
-npm run lint    # ESLint
+npm run dev        # ambiente de desenvolvimento
+npm run build      # build de produção (Turbopack)
+npm run lint       # ESLint (inclui regras de segurança e acessibilidade)
+npm run typecheck  # checagem de tipos (tsc --noEmit)
 ```
 
 Abra http://localhost:3000 no navegador.
