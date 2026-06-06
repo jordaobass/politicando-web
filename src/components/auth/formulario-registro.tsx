@@ -28,7 +28,7 @@ export function FormularioRegistro({ aoConcluir }: { aoConcluir?: () => void }) 
   } = useForm<RegistrarFormValues>({
     resolver: zodResolver(registrarSchema),
     mode: "onChange",
-    defaultValues: { nome: "", email: "", senha: "" },
+    defaultValues: { nome: "", email: "", senha: "", lgpd: false },
   });
 
   // useWatch (em vez de watch) é compatível com o React Compiler.
@@ -38,9 +38,9 @@ export function FormularioRegistro({ aoConcluir }: { aoConcluir?: () => void }) 
     try {
       const resposta = await mutation.mutateAsync(valores);
       entrar(resposta);
-      toast.success("Conta criada com sucesso!");
+      toast.success(`Bem-vindo, ${resposta.usuario.nome}!`);
       if (aoConcluir) aoConcluir();
-      else router.push("/perfil");
+      else router.push("/quiz");
     } catch {
       toast.error("Não foi possível criar a conta. Tente novamente.");
     }
@@ -95,6 +95,26 @@ export function FormularioRegistro({ aoConcluir }: { aoConcluir?: () => void }) 
           {...register("senha")}
         />
         <ChecklistSenha senha={senha} />
+      </div>
+
+      <div className="space-y-1.5">
+        <label htmlFor="reg-lgpd" className="flex items-start gap-2 text-sm">
+          <input
+            id="reg-lgpd"
+            type="checkbox"
+            className="mt-0.5 size-4 rounded border-input accent-primary"
+            aria-invalid={Boolean(errors.lgpd)}
+            {...register("lgpd")}
+          />
+          <span className="text-muted-foreground">
+            Li e aceito a{" "}
+            <a href="/privacidade" className="text-primary underline">
+              política de privacidade
+            </a>{" "}
+            e o tratamento dos meus dados (LGPD).
+          </span>
+        </label>
+        {errors.lgpd && <p className="text-sm text-destructive">{errors.lgpd.message}</p>}
       </div>
 
       <Button

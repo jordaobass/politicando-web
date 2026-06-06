@@ -10,10 +10,12 @@ import { CampoSenha } from "@/components/auth/campo-senha";
 import { ChecklistSenha } from "@/components/auth/checklist-senha";
 import { REGRAS_SENHA } from "@/lib/schemas";
 import { redefinirSenha } from "@/lib/api";
+import { useSessao } from "@/hooks/use-sessao";
 
 /** Form de redefinição: lê email+token da URL, valida a nova senha e confirma. */
 export function FormularioRedefinir() {
   const router = useRouter();
+  const { entrar } = useSessao();
   const params = useSearchParams();
   const email = params.get("email") ?? "";
   const token = params.get("token") ?? "";
@@ -27,9 +29,11 @@ export function FormularioRedefinir() {
     if (!valida) return;
     setEnviando(true);
     try {
-      await redefinirSenha({ email, token, novaSenha: senha });
-      toast.success("Senha redefinida! Faça login.");
-      router.push("/login");
+      // Auto-login após redefinir (cartão US-AUTH-04): a API já devolve a sessão.
+      const sessao = await redefinirSenha({ email, token, novaSenha: senha });
+      entrar(sessao);
+      toast.success("Senha redefinida com sucesso!");
+      router.push("/candidatos");
     } catch {
       toast.error("Link inválido ou expirado.");
     } finally {

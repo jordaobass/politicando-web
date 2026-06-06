@@ -311,7 +311,13 @@ export interface Usuario {
 
 export interface AuthResponse {
   token: string;
+  refreshToken: string;
   usuario: Usuario;
+}
+
+export interface EsqueciSenhaResposta {
+  mensagem: string;
+  contaSocial: boolean;
 }
 
 export interface LoginRequest {

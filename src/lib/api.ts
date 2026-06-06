@@ -22,6 +22,7 @@ import type {
   RegistrarRequest,
   ResultadoQuiz,
   Usuario,
+  EsqueciSenhaResposta,
 } from "@/lib/types";
 
 export const API_BASE_URL =
@@ -174,23 +175,39 @@ export function registrar(body: RegistrarRequest): Promise<AuthResponse> {
   });
 }
 
-/** Solicita o link de redefinição (resposta sempre OK; não revela se o e-mail existe). */
-export function esqueciSenha(email: string): Promise<boolean> {
-  return request<boolean>("/auth/esqueci-senha", {
+/** Solicita o link de redefinição. Resposta neutra; sinaliza conta exclusivamente social. */
+export function esqueciSenha(email: string): Promise<EsqueciSenhaResposta> {
+  return request<EsqueciSenhaResposta>("/auth/esqueci-senha", {
     method: "POST",
     body: JSON.stringify({ email }),
   });
 }
 
-/** Redefine a senha a partir do token recebido no link. */
+/** Redefine a senha e já autentica o usuário (auto-login, cartão US-AUTH-04). */
 export function redefinirSenha(body: {
   email: string;
   token: string;
   novaSenha: string;
-}): Promise<boolean> {
-  return request<boolean>("/auth/redefinir-senha", {
+}): Promise<AuthResponse> {
+  return request<AuthResponse>("/auth/redefinir-senha", {
     method: "POST",
     body: JSON.stringify(body),
+  });
+}
+
+/** Renova a sessão (rotaciona o refresh token e devolve um novo JWT de 30 dias). */
+export function renovarSessao(refreshToken: string): Promise<AuthResponse> {
+  return request<AuthResponse>("/auth/refresh", {
+    method: "POST",
+    body: JSON.stringify({ refreshToken }),
+  });
+}
+
+/** Encerra a sessão no servidor revogando o refresh token. */
+export function logout(refreshToken: string): Promise<void> {
+  return request<void>("/auth/logout", {
+    method: "POST",
+    body: JSON.stringify({ refreshToken }),
   });
 }
 

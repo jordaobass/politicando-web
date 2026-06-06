@@ -2,6 +2,7 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 
+import { logout } from "@/lib/api";
 import { CHAVE_SESSAO } from "@/lib/constantes";
 import type { AuthResponse, Usuario } from "@/lib/types";
 
@@ -52,6 +53,13 @@ export function useSessao() {
   }, []);
 
   const sair = useCallback(() => {
+    // Revoga o refresh token no servidor (fire-and-forget) antes de limpar a sessão local.
+    try {
+      const atual = JSON.parse(localStorage.getItem(CHAVE_SESSAO) ?? "null") as AuthResponse | null;
+      if (atual?.refreshToken) void logout(atual.refreshToken);
+    } catch {
+      // sessão corrompida — segue direto para a limpeza local
+    }
     localStorage.removeItem(CHAVE_SESSAO);
     notificar();
   }, []);

@@ -38,9 +38,9 @@ export function FormularioLogin({
     try {
       const resposta = await mutation.mutateAsync(valores);
       entrar(resposta);
-      toast.success("Login realizado com sucesso!");
+      toast.success(`Bem-vindo de volta, ${resposta.usuario.nome}!`);
       if (aoConcluir) aoConcluir();
-      else router.push("/perfil");
+      else router.push("/candidatos");
     } catch {
       toast.error("Não foi possível entrar. Verifique suas credenciais.");
     }

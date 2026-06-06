@@ -20,7 +20,9 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     let cancelado = false;
     (async () => {
-      const token = new URLSearchParams(window.location.hash.slice(1)).get("token");
+      const hash = new URLSearchParams(window.location.hash.slice(1));
+      const token = hash.get("token");
+      const refreshToken = hash.get("refresh") ?? "";
       if (!token) {
         if (!cancelado) setErro(true);
         return;
@@ -28,7 +30,7 @@ export default function AuthCallbackPage() {
       try {
         const usuario = await meuPerfil(token);
         if (cancelado) return;
-        entrar({ token, usuario });
+        entrar({ token, refreshToken, usuario });
         toast.success("Login realizado com sucesso!");
         router.replace("/perfil");
       } catch {
