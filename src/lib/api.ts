@@ -21,6 +21,7 @@ import type {
   PoliticoPerfil,
   RegistrarRequest,
   ResultadoQuiz,
+  Usuario,
 } from "@/lib/types";
 
 export const API_BASE_URL =
@@ -192,6 +193,14 @@ export function redefinirSenha(body: {
     body: JSON.stringify(body),
   });
 }
+
+/** Dados do usuário autenticado — usado pelo callback do login social para montar a sessão. */
+export function meuPerfil(token: string): Promise<Usuario> {
+  return request<Usuario>("/auth/me", { token });
+}
+
+/** URL para iniciar o login com Google (navegação de página inteira; o fluxo é todo no backend). */
+export const URL_LOGIN_GOOGLE = `${API_BASE_URL}/auth/google`;
 
 // ---------------------------------------------------------------------------
 // Admin

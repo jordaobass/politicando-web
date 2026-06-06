@@ -3,6 +3,7 @@
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { URL_LOGIN_GOOGLE } from "@/lib/api";
 
 /** Logo do Google nas suas 4 cores oficiais. */
 function GoogleIcon() {
@@ -43,19 +44,25 @@ function AppleIcon() {
 const ESTILO_BOTAO =
   "h-12 w-full justify-center gap-3 border-zinc-200 bg-white text-base font-medium text-zinc-800 hover:bg-zinc-50";
 
-/** Botões de login social: Google e Apple (visuais — integração OAuth é próximo passo). */
+/** Botões de login social: Google (OAuth real no backend) e Apple (ainda visual). */
 export function BotoesSociais() {
-  function aviso(provedor: string) {
-    toast.info(`Login com ${provedor} estará disponível em breve.`);
+  function entrarComGoogle() {
+    // Navegação de página inteira: o fluxo OAuth roda todo no backend e volta em /auth/callback.
+    window.location.href = URL_LOGIN_GOOGLE;
   }
 
   return (
     <div className="grid gap-3">
-      <Button type="button" variant="outline" className={ESTILO_BOTAO} onClick={() => aviso("Google")}>
+      <Button type="button" variant="outline" className={ESTILO_BOTAO} onClick={entrarComGoogle}>
         <GoogleIcon />
         Entrar com Google
       </Button>
-      <Button type="button" variant="outline" className={ESTILO_BOTAO} onClick={() => aviso("Apple")}>
+      <Button
+        type="button"
+        variant="outline"
+        className={ESTILO_BOTAO}
+        onClick={() => toast.info("Login com Apple estará disponível em breve.")}
+      >
         <AppleIcon />
         Entrar com Apple
       </Button>
