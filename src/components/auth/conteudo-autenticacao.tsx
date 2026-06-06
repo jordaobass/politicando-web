@@ -19,8 +19,14 @@ const ABAS: { id: Aba; rotulo: string }[] = [
  * Conteúdo de autenticação (abas, formulários, sociais e alternância), sem o card externo.
  * Reutilizado na página de login e no modal de fim de quiz. `aoConcluir` é chamado no sucesso.
  */
-export function ConteudoAutenticacao({ aoConcluir }: { aoConcluir?: () => void }) {
-  const [aba, setAba] = useState<Aba>("login");
+export function ConteudoAutenticacao({
+  aoConcluir,
+  abaInicial = "login",
+}: {
+  aoConcluir?: () => void;
+  abaInicial?: Aba;
+}) {
+  const [aba, setAba] = useState<Aba>(abaInicial);
   const [recuperando, setRecuperando] = useState(false);
 
   // Modo recuperação de senha: oculta abas e sociais.

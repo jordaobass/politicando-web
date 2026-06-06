@@ -30,13 +30,17 @@ import { PainelPresenca } from "@/components/candidatos/atividade/painel-presenc
 import { PainelGabinete } from "@/components/candidatos/atividade/painel-gabinete";
 import { PainelOpinioes } from "@/components/candidatos/painel-opinioes";
 import { PainelAnaliseTematica } from "@/components/candidatos/painel-analise-tematica";
+import { BlocoBloqueado } from "@/components/candidatos/bloco-bloqueado";
 import { useAtividade, useCandidatura, useOpinioes } from "@/hooks/use-api";
+import { useSessao } from "@/hooks/use-sessao";
 
 /** Perfil completo de uma candidatura (identidade única do político + atividade legislativa). */
 export function DetalheCandidato({ id }: { id: string }) {
   const { data, isLoading, isError, refetch } = useCandidatura(id);
   const { data: atividade } = useAtividade(id);
   const { data: opinioes } = useOpinioes(id);
+  // Cartões US-*-03: Opiniões, Presença e Gastos ficam fechados (gate) sem login.
+  const { autenticado } = useSessao();
 
   if (isLoading) {
     return (
@@ -315,51 +319,61 @@ export function DetalheCandidato({ id }: { id: string }) {
         </Card>
       )}
 
-      {/* Opiniões — largura cheia, abaixo do score/projetos. */}
-      {temOpinioes && opinioes && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Opiniões</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Posição de {politico.nomeUrna} por tema, com a fonte de cada resposta.
-            </p>
-          </CardHeader>
-          <CardContent>
-            <PainelOpinioes categorias={opinioes} nomeUrna={politico.nomeUrna} />
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Presença + Gastos do mandato — cards de meia tela lado a lado. */}
-      {temAtividade && atividade && (
-        <div className={cn("grid gap-6", temGabinete && "lg:grid-cols-2")}>
-          <Card className="h-full">
+      {/* Opiniões — largura cheia, abaixo do score/projetos. Fechado sem login. */}
+      {temOpinioes && opinioes &&
+        (!autenticado ? (
+          <BlocoBloqueado titulo="Opiniões" />
+        ) : (
+          <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Presença em plenário</CardTitle>
+              <CardTitle className="text-lg">Opiniões</CardTitle>
               <p className="text-sm text-muted-foreground">
-                {data.cargo?.toLowerCase().includes("senador")
-                  ? "Comparecimento às votações nominais — total do mandato e últimos anos."
-                  : "Comparecimento às sessões — total do mandato e últimos anos."}
+                Posição de {politico.nomeUrna} por tema, com a fonte de cada resposta.
               </p>
             </CardHeader>
             <CardContent>
-              <PainelPresenca presencas={atividade.presencas} cargo={data.cargo} />
+              <PainelOpinioes categorias={opinioes} nomeUrna={politico.nomeUrna} />
             </CardContent>
           </Card>
+        ))}
 
-          {temGabinete && (
+      {/* Presença + Gastos do mandato — cards de meia tela lado a lado. Fechados sem login. */}
+      {temAtividade && atividade && (
+        <div className={cn("grid gap-6", temGabinete && "lg:grid-cols-2")}>
+          {!autenticado ? (
+            <BlocoBloqueado titulo="Presença em plenário" />
+          ) : (
             <Card className="h-full">
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Gastos do mandato</CardTitle>
+                <CardTitle className="text-lg">Presença em plenário</CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  Cota parlamentar (CEAP) — economia estimada e despesas por ano.
+                  {data.cargo?.toLowerCase().includes("senador")
+                    ? "Comparecimento às votações nominais — total do mandato e últimos anos."
+                    : "Comparecimento às sessões — total do mandato e últimos anos."}
                 </p>
               </CardHeader>
               <CardContent>
-                <PainelGabinete gabinetes={gabinetes} uf={data.uf} cargo={data.cargo} />
+                <PainelPresenca presencas={atividade.presencas} cargo={data.cargo} />
               </CardContent>
             </Card>
           )}
+
+          {temGabinete &&
+            (!autenticado ? (
+              <BlocoBloqueado titulo="Gastos do mandato" />
+            ) : (
+              <Card className="h-full">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">Gastos do mandato</CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Cota parlamentar (CEAP) — economia estimada e despesas por ano.
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <PainelGabinete gabinetes={gabinetes} uf={data.uf} cargo={data.cargo} />
+                </CardContent>
+              </Card>
+            ))}
         </div>
       )}
     </div>
