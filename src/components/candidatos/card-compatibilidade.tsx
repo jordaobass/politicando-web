@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCompatibilidadeCandidato } from "@/hooks/use-resultado-quiz";
 import { useSessao } from "@/hooks/use-sessao";
+import { Donut } from "@/components/comum/donut";
 import {
-  classeBarraNivel,
   classesBadgeNivel,
   formatarPercentual,
   paraEscala100,
@@ -41,36 +41,30 @@ export function CardCompatibilidade({ candidaturaId, nomeUrna }: Props) {
     );
   }
 
-  // Estado 1 — fez o quiz: percentual real + nível.
+  // Estado 1 — fez o quiz: donut verde com o percentual real.
   if (candidato) {
-    const escala = paraEscala100(candidato.compatibilidade);
     return (
       <Card>
-        <CardContent className="space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-4">
+        <CardContent className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Donut valor={paraEscala100(candidato.compatibilidade)} classeCor="text-accent">
+              <span className="text-2xl font-bold text-accent tabular-nums">
+                {formatarPercentual(candidato.compatibilidade)}
+              </span>
+            </Donut>
             <div className="space-y-1">
-              <div className="flex items-baseline gap-3">
-                <span className="text-5xl font-bold text-accent tabular-nums">
-                  {formatarPercentual(candidato.compatibilidade)}
-                </span>
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-foreground">compatível com você</span>
                 <Badge variant="outline" className={classesBadgeNivel(candidato.nivel)}>
                   {candidato.nivel}
                 </Badge>
               </div>
-              <p className="text-sm text-muted-foreground">
-                compatível com você · Baseado nas suas respostas do quiz
-              </p>
+              <p className="text-sm text-muted-foreground">Baseado nas suas respostas do quiz</p>
             </div>
-            <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
-              <Link href="/quiz/resultado">Ver detalhes</Link>
-            </Button>
           </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-            <div
-              className={`h-full rounded-full ${classeBarraNivel(candidato.nivel)}`}
-              style={{ width: `${escala}%` }}
-            />
-          </div>
+          <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+            <Link href="/quiz/resultado">Ver detalhes</Link>
+          </Button>
         </CardContent>
       </Card>
     );

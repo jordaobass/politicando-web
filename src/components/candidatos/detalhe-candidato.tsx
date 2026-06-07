@@ -68,7 +68,8 @@ export function DetalheCandidato({ id }: { id: string }) {
   const { politico } = data;
   const resumo = atividade?.resumo;
   const gabinetes = (atividade?.gabinetes ?? []).filter((g) => g.total > 0);
-  const gabineteRecente = gabinetes[0];
+  // Chip do hero: prioriza o mandato corrente (2026); cai para o ano mais recente com dado.
+  const gabineteRecente = gabinetes.find((g) => g.ano === 2026) ?? gabinetes[0];
   const temGabinete = gabinetes.length > 0;
   const temAtividade =
     !!resumo &&
@@ -286,15 +287,17 @@ export function DetalheCandidato({ id }: { id: string }) {
                   />
                 </div>
 
-                {data.observacaoIa && (
-                  <div className="rounded-xl border border-border bg-muted/30 p-4">
-                    <p className="mb-1 flex items-center gap-2 text-sm font-medium text-foreground">
-                      <SparklesIcon className="size-4 text-primary" aria-hidden="true" />
-                      Resumo
-                    </p>
-                    <p className="text-sm text-muted-foreground">{data.observacaoIa}</p>
-                  </div>
-                )}
+                <div className="rounded-xl border border-border bg-muted/30 p-4">
+                  <p className="mb-1 flex items-center gap-2 text-sm font-medium text-foreground">
+                    <SparklesIcon className="size-4 text-primary" aria-hidden="true" />
+                    Resumo
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {resumo.projetosTotal === 0
+                      ? `${politico.nomeUrna} não possui projetos de lei cadastrados.`
+                      : (data.observacaoIa ?? "Resumo temporariamente indisponível.")}
+                  </p>
+                </div>
               </CardContent>
             </Card>
           )}
