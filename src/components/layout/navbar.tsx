@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MenuIcon, VoteIcon, XIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useSessao } from "@/hooks/use-sessao";
 
 const LINKS = [
   { href: "/quiz", rotulo: "Quiz" },
@@ -18,8 +19,18 @@ const LINKS = [
 /** Barra de navegação global (tema navy do protótipo) com links e CTA de login. */
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { autenticado, usuario, sair } = useSessao();
   const [aberto, setAberto] = useState(false);
   const [rolou, setRolou] = useState(false);
+
+  const primeiroNome = usuario?.nome?.trim().split(/\s+/)[0] || "Perfil";
+
+  function aoSair() {
+    sair();
+    setAberto(false);
+    router.push("/");
+  }
 
   // Esconde a navbar no topo da home; revela ao rolar (ou abrir o menu).
   useEffect(() => {
@@ -66,21 +77,45 @@ export function Navbar() {
         </ul>
 
         <div className="hidden items-center gap-2 md:flex">
-          <Button
-            asChild
-            variant="ghost"
-            size="sm"
-            className="text-primary-foreground hover:bg-white/10 hover:text-white"
-          >
-            <Link href="/login">Entrar</Link>
-          </Button>
-          <Button
-            asChild
-            size="sm"
-            className="bg-accent text-accent-foreground hover:bg-accent/90"
-          >
-            <Link href="/login">Cadastrar</Link>
-          </Button>
+          {autenticado ? (
+            <>
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="font-semibold text-primary-foreground hover:bg-white/10 hover:text-white"
+              >
+                <Link href="/perfil">Olá, {primeiroNome}</Link>
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={aoSair}
+                className="text-primary-foreground/75 hover:bg-white/10 hover:text-white"
+              >
+                Sair
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="text-primary-foreground hover:bg-white/10 hover:text-white"
+              >
+                <Link href="/login">Entrar</Link>
+              </Button>
+              <Button
+                asChild
+                size="sm"
+                className="bg-accent text-accent-foreground hover:bg-accent/90"
+              >
+                <Link href="/login?aba=registrar">Cadastrar</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         <Button
@@ -98,7 +133,7 @@ export function Navbar() {
       {aberto && (
         <div className="border-t border-white/10 md:hidden">
           <ul className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-3">
-            {[...LINKS, { href: "/login", rotulo: "Entrar" }].map((link) => (
+            {[...LINKS, ...(autenticado ? [{ href: "/perfil", rotulo: `Olá, ${primeiroNome}` }] : [{ href: "/login", rotulo: "Entrar" }])].map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
@@ -114,6 +149,17 @@ export function Navbar() {
                 </Link>
               </li>
             ))}
+            {autenticado && (
+              <li>
+                <button
+                  type="button"
+                  onClick={aoSair}
+                  className="block w-full rounded-md px-3 py-2 text-left text-sm font-medium text-primary-foreground/75 transition-colors hover:bg-white/10"
+                >
+                  Sair
+                </button>
+              </li>
+            )}
           </ul>
         </div>
       )}
