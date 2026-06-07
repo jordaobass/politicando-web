@@ -157,6 +157,10 @@ export function buscarPartidos(): Promise<Partido[]> {
   return request<Partido[]>("/partidos");
 }
 
+export function buscarPartido(id: string): Promise<Partido> {
+  return request<Partido>(`/partidos/${id}`);
+}
+
 // ---------------------------------------------------------------------------
 // Autenticação
 // ---------------------------------------------------------------------------

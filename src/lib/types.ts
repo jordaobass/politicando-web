@@ -313,6 +313,9 @@ export interface Partido {
   nome: string;
   numero: number;
   logoUrl: string | null;
+  siteOficial?: string | null;
+  programaUrl?: string | null;
+  programaResumo?: string | null;
 }
 
 export interface Usuario {
