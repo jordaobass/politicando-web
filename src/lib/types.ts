@@ -258,6 +258,17 @@ export interface GabineteAtividade {
   urlPortal: string | null;
 }
 
+export interface ComissaoAtividade {
+  nome: string;
+  sigla: string;
+  casa: string | null;
+  participacao: string; // "Titular" / "Suplente" / ...
+  inicio: string | null;
+  fim: string | null; // null = "até o momento"
+  ativa: boolean;
+  ano: number;
+}
+
 export interface AtividadeLegislativa {
   resumo: ResumoAtividade;
   projetos: ProposicaoAtividade[];
@@ -267,6 +278,8 @@ export interface AtividadeLegislativa {
   presencas: PresencaAtividade[];
   /** Gastos da Cota Parlamentar por ano, do mais recente para o mais antigo (carrossel). */
   gabinetes: GabineteAtividade[];
+  /** Atuação em comissões (Senado), da mais recente para a mais antiga. */
+  comissoes: ComissaoAtividade[];
   portalNome: string | null;
   portalUrl: string | null;
 }

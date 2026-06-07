@@ -28,6 +28,7 @@ import { EstadoErro } from "@/components/comum/estados";
 import { CartaoContagem } from "@/components/candidatos/atividade/cartao-contagem";
 import { PainelPresenca } from "@/components/candidatos/atividade/painel-presenca";
 import { PainelGabinete } from "@/components/candidatos/atividade/painel-gabinete";
+import { PainelComissoes } from "@/components/candidatos/atividade/painel-comissoes";
 import { PainelOpinioes } from "@/components/candidatos/painel-opinioes";
 import { PainelAnaliseTematica } from "@/components/candidatos/painel-analise-tematica";
 import { BlocoBloqueado } from "@/components/candidatos/bloco-bloqueado";
@@ -71,6 +72,7 @@ export function DetalheCandidato({ id }: { id: string }) {
   // Chip do hero: prioriza o mandato corrente (2026); cai para o ano mais recente com dado.
   const gabineteRecente = gabinetes.find((g) => g.ano === 2026) ?? gabinetes[0];
   const temGabinete = gabinetes.length > 0;
+  const temComissoes = (atividade?.comissoes?.length ?? 0) > 0;
   const temAtividade =
     !!resumo &&
     (resumo.projetosTotal > 0 ||
@@ -379,6 +381,24 @@ export function DetalheCandidato({ id }: { id: string }) {
             ))}
         </div>
       )}
+
+      {/* Atuação em comissões (senadores) — largura cheia, fechado sem login. */}
+      {temComissoes && atividade &&
+        (!autenticado ? (
+          <BlocoBloqueado titulo="Atuação em comissões" />
+        ) : (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Atuação em comissões</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Comissões de {politico.nomeUrna} por ano, como titular ou suplente.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <PainelComissoes comissoes={atividade.comissoes} />
+            </CardContent>
+          </Card>
+        ))}
     </div>
   );
 }
