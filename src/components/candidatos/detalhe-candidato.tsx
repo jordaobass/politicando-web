@@ -73,6 +73,10 @@ export function DetalheCandidato({ id }: { id: string }) {
   const gabineteRecente = gabinetes.find((g) => g.ano === 2026) ?? gabinetes[0];
   const temGabinete = gabinetes.length > 0;
   const temComissoes = (atividade?.comissoes?.length ?? 0) > 0;
+  const ehSenador = (data.cargo ?? "").toLowerCase().includes("senador");
+  // Bloco "Score por tema" exibe os 8 temas gerais do card (US-*-03); o eixo
+  // institucional fica fora DESTE bloco — segue contando no match e na análise temática.
+  const scoresDoScore = data.scores.filter((s) => s.categoria !== "Instituições e Democracia");
   const temAtividade =
     !!resumo &&
     (resumo.projetosTotal > 0 ||
@@ -219,7 +223,7 @@ export function DetalheCandidato({ id }: { id: string }) {
           Sem items-start + h-full nos cards => os dois ficam com a mesma altura. */}
       {temAtividade ? (
         <div className="grid gap-6 lg:grid-cols-2">
-          <Card className="h-full">
+          <Card className="h-full" data-testid="bloco-score">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <SparklesIcon className="size-4 text-primary" aria-hidden="true" />
@@ -233,13 +237,13 @@ export function DetalheCandidato({ id }: { id: string }) {
               {data.propostasResumo && (
                 <p className="line-clamp-4 text-sm text-muted-foreground">{data.propostasResumo}</p>
               )}
-              {data.scores.length === 0 ? (
+              {scoresDoScore.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
                   Ainda não há scores calculados para este candidato.
                 </p>
               ) : (
                 <div className="space-y-3">
-                  {data.scores.map((score) => (
+                  {scoresDoScore.map((score) => (
                     <BarraScore
                       key={score.categoria}
                       rotulo={score.categoria}
@@ -253,41 +257,38 @@ export function DetalheCandidato({ id }: { id: string }) {
             </CardContent>
           </Card>
 
+          {/* Proposições Legislativas (US-SEN-03 / US-DEP-03): um bloco com os grupos
+              Projetos de Lei e — para senadores — Fiscalização e Controle, + um resumo de IA. */}
           {resumo && (
-            <Card className="h-full">
+            <Card className="h-full" data-testid="bloco-proposicoes">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <ScrollTextIcon className="size-4 text-primary" aria-hidden="true" />
-                  Projetos de lei
+                  Proposições legislativas
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  Projetos de autoria de {politico.nomeUrna} e seu desfecho.
+                  Matérias de autoria de {politico.nomeUrna} e seu desfecho.
                 </p>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <CartaoContagem
-                    rotulo="Total"
-                    valor={resumo.projetosTotal}
-                    icone={ScrollTextIcon}
+              <CardContent className="space-y-5">
+                <GrupoProposicao
+                  titulo="Projetos de Lei"
+                  total={resumo.projetosTotal}
+                  aprovados={resumo.projetosAprovados}
+                  emTramitacao={resumo.projetosEmTramitacao}
+                  rejeitados={resumo.projetosRejeitados}
+                />
+
+                {ehSenador && (
+                  <GrupoProposicao
+                    titulo="Fiscalização e Controle"
+                    descricao="Requerimentos e indicações (RQS/REQ/IND)."
+                    total={resumo.fiscalizacaoTotal}
+                    aprovados={resumo.fiscalizacaoAprovadas}
+                    emTramitacao={resumo.fiscalizacaoEmTramitacao}
+                    rejeitados={resumo.fiscalizacaoRejeitadas}
                   />
-                  <CartaoContagem
-                    rotulo="Aprovados"
-                    valor={resumo.projetosAprovados}
-                    icone={CircleCheckBigIcon}
-                    destaque
-                  />
-                  <CartaoContagem
-                    rotulo="Em tramitação"
-                    valor={resumo.projetosEmTramitacao}
-                    icone={ClockIcon}
-                  />
-                  <CartaoContagem
-                    rotulo="Rejeitados"
-                    valor={resumo.projetosRejeitados}
-                    icone={XCircleIcon}
-                  />
-                </div>
+                )}
 
                 <div className="rounded-xl border border-border bg-muted/30 p-4">
                   <p className="mb-1 flex items-center gap-2 text-sm font-medium text-foreground">
@@ -295,8 +296,8 @@ export function DetalheCandidato({ id }: { id: string }) {
                     Resumo
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {resumo.projetosTotal === 0
-                      ? `${politico.nomeUrna} não possui projetos de lei cadastrados.`
+                    {resumo.projetosTotal + (ehSenador ? resumo.fiscalizacaoTotal : 0) === 0
+                      ? `${ehSenador ? "Este senador" : politico.nomeUrna} não possui proposições cadastradas.`
                       : (data.observacaoIa ?? "Resumo temporariamente indisponível.")}
                   </p>
                 </div>
@@ -399,6 +400,41 @@ export function DetalheCandidato({ id }: { id: string }) {
             </CardContent>
           </Card>
         ))}
+    </div>
+  );
+}
+
+/**
+ * Grupo de proposições dentro do bloco "Proposições legislativas": título opcional +
+ * grade de 4 contadores (Total/Aprovados/Em tramitação/Rejeitados).
+ */
+function GrupoProposicao({
+  titulo,
+  descricao,
+  total,
+  aprovados,
+  emTramitacao,
+  rejeitados,
+}: {
+  titulo: string;
+  descricao?: string;
+  total: number;
+  aprovados: number;
+  emTramitacao: number;
+  rejeitados: number;
+}) {
+  return (
+    <div className="space-y-2">
+      <div>
+        <p className="text-sm font-semibold text-foreground">{titulo}</p>
+        {descricao && <p className="text-xs text-muted-foreground">{descricao}</p>}
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <CartaoContagem rotulo="Total" valor={total} icone={ScrollTextIcon} />
+        <CartaoContagem rotulo="Aprovados" valor={aprovados} icone={CircleCheckBigIcon} destaque />
+        <CartaoContagem rotulo="Em tramitação" valor={emTramitacao} icone={ClockIcon} />
+        <CartaoContagem rotulo="Rejeitados" valor={rejeitados} icone={XCircleIcon} />
+      </div>
     </div>
   );
 }

@@ -198,6 +198,11 @@ export interface ResumoAtividade {
   projetosAprovados: number;
   projetosEmTramitacao: number;
   projetosRejeitados: number;
+  // Fiscalização e Controle (US-SEN-03): requerimentos/indicações.
+  fiscalizacaoTotal: number;
+  fiscalizacaoAprovadas: number;
+  fiscalizacaoEmTramitacao: number;
+  fiscalizacaoRejeitadas: number;
   votacoes: number;
   relatorias: number;
   presencaPercentual: number | null;
@@ -272,6 +277,8 @@ export interface ComissaoAtividade {
 export interface AtividadeLegislativa {
   resumo: ResumoAtividade;
   projetos: ProposicaoAtividade[];
+  /** Fiscalização e Controle: requerimentos e indicações de autoria (Senado). */
+  fiscalizacao: ProposicaoAtividade[];
   votacoes: VotoAtividade[];
   relatorias: ProposicaoAtividade[];
   /** Um item por ano do mandato (legislatura) corrente, do mais recente para o mais antigo. */

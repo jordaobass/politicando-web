@@ -27,7 +27,11 @@ export function PainelComissoes({ comissoes }: { comissoes: ComissaoAtividade[] 
   const visiveis = verMais ? doAno : doAno.slice(0, MAX_INICIAL);
 
   if (comissoes.length === 0) {
-    return <p className="text-sm text-muted-foreground">Sem comissões registradas.</p>;
+    return (
+      <p className="text-sm text-muted-foreground">
+        Nenhuma comissão registrada para este período.
+      </p>
+    );
   }
 
   return (
@@ -65,6 +69,12 @@ export function PainelComissoes({ comissoes }: { comissoes: ComissaoAtividade[] 
           <p className="text-sm text-muted-foreground">como suplente</p>
         </div>
       </div>
+
+      {doAno.length === 0 && (
+        <p className="text-sm text-muted-foreground">
+          Nenhuma comissão registrada para este período.
+        </p>
+      )}
 
       <ul className="space-y-2">
         {visiveis.map((c, i) => (
