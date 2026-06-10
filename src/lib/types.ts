@@ -329,7 +329,31 @@ export interface Usuario {
   id?: string;
   nome: string;
   email: string;
+  /** Data de nascimento ISO (YYYY-MM-DD); somente leitura no perfil. */
+  dataNascimento?: string | null;
+  /** Tem senha definida (conta manual) → exibe "Alterar senha". Conta exclusivamente social = false. */
+  podeAlterarSenha?: boolean;
   [chave: string]: unknown;
+}
+
+/** Candidato resumido exibido numa comparação salva (cartão US-AUTH-06). */
+export interface CandidaturaMini {
+  id: string;
+  nomeUrna: string;
+  partidoSigla?: string | null;
+  fotoUrl?: string | null;
+}
+
+export interface ComparacaoSalva {
+  id: string;
+  a: CandidaturaMini;
+  b: CandidaturaMini;
+}
+
+/** Último quiz do usuário: quando foi feito + o resultado recalculado. */
+export interface UltimoQuiz {
+  finalizadoEm: string;
+  resultado: ResultadoQuiz;
 }
 
 export interface AuthResponse {

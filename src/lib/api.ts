@@ -12,6 +12,7 @@ import type {
   Categoria,
   CategoriaOpiniao,
   CompararResultado,
+  ComparacaoSalva,
   EnviarRespostasRequest,
   FiltrosCandidatura,
   LoginRequest,
@@ -21,6 +22,7 @@ import type {
   PoliticoPerfil,
   RegistrarRequest,
   ResultadoQuiz,
+  UltimoQuiz,
   Usuario,
   EsqueciSenhaResposta,
 } from "@/lib/types";
@@ -232,8 +234,52 @@ export function completarCadastro(
   });
 }
 
+/** Atualiza o nome do usuário autenticado (cartão US-AUTH-06). */
+export function atualizarNome(nome: string, token: string): Promise<Usuario> {
+  return request<Usuario>("/auth/me", {
+    method: "PUT",
+    token,
+    body: JSON.stringify({ nome }),
+  });
+}
+
 /** URL para iniciar o login com Google (navegação de página inteira; o fluxo é todo no backend). */
 export const URL_LOGIN_GOOGLE = `${API_BASE_URL}/auth/google`;
+
+// ---------------------------------------------------------------------------
+// Meu Perfil — último quiz e comparações salvas (cartão US-AUTH-06)
+// ---------------------------------------------------------------------------
+
+/** Último quiz do usuário (ou null se nunca realizou — backend responde 204). */
+export async function meuUltimoQuiz(token: string): Promise<UltimoQuiz | null> {
+  return (await request<UltimoQuiz | null>("/quiz/meu-ultimo", { token })) ?? null;
+}
+
+export function listarComparacoesSalvas(
+  pagina: number,
+  token: string,
+): Promise<PaginaResultado<ComparacaoSalva>> {
+  return request<PaginaResultado<ComparacaoSalva>>(
+    `/comparacoes${montarQuery({ pagina })}`,
+    { token },
+  );
+}
+
+export function salvarComparacao(
+  candidaturaAId: string,
+  candidaturaBId: string,
+  token: string,
+): Promise<ComparacaoSalva> {
+  return request<ComparacaoSalva>("/comparacoes", {
+    method: "POST",
+    token,
+    body: JSON.stringify({ candidaturaAId, candidaturaBId }),
+  });
+}
+
+export function excluirComparacao(id: string, token: string): Promise<void> {
+  return request<void>(`/comparacoes/${id}`, { method: "DELETE", token });
+}
 
 // ---------------------------------------------------------------------------
 // Admin

@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-query";
 
 import {
+  atualizarNome,
   buscarAtividade,
   buscarCandidatura,
   buscarCandidaturas,
@@ -20,9 +21,13 @@ import {
   buscarPerguntas,
   compararCandidaturas,
   enviarRespostas,
+  excluirComparacao,
+  listarComparacoesSalvas,
   login,
+  meuUltimoQuiz,
   recalcularScores,
   registrar,
+  salvarComparacao,
 } from "@/lib/api";
 import type {
   EnviarRespostasRequest,
@@ -42,6 +47,8 @@ export const chavesQuery = {
   opinioes: (id: string) => ["candidatura", id, "opinioes"] as const,
   comparar: (a: string, b: string) => ["comparar", a, b] as const,
   partidos: ["partidos"] as const,
+  meuUltimoQuiz: ["meu-ultimo-quiz"] as const,
+  comparacoesSalvas: (pagina: number) => ["comparacoes-salvas", pagina] as const,
   adminDashboard: ["admin", "dashboard"] as const,
   adminIntegracoes: ["admin", "integracoes"] as const,
 };
@@ -133,6 +140,52 @@ export function useLogin() {
 export function useRegistrar() {
   return useMutation({
     mutationFn: (body: RegistrarRequest) => registrar(body),
+  });
+}
+
+// --- Meu Perfil (cartão US-AUTH-06) ---
+
+/** Atualiza o nome do usuário; invalida o último quiz/comparações não é necessário. */
+export function useAtualizarNome(token: string | null) {
+  return useMutation({
+    mutationFn: (nome: string) => atualizarNome(nome, token ?? ""),
+  });
+}
+
+export function useMeuUltimoQuiz(token: string | null) {
+  return useQuery({
+    queryKey: chavesQuery.meuUltimoQuiz,
+    queryFn: () => meuUltimoQuiz(token ?? ""),
+    enabled: Boolean(token),
+  });
+}
+
+export function useComparacoesSalvas(pagina: number, token: string | null) {
+  return useQuery({
+    queryKey: chavesQuery.comparacoesSalvas(pagina),
+    queryFn: () => listarComparacoesSalvas(pagina, token ?? ""),
+    enabled: Boolean(token),
+    placeholderData: (anterior) => anterior,
+  });
+}
+
+export function useSalvarComparacao(token: string | null) {
+  const cliente = useQueryClient();
+  return useMutation({
+    mutationFn: ({ a, b }: { a: string; b: string }) => salvarComparacao(a, b, token ?? ""),
+    onSuccess: () => {
+      cliente.invalidateQueries({ queryKey: ["comparacoes-salvas"] });
+    },
+  });
+}
+
+export function useExcluirComparacao(token: string | null) {
+  const cliente = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => excluirComparacao(id, token ?? ""),
+    onSuccess: () => {
+      cliente.invalidateQueries({ queryKey: ["comparacoes-salvas"] });
+    },
   });
 }
 
