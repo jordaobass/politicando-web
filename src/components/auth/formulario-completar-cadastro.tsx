@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useSessao } from "@/hooks/use-sessao";
+import { useHidratado } from "@/hooks/use-storage";
 import { completarCadastro } from "@/lib/api";
 import {
   completarCadastroSchema,
@@ -24,12 +25,15 @@ import {
  */
 export function FormularioCompletarCadastro() {
   const router = useRouter();
-  const { usuario, autenticado, carregado, entrar, sessao } = useSessao();
+  const { usuario, autenticado, entrar, sessao } = useSessao();
+  // Só depois da hidratação o localStorage foi lido; evita redirect espúrio quando
+  // a sessão existe mas o 1º render (SSR/hidratação) ainda enxerga "não autenticado".
+  const hidratado = useHidratado();
 
   // Sem sessão (acesso direto à rota): volta ao login.
   useEffect(() => {
-    if (carregado && !autenticado) router.replace("/login");
-  }, [carregado, autenticado, router]);
+    if (hidratado && !autenticado) router.replace("/login");
+  }, [hidratado, autenticado, router]);
 
   const {
     register,
