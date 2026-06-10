@@ -220,6 +220,18 @@ export function meuPerfil(token: string): Promise<Usuario> {
   return request<Usuario>("/auth/me", { token });
 }
 
+/** Etapa complementar do OAuth: salva a data de nascimento do usuário autenticado (US-AUTH-02). */
+export function completarCadastro(
+  dataNascimento: string,
+  token: string,
+): Promise<Usuario> {
+  return request<Usuario>("/auth/completar-cadastro", {
+    method: "POST",
+    token,
+    body: JSON.stringify({ dataNascimento }),
+  });
+}
+
 /** URL para iniciar o login com Google (navegação de página inteira; o fluxo é todo no backend). */
 export const URL_LOGIN_GOOGLE = `${API_BASE_URL}/auth/google`;
 

@@ -27,12 +27,24 @@ export default function AuthCallbackPage() {
         if (!cancelado) setErro(true);
         return;
       }
+      const novo = hash.get("novo") === "1";
+      const vinculado = hash.get("vinculado") === "1";
       try {
         const usuario = await meuPerfil(token);
         if (cancelado) return;
         entrar({ token, refreshToken, usuario });
-        toast.success("Login realizado com sucesso!");
-        router.replace("/perfil");
+
+        if (novo) {
+          // Novo usuário via Google: falta a data de nascimento (etapa complementar).
+          router.replace("/completar-cadastro");
+          return;
+        }
+        if (vinculado) {
+          toast.success("Conta vinculada ao Google com sucesso.");
+        } else {
+          toast.success(`Bem-vindo de volta, ${usuario.nome}!`);
+        }
+        router.replace("/candidatos");
       } catch {
         if (!cancelado) setErro(true);
       }

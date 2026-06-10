@@ -60,3 +60,14 @@ export const registrarSchema = z
   });
 
 export type RegistrarFormValues = z.infer<typeof registrarSchema>;
+
+/** Schema da etapa complementar de data de nascimento pós-OAuth (cartão US-AUTH-02). */
+export const completarCadastroSchema = z.object({
+  dataNascimento: z
+    .string()
+    .min(1, "Informe sua data de nascimento")
+    .refine((s) => !Number.isNaN(Date.parse(s)), "Data inválida")
+    .refine((s) => calcularIdade(s) >= IDADE_MINIMA, MENSAGEM_IDADE_MINIMA),
+});
+
+export type CompletarCadastroFormValues = z.infer<typeof completarCadastroSchema>;
