@@ -14,9 +14,9 @@ const COLUNAS = [
   {
     titulo: "Transparência",
     links: [
-      { href: "/candidatos", rotulo: "Como calculamos" },
-      { href: "/candidatos", rotulo: "Fontes dos dados" },
-      { href: "/candidatos", rotulo: "Metodologia" },
+      { href: "/como-calculamos", rotulo: "Como calculamos" },
+      { href: "/como-calculamos", rotulo: "Fontes dos dados" },
+      { href: "/como-calculamos", rotulo: "Metodologia" },
     ],
   },
   {
