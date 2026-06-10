@@ -352,6 +352,9 @@ export interface RegistrarRequest {
   nome: string;
   email: string;
   senha: string;
+  /** Data de nascimento no formato ISO (YYYY-MM-DD); idade mínima de 16 anos. */
+  dataNascimento: string;
+  aceiteLgpd: boolean;
 }
 
 export interface FiltrosCandidatura {

@@ -28,6 +28,13 @@ export function ConteudoAutenticacao({
 }) {
   const [aba, setAba] = useState<Aba>(abaInicial);
   const [recuperando, setRecuperando] = useState(false);
+  // E-mail propagado do cadastro para a aba de login (link "Entrar" do e-mail já cadastrado).
+  const [emailLogin, setEmailLogin] = useState("");
+
+  function irParaLogin(email: string) {
+    setEmailLogin(email);
+    setAba("login");
+  }
 
   // Modo recuperação de senha: oculta abas e sociais.
   if (recuperando) {
@@ -67,9 +74,13 @@ export function ConteudoAutenticacao({
 
       <div key={aba} className="animate-in fade-in slide-in-from-right-3 duration-300">
         {aba === "login" ? (
-          <FormularioLogin aoConcluir={aoConcluir} aoEsquecer={() => setRecuperando(true)} />
+          <FormularioLogin
+            aoConcluir={aoConcluir}
+            aoEsquecer={() => setRecuperando(true)}
+            emailInicial={emailLogin}
+          />
         ) : (
-          <FormularioRegistro aoConcluir={aoConcluir} />
+          <FormularioRegistro aoConcluir={aoConcluir} aoIrParaLogin={irParaLogin} />
         )}
       </div>
 

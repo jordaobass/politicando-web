@@ -23,14 +23,40 @@ const senhaValida = z
   .string()
   .refine((s) => REGRAS_SENHA.every((r) => r.testar(s)), "A senha não atende às regras");
 
-/** Schema do formulário de cadastro (inclui aceite LGPD obrigatório). */
-export const registrarSchema = z.object({
-  nome: z.string().min(2, "Informe seu nome"),
-  email: z.email("Informe um e-mail válido"),
-  senha: senhaValida,
-  lgpd: z.boolean().refine((v) => v === true, {
-    message: "É necessário aceitar os termos para continuar",
-  }),
-});
+/** Idade mínima de cadastro (cartão US-AUTH-01; sujeita a revisão jurídica LGPD). */
+export const IDADE_MINIMA = 16;
+export const MENSAGEM_IDADE_MINIMA =
+  "Você precisa ter pelo menos 16 anos para se cadastrar";
+
+/** Idade (anos completos) a partir de uma data ISO (YYYY-MM-DD). */
+function calcularIdade(dataIso: string): number {
+  const nascimento = new Date(dataIso);
+  const hoje = new Date();
+  let idade = hoje.getFullYear() - nascimento.getFullYear();
+  const mes = hoje.getMonth() - nascimento.getMonth();
+  if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) idade--;
+  return idade;
+}
+
+/** Schema do formulário de cadastro (inclui data de nascimento, confirmação e aceite LGPD). */
+export const registrarSchema = z
+  .object({
+    nome: z.string().min(2, "Informe seu nome"),
+    email: z.email("Informe um e-mail válido"),
+    dataNascimento: z
+      .string()
+      .min(1, "Informe sua data de nascimento")
+      .refine((s) => !Number.isNaN(Date.parse(s)), "Data inválida")
+      .refine((s) => calcularIdade(s) >= IDADE_MINIMA, MENSAGEM_IDADE_MINIMA),
+    senha: senhaValida,
+    confirmarSenha: z.string().min(1, "Confirme sua senha"),
+    lgpd: z.boolean().refine((v) => v === true, {
+      message: "É necessário aceitar os termos para continuar",
+    }),
+  })
+  .refine((d) => d.senha === d.confirmarSenha, {
+    message: "As senhas não coincidem",
+    path: ["confirmarSenha"],
+  });
 
 export type RegistrarFormValues = z.infer<typeof registrarSchema>;
