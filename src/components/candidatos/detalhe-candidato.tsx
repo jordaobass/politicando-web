@@ -29,18 +29,16 @@ import { CartaoContagem } from "@/components/candidatos/atividade/cartao-contage
 import { PainelPresenca } from "@/components/candidatos/atividade/painel-presenca";
 import { PainelGabinete } from "@/components/candidatos/atividade/painel-gabinete";
 import { PainelComissoes } from "@/components/candidatos/atividade/painel-comissoes";
-import { PainelOpinioes } from "@/components/candidatos/painel-opinioes";
 import { PainelAnaliseTematica } from "@/components/candidatos/painel-analise-tematica";
 import { BlocoBloqueado } from "@/components/candidatos/bloco-bloqueado";
-import { useAtividade, useCandidatura, useOpinioes } from "@/hooks/use-api";
+import { useAtividade, useCandidatura } from "@/hooks/use-api";
 import { useSessao } from "@/hooks/use-sessao";
 
 /** Perfil completo de uma candidatura (identidade única do político + atividade legislativa). */
 export function DetalheCandidato({ id }: { id: string }) {
   const { data, isLoading, isError, refetch } = useCandidatura(id);
   const { data: atividade } = useAtividade(id);
-  const { data: opinioes } = useOpinioes(id);
-  // Cartões US-*-03: Opiniões, Presença e Gastos ficam fechados (gate) sem login.
+  // Cartões US-*-03: Presença e Gastos ficam fechados (gate) sem login.
   const { autenticado } = useSessao();
 
   if (isLoading) {
@@ -84,10 +82,6 @@ export function DetalheCandidato({ id }: { id: string }) {
       resumo.relatorias > 0 ||
       resumo.presencaPercentual !== null ||
       temGabinete);
-
-  // Mostra o card "Opiniões" quando existe pelo menos uma pergunta cadastrada (mesmo
-  // sem resposta — o usuário enxerga o conjunto temático ofuscado/transparente).
-  const temOpinioes = (opinioes?.some((c) => c.perguntas.length > 0) ?? false);
 
   return (
     <div className="space-y-6">
@@ -324,24 +318,6 @@ export function DetalheCandidato({ id }: { id: string }) {
           </CardContent>
         </Card>
       )}
-
-      {/* Opiniões — largura cheia, abaixo do score/projetos. Fechado sem login. */}
-      {temOpinioes && opinioes &&
-        (!autenticado ? (
-          <BlocoBloqueado titulo="Opiniões" />
-        ) : (
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Opiniões</CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Posição de {politico.nomeUrna} por tema, com a fonte de cada resposta.
-              </p>
-            </CardHeader>
-            <CardContent>
-              <PainelOpinioes categorias={opinioes} nomeUrna={politico.nomeUrna} />
-            </CardContent>
-          </Card>
-        ))}
 
       {/* Presença + Gastos do mandato — cards de meia tela lado a lado. Fechados sem login. */}
       {temAtividade && atividade && (
