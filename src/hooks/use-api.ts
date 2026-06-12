@@ -9,7 +9,7 @@ import {
 } from "@tanstack/react-query";
 
 import {
-  atualizarNome,
+  atualizarPerfil,
   buscarAtividade,
   buscarCandidatura,
   buscarCandidaturas,
@@ -145,10 +145,11 @@ export function useRegistrar() {
 
 // --- Meu Perfil (cartão US-AUTH-06) ---
 
-/** Atualiza o nome do usuário; invalida o último quiz/comparações não é necessário. */
-export function useAtualizarNome(token: string | null) {
+/** Atualiza nome e/ou data de nascimento do usuário autenticado. */
+export function useAtualizarPerfil(token: string | null) {
   return useMutation({
-    mutationFn: (nome: string) => atualizarNome(nome, token ?? ""),
+    mutationFn: (dados: { nome: string; dataNascimento?: string | null }) =>
+      atualizarPerfil(dados, token ?? ""),
   });
 }
 

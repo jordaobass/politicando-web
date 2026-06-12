@@ -21,7 +21,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { CARGOS, UFS } from "@/lib/constantes";
+import { CARGOS_FILTRO, UFS } from "@/lib/constantes";
 import { usePartidos } from "@/hooks/use-api";
 
 export interface ValoresFiltro {
@@ -112,7 +112,7 @@ function PainelFiltros({ valores, onChange }: FiltrosCandidatosProps) {
         <ListaCheckboxes
           nome="cargo"
           selecionados={valores.cargos}
-          opcoes={CARGOS.map((c) => ({ valor: c.valor, rotulo: c.rotulo }))}
+          opcoes={CARGOS_FILTRO.map((c) => ({ valor: c.valor, rotulo: c.rotulo }))}
           onMudar={(valores) => definir("cargos", valores)}
         />
       </Secao>

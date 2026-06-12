@@ -9,9 +9,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useAtualizarNome } from "@/hooks/use-api";
+import { useAtualizarPerfil } from "@/hooks/use-api";
 import { esqueciSenha } from "@/lib/api";
 import { iniciais } from "@/lib/format";
+import {
+  calcularIdade,
+  IDADE_MINIMA,
+  MENSAGEM_IDADE_MINIMA,
+} from "@/lib/schemas";
 import type { AuthResponse, Usuario } from "@/lib/types";
 
 interface DadosUsuarioProps {
@@ -21,26 +26,29 @@ interface DadosUsuarioProps {
   aoSair: () => void;
 }
 
-/** Formata uma data ISO (YYYY-MM-DD) para o padrão brasileiro. */
-function formatarData(iso?: string | null): string {
-  if (!iso) return "—";
-  const [ano, mes, dia] = iso.slice(0, 10).split("-");
-  return ano && mes && dia ? `${dia}/${mes}/${ano}` : "—";
-}
-
-/** Dados do perfil: nome editável, e-mail/data de nascimento (RO), alterar senha e sair. */
+/** Dados do perfil: nome e data de nascimento editáveis, e-mail (RO), alterar senha e sair. */
 export function DadosUsuario({ usuario, token, aoAtualizar, aoSair }: DadosUsuarioProps) {
   const [nome, setNome] = useState(usuario.nome);
-  const mutation = useAtualizarNome(token);
-  const alterado = nome.trim() !== usuario.nome && nome.trim().length >= 2;
+  const [nascimento, setNascimento] = useState(usuario.dataNascimento?.slice(0, 10) ?? "");
+  const mutation = useAtualizarPerfil(token);
+
+  const nomeValido = nome.trim().length >= 2;
+  const nascimentoOriginal = usuario.dataNascimento?.slice(0, 10) ?? "";
+  // Idade só é exigida quando há data informada; campo vazio mantém o valor atual.
+  const nascimentoValido = nascimento === "" || calcularIdade(nascimento) >= IDADE_MINIMA;
+  const mudou = nome.trim() !== usuario.nome || nascimento !== nascimentoOriginal;
+  const podeSalvar = mudou && nomeValido && nascimentoValido;
 
   async function salvar() {
     try {
-      const atualizado = await mutation.mutateAsync(nome.trim());
+      const atualizado = await mutation.mutateAsync({
+        nome: nome.trim(),
+        dataNascimento: nascimento || null,
+      });
       aoAtualizar(atualizado);
       toast.success("Nome atualizado com sucesso!");
     } catch {
-      toast.error("Não foi possível atualizar o nome.");
+      toast.error("Não foi possível atualizar o perfil.");
     }
   }
 
@@ -82,15 +90,25 @@ export function DadosUsuario({ usuario, token, aoAtualizar, aoSair }: DadosUsuar
         </div>
 
         <div className="space-y-1.5">
-          <Label className="text-base">Data de nascimento</Label>
-          <p className="text-sm text-muted-foreground" data-testid="perfil-nascimento">
-            {formatarData(usuario.dataNascimento)}
-          </p>
+          <Label htmlFor="perfil-nascimento" className="text-base">
+            Data de nascimento
+          </Label>
+          <Input
+            id="perfil-nascimento"
+            type="date"
+            value={nascimento}
+            onChange={(e) => setNascimento(e.target.value)}
+            aria-invalid={!nascimentoValido}
+            className="h-11 text-base"
+          />
+          {!nascimentoValido && (
+            <p className="text-sm text-destructive">{MENSAGEM_IDADE_MINIMA}</p>
+          )}
         </div>
 
         <Button
           onClick={salvar}
-          disabled={!alterado || mutation.isPending}
+          disabled={!podeSalvar || mutation.isPending}
           className="w-full"
           data-testid="perfil-salvar"
         >

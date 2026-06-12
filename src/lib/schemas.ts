@@ -29,7 +29,7 @@ export const MENSAGEM_IDADE_MINIMA =
   "Você precisa ter pelo menos 16 anos para se cadastrar";
 
 /** Idade (anos completos) a partir de uma data ISO (YYYY-MM-DD). */
-function calcularIdade(dataIso: string): number {
+export function calcularIdade(dataIso: string): number {
   const nascimento = new Date(dataIso);
   const hoje = new Date();
   let idade = hoje.getFullYear() - nascimento.getFullYear();

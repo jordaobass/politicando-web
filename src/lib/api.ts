@@ -234,12 +234,15 @@ export function completarCadastro(
   });
 }
 
-/** Atualiza o nome do usuário autenticado (cartão US-AUTH-06). */
-export function atualizarNome(nome: string, token: string): Promise<Usuario> {
+/** Atualiza nome e data de nascimento do usuário autenticado (cartão US-AUTH-06). */
+export function atualizarPerfil(
+  dados: { nome: string; dataNascimento?: string | null },
+  token: string,
+): Promise<Usuario> {
   return request<Usuario>("/auth/me", {
     method: "PUT",
     token,
-    body: JSON.stringify({ nome }),
+    body: JSON.stringify(dados),
   });
 }
 

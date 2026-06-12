@@ -1,19 +1,22 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { MenuIcon, VoteIcon, XIcon } from "lucide-react";
+import { MenuIcon, XIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useSessao } from "@/hooks/use-sessao";
 
+// Release 1 (entrega enxuta): só "Candidatos" navega; os demais aparecem mas ficam
+// desabilitados (exibidos, porém não navegáveis).
 const LINKS = [
-  { href: "/quiz", rotulo: "Quiz" },
-  { href: "/candidatos", rotulo: "Candidatos" },
-  { href: "/comparar", rotulo: "Comparar" },
-  { href: "/partidos", rotulo: "Partidos" },
+  { href: "/quiz", rotulo: "Quiz", navegavel: false },
+  { href: "/candidatos", rotulo: "Candidatos", navegavel: true },
+  { href: "/comparar", rotulo: "Comparar", navegavel: false },
+  { href: "/partidos", rotulo: "Partidos", navegavel: false },
 ];
 
 /** Barra de navegação global (tema navy do protótipo) com links e CTA de login. */
@@ -54,26 +57,45 @@ export function Navbar() {
     >
       <nav className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-4 px-4">
         <Link href="/" className="flex items-center gap-2 text-lg font-bold">
-          <VoteIcon className="size-5 text-accent" aria-hidden="true" />
+          <Image
+            src="/logo-politicando.jpeg"
+            alt="Politicando"
+            width={32}
+            height={32}
+            className="size-8 rounded-md"
+            priority
+          />
           Politicando
         </Link>
 
         <ul className="hidden items-center gap-1 md:flex">
-          {LINKS.map((link) => (
-            <li key={link.href}>
-              <Link
-                href={link.href}
-                className={cn(
-                  "rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-white/10",
-                  ehAtivo(link.href)
-                    ? "text-white"
-                    : "text-primary-foreground/75 hover:text-white",
-                )}
-              >
-                {link.rotulo}
-              </Link>
-            </li>
-          ))}
+          {LINKS.map((link) =>
+            link.navegavel ? (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className={cn(
+                    "rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-white/10",
+                    ehAtivo(link.href)
+                      ? "text-white"
+                      : "text-primary-foreground/75 hover:text-white",
+                  )}
+                >
+                  {link.rotulo}
+                </Link>
+              </li>
+            ) : (
+              <li key={link.href}>
+                <span
+                  aria-disabled="true"
+                  title="Disponível em breve"
+                  className="cursor-not-allowed rounded-md px-3 py-2 text-sm font-medium text-primary-foreground/40"
+                >
+                  {link.rotulo}
+                </span>
+              </li>
+            ),
+          )}
         </ul>
 
         <div className="hidden items-center gap-2 md:flex">
@@ -133,22 +155,34 @@ export function Navbar() {
       {aberto && (
         <div className="border-t border-white/10 md:hidden">
           <ul className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-3">
-            {[...LINKS, ...(autenticado ? [{ href: "/perfil", rotulo: `Olá, ${primeiroNome}` }] : [{ href: "/login", rotulo: "Entrar" }])].map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  onClick={() => setAberto(false)}
-                  className={cn(
-                    "block rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-white/10",
-                    ehAtivo(link.href)
-                      ? "text-white"
-                      : "text-primary-foreground/75",
-                  )}
-                >
-                  {link.rotulo}
-                </Link>
-              </li>
-            ))}
+            {[...LINKS, ...(autenticado ? [{ href: "/perfil", rotulo: `Olá, ${primeiroNome}`, navegavel: true }] : [{ href: "/login", rotulo: "Entrar", navegavel: true }])].map((link) =>
+              link.navegavel ? (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    onClick={() => setAberto(false)}
+                    className={cn(
+                      "block rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-white/10",
+                      ehAtivo(link.href)
+                        ? "text-white"
+                        : "text-primary-foreground/75",
+                    )}
+                  >
+                    {link.rotulo}
+                  </Link>
+                </li>
+              ) : (
+                <li key={link.href}>
+                  <span
+                    aria-disabled="true"
+                    title="Disponível em breve"
+                    className="block cursor-not-allowed rounded-md px-3 py-2 text-sm font-medium text-primary-foreground/40"
+                  >
+                    {link.rotulo}
+                  </span>
+                </li>
+              ),
+            )}
             {autenticado && (
               <li>
                 <button
