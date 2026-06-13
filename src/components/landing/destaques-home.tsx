@@ -1,37 +1,27 @@
 "use client";
 
-import { useMemo } from "react";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 
-import { Skeleton } from "@/components/ui/skeleton";
 import { CartaoCandidato } from "@/components/comum/cartao-candidato";
-import { useCandidaturas } from "@/hooks/use-api";
+import type { CandidaturaResumo } from "@/lib/types";
 
 /**
- * Destaques da home: cartões pôster (CartaoCandidato) com a borda na cor do partido.
- * Mobile = slider coverflow; desktop = lado a lado com hover.
+ * Destaques da home: lista FIXA dos principais presidenciáveis, com fotos locais
+ * (public/destaques) servidas pelo CDN da Vercel — sem chamada à API e sem buscar
+ * imagem em origem externa, para a landing abrir instantânea. Os `id` batem com as
+ * candidaturas reais do banco, então o link "Ver perfil" continua funcionando.
  */
+const DESTAQUES: CandidaturaResumo[] = [
+  destaque("de17554a-cb07-4dbb-a804-01094e84e3d2", "Flávio Bolsonaro", "PL", "/destaques/flavio-bolsonaro.jpg"),
+  destaque("a4f60847-81ba-4bb8-bf45-0c5f0794e92f", "Lula", "PT", "/destaques/lula.jpg"),
+  destaque("b0385683-734d-4395-b5e0-8634a6dc8b42", "Renan Santos", "MISSÃO", "/destaques/renan-santos.jpg"),
+];
+
 export function DestaquesHome() {
-  const { data, isLoading } = useCandidaturas({ cargos: ["Presidente"], tamanho: 3 });
-  // Embaralha a cada carregamento para não privilegiar sempre o mesmo nome.
-  const itens = useMemo(() => embaralhar(data?.itens ?? []), [data?.itens]);
-
-  if (isLoading) {
-    return (
-      <div className="flex items-end justify-center gap-3">
-        {[0, 1, 2].map((i) => (
-          <Skeleton key={i} className="h-72 w-44 rounded-2xl sm:w-56" />
-        ))}
-      </div>
-    );
-  }
-
-  if (itens.length === 0) return null;
-
   return (
     <>
       {/* Mobile: slider coverflow (vê os 3, central em destaque) */}
@@ -45,9 +35,9 @@ export function DestaquesHome() {
           coverflowEffect={{ rotate: 14, stretch: 8, depth: 110, modifier: 1, slideShadows: false }}
           modules={[EffectCoverflow]}
         >
-          {itens.map((c) => (
+          {DESTAQUES.map((c) => (
             <SwiperSlide key={c.id} className="!w-44">
-              <CartaoCandidato candidato={c} otimizarFoto className="shadow-md" />
+              <CartaoCandidato candidato={c} className="shadow-md" />
             </SwiperSlide>
           ))}
         </Swiper>
@@ -56,12 +46,11 @@ export function DestaquesHome() {
 
       {/* Desktop: cartões lado a lado */}
       <div className="hidden items-stretch justify-center gap-6 sm:flex">
-        {itens.map((c) => (
+        {DESTAQUES.map((c) => (
           <Link key={c.id} href={`/candidatos/${c.id}`} className="group block w-56 shrink-0">
             <CartaoCandidato
               candidato={c}
               comHover
-              otimizarFoto
               className="transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-xl"
             />
           </Link>
@@ -71,12 +60,18 @@ export function DestaquesHome() {
   );
 }
 
-/** Fisher-Yates: devolve uma nova ordem aleatória a cada chamada. */
-function embaralhar<T>(lista: T[]): T[] {
-  const arr = [...lista];
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
+/** Monta um CandidaturaResumo mínimo para o cartão fixo da landing (foto local). */
+function destaque(id: string, nomeUrna: string, partidoSigla: string, fotoUrl: string): CandidaturaResumo {
+  return {
+    id,
+    nomeUrna,
+    partidoSigla,
+    partidoLogoUrl: null,
+    cargo: "Presidente",
+    uf: "BR",
+    numeroUrna: "",
+    fotoUrl,
+    origem: "PreCandidato",
+    scores: [],
+  };
 }
