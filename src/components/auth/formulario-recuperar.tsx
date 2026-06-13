@@ -13,14 +13,15 @@ import { esqueciSenha } from "@/lib/api";
 export function FormularioRecuperar({ aoVoltar }: { aoVoltar: () => void }) {
   const [email, setEmail] = useState("");
   const [enviando, setEnviando] = useState(false);
-  const [enviado, setEnviado] = useState(false);
+  const [mensagem, setMensagem] = useState<string | null>(null);
 
   async function aoEnviar(e: React.FormEvent) {
     e.preventDefault();
     setEnviando(true);
     try {
-      await esqueciSenha(email.trim());
-      setEnviado(true);
+      // Conta exclusivamente social vem com mensagem própria (use o provedor); caso contrário, neutra.
+      const resposta = await esqueciSenha(email.trim());
+      setMensagem(resposta.mensagem);
     } catch {
       toast.error("Não foi possível processar. Tente novamente.");
     } finally {
@@ -28,14 +29,11 @@ export function FormularioRecuperar({ aoVoltar }: { aoVoltar: () => void }) {
     }
   }
 
-  if (enviado) {
+  if (mensagem) {
     return (
       <div className="animate-in fade-in space-y-4 text-center duration-300">
         <MailCheckIcon className="mx-auto size-10 text-accent" aria-hidden="true" />
-        <p className="text-sm text-muted-foreground">
-          Se houver uma conta com <span className="font-medium text-foreground">{email}</span>,
-          enviamos um link para redefinir a senha.
-        </p>
+        <p className="text-sm text-muted-foreground">{mensagem}</p>
         <Button variant="outline" className="h-12 w-full text-base" onClick={aoVoltar}>
           Voltar para o login
         </Button>

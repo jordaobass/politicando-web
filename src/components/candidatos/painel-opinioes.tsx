@@ -173,7 +173,7 @@ function visualResposta(resposta: RespostaOpiniao): {
       };
     default:
       return {
-        rotulo: "Sem posição registrada",
+        rotulo: "Sem posição declarada",
         icone: <HelpCircleIcon className="size-3.5" aria-hidden="true" />,
         classes: "text-muted-foreground",
       };

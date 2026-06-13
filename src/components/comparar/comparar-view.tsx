@@ -7,6 +7,7 @@ import { SeletorCandidatura } from "@/components/comparar/seletor-candidatura";
 import { ColunaCandidato } from "@/components/comparar/coluna-candidato";
 import { ComparacaoRadar } from "@/components/comparar/comparacao-radar";
 import { ComparacaoCategorias } from "@/components/comparar/comparacao-categorias";
+import { BotaoSalvarComparacao } from "@/components/comparar/botao-salvar-comparacao";
 import { EstadoErro, EstadoVazio } from "@/components/comum/estados";
 import { useComparar } from "@/hooks/use-api";
 
@@ -47,6 +48,9 @@ export function CompararView({ aInicial = "", bInicial = "" }: CompararViewProps
         />
       ) : (
         <div className="space-y-8">
+          <div className="flex justify-end">
+            <BotaoSalvarComparacao a={a} b={b} />
+          </div>
           <div className="grid gap-6 sm:grid-cols-2">
             <ColunaCandidato dado={data.a} />
             <ColunaCandidato dado={data.b} />

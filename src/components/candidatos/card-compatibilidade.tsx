@@ -7,8 +7,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCompatibilidadeCandidato } from "@/hooks/use-resultado-quiz";
+import { useSessao } from "@/hooks/use-sessao";
+import { Donut } from "@/components/comum/donut";
 import {
-  classeBarraNivel,
   classesBadgeNivel,
   formatarPercentual,
   paraEscala100,
@@ -20,14 +21,16 @@ interface Props {
 }
 
 /**
- * Card "Sua compatibilidade" em largura total: se o usuário já fez o quiz, mostra
- * o % real e o nível; caso contrário, mostra um valor mockado ofuscado (blur) +
- * botão grande "Fazer o quiz".
+ * Bloco de match (cartões US-DEP-02 / US-SEN-02), em 3 estados:
+ *  1. fez o quiz → percentual real + "Ver detalhes" (verde);
+ *  2. logado sem quiz → incentivo + "Fazer o teste" (azul);
+ *  3. não logado → valor ofuscado + "Fazer o quiz" (azul).
  */
 export function CardCompatibilidade({ candidaturaId, nomeUrna }: Props) {
   const { carregado, candidato } = useCompatibilidadeCandidato(candidaturaId);
+  const { autenticado } = useSessao();
 
-  // Pré-hidratação: não decide blur vs valor real para evitar flicker.
+  // Pré-hidratação: não decide o estado para evitar flicker.
   if (!carregado) {
     return (
       <Card>
@@ -38,37 +41,55 @@ export function CardCompatibilidade({ candidaturaId, nomeUrna }: Props) {
     );
   }
 
+  // Estado 1 — fez o quiz: donut verde com o percentual real.
   if (candidato) {
-    const escala = paraEscala100(candidato.compatibilidade);
     return (
       <Card>
-        <CardContent className="space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-baseline gap-3">
-              <span className="text-5xl font-bold text-primary tabular-nums">
+        <CardContent className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Donut valor={paraEscala100(candidato.compatibilidade)} classeCor="text-accent">
+              <span className="text-2xl font-bold text-accent tabular-nums">
                 {formatarPercentual(candidato.compatibilidade)}
               </span>
-              <Badge variant="outline" className={classesBadgeNivel(candidato.nivel)}>
-                {candidato.nivel}
-              </Badge>
+            </Donut>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-foreground">compatível com você</span>
+                <Badge variant="outline" className={classesBadgeNivel(candidato.nivel)}>
+                  {candidato.nivel}
+                </Badge>
+              </div>
+              <p className="text-sm text-muted-foreground">Baseado nas suas respostas do quiz</p>
             </div>
-            <Button asChild variant="outline" size="lg">
-              <Link href="/quiz/resultado">Ver resultado completo</Link>
-            </Button>
           </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-            <div
-              className={`h-full rounded-full ${classeBarraNivel(candidato.nivel)}`}
-              style={{ width: `${escala}%` }}
-            />
-          </div>
+          <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+            <Link href="/quiz/resultado">Ver detalhes</Link>
+          </Button>
         </CardContent>
       </Card>
     );
   }
 
-  // Não fez o quiz: estado ofuscado com CTA destacado — banner enxuto, botão da mesma
-  // altura da área ofuscada (items-stretch + h-auto no botão).
+  // Estado 2 — logado, sem quiz: incentivo a fazer o teste.
+  if (autenticado) {
+    return (
+      <Card>
+        <CardContent className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="font-semibold text-foreground">Descubra sua compatibilidade</p>
+            <p className="text-sm text-muted-foreground">
+              Quiz gratuito em menos de 3 minutos, sem viés partidário.
+            </p>
+          </div>
+          <Button asChild className="bg-primary px-8 font-semibold text-primary-foreground hover:bg-primary/90">
+            <Link href="/quiz">Fazer o teste</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Estado 3 — não logado: valor ofuscado (blur) + CTA "Fazer o quiz".
   return (
     <Card>
       <CardContent className="flex flex-col items-stretch gap-2 p-2 sm:flex-row">
@@ -91,7 +112,7 @@ export function CardCompatibilidade({ candidaturaId, nomeUrna }: Props) {
         </div>
         <Button
           asChild
-          className="h-auto bg-accent px-8 font-semibold text-accent-foreground hover:bg-accent/90"
+          className="h-auto bg-primary px-8 font-semibold text-primary-foreground hover:bg-primary/90"
         >
           <Link href="/quiz">Fazer o quiz</Link>
         </Button>

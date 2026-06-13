@@ -21,6 +21,21 @@ const COTA_CEAP_MENSAL: Record<string, number> = {
   SE: 40139.26, TO: 36092.71,
 };
 
+/**
+ * Cota mensal da CEAPS (Cota para o Exercício da Atividade Parlamentar dos Senadores) por UF — em R$.
+ * Diferente da cota da Câmara: varia por estado (componente de passagens aéreas). Valores de
+ * referência do Senado (Ato da Comissão Diretora); revisar periodicamente. Usada só para estimar
+ * a economia (cota não utilizada) no perfil de senadores.
+ */
+const COTA_CEAPS_MENSAL: Record<string, number> = {
+  AC: 48107.0, AL: 41999.83, AP: 47192.45, AM: 47963.4, BA: 41376.86,
+  CE: 43505.39, DF: 22663.94, ES: 38871.59, GO: 33763.0, MA: 42388.19,
+  MT: 39971.05, MS: 39511.85, MG: 36227.05, PA: 44342.0, PB: 43578.42,
+  PR: 39971.05, PE: 42388.19, PI: 43505.39, RJ: 37728.96, RN: 43906.5,
+  RS: 42388.19, RO: 47196.0, RR: 47963.4, SC: 40484.85, SP: 38871.59,
+  SE: 41999.83, TO: 37728.96,
+};
+
 interface PainelGabineteProps {
   /** Gastos por ano, do mais recente para o mais antigo (índice 0 = mais recente). */
   gabinetes: GabineteAtividade[];
@@ -50,9 +65,18 @@ export function PainelGabinete({ gabinetes, uf, cargo }: PainelGabineteProps) {
   const gabinete = anos[i];
 
   // Teto da cota no período: cota mensal da UF × meses decorridos no ano de referência.
-  // Só para deputado federal — a cota do Senado é outra e ainda não está tabelada.
-  const ehDeputado = (cargo ?? "").toLowerCase().includes("deputado");
-  const cotaMensal = ehDeputado && uf ? COTA_CEAP_MENSAL[uf.toUpperCase()] : undefined;
+  // Deputado usa a CEAP (Câmara); senador usa a CEAPS (Senado) — tabelas distintas por UF.
+  const cargoLower = (cargo ?? "").toLowerCase();
+  const ehDeputado = cargoLower.includes("deputado");
+  const ehSenador = cargoLower.includes("senador");
+  const ufKey = uf?.toUpperCase();
+  const cotaMensal = ufKey
+    ? ehDeputado
+      ? COTA_CEAP_MENSAL[ufKey]
+      : ehSenador
+        ? COTA_CEAPS_MENSAL[ufKey]
+        : undefined
+    : undefined;
   const agora = new Date();
   const meses = gabinete.ano < agora.getFullYear() ? 12 : Math.max(1, agora.getMonth() + 1);
   const cotaPeriodo = cotaMensal ? cotaMensal * meses : undefined;
@@ -127,7 +151,7 @@ export function PainelGabinete({ gabinetes, uf, cargo }: PainelGabineteProps) {
             />
           </div>
           <p className="text-[11px] text-muted-foreground">
-            Cota CEAP de {formatarReais(cotaPeriodo)} no período ({meses}{" "}
+            Cota {ehSenador ? "CEAPS" : "CEAP"} de {formatarReais(cotaPeriodo)} no período ({meses}{" "}
             {meses === 1 ? "mês" : "meses"}).
           </p>
         </div>

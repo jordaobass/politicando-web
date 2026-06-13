@@ -1,5 +1,5 @@
+import Image from "next/image";
 import Link from "next/link";
-import { VoteIcon } from "lucide-react";
 
 const COLUNAS = [
   {
@@ -14,9 +14,7 @@ const COLUNAS = [
   {
     titulo: "Transparência",
     links: [
-      { href: "/candidatos", rotulo: "Como calculamos" },
-      { href: "/candidatos", rotulo: "Fontes dos dados" },
-      { href: "/candidatos", rotulo: "Metodologia" },
+      { href: "/como-calculamos", rotulo: "Como calculamos" },
     ],
   },
   {
@@ -35,7 +33,13 @@ export function Footer() {
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-2">
           <p className="flex items-center gap-2 text-lg font-bold">
-            <VoteIcon className="size-5 text-accent" aria-hidden="true" />
+            <Image
+              src="/logo-politicando.jpeg"
+              alt="Politicando"
+              width={32}
+              height={32}
+              className="size-8 rounded-md"
+            />
             Politicando
           </p>
           <p className="text-sm text-primary-foreground/70">
@@ -65,8 +69,10 @@ export function Footer() {
 
       <div className="border-t border-white/10">
         <p className="mx-auto max-w-7xl px-4 py-4 text-xs text-primary-foreground/60">
-          © {new Date().getFullYear()} Politicando · Dados de fontes públicas
-          (Câmara, Senado, TSE).
+          O Politicando é uma plataforma independente e apartidária. As análises
+          são geradas por inteligência artificial com base em dados públicos e não
+          representam indicação, endorsement ou posição política de qualquer
+          natureza.
         </p>
       </div>
     </footer>

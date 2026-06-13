@@ -198,6 +198,11 @@ export interface ResumoAtividade {
   projetosAprovados: number;
   projetosEmTramitacao: number;
   projetosRejeitados: number;
+  // Fiscalização e Controle (US-SEN-03): requerimentos/indicações.
+  fiscalizacaoTotal: number;
+  fiscalizacaoAprovadas: number;
+  fiscalizacaoEmTramitacao: number;
+  fiscalizacaoRejeitadas: number;
   votacoes: number;
   relatorias: number;
   presencaPercentual: number | null;
@@ -258,15 +263,30 @@ export interface GabineteAtividade {
   urlPortal: string | null;
 }
 
+export interface ComissaoAtividade {
+  nome: string;
+  sigla: string;
+  casa: string | null;
+  participacao: string; // "Titular" / "Suplente" / ...
+  inicio: string | null;
+  fim: string | null; // null = "até o momento"
+  ativa: boolean;
+  ano: number;
+}
+
 export interface AtividadeLegislativa {
   resumo: ResumoAtividade;
   projetos: ProposicaoAtividade[];
+  /** Fiscalização e Controle: requerimentos e indicações de autoria (Senado). */
+  fiscalizacao: ProposicaoAtividade[];
   votacoes: VotoAtividade[];
   relatorias: ProposicaoAtividade[];
   /** Um item por ano do mandato (legislatura) corrente, do mais recente para o mais antigo. */
   presencas: PresencaAtividade[];
   /** Gastos da Cota Parlamentar por ano, do mais recente para o mais antigo (carrossel). */
   gabinetes: GabineteAtividade[];
+  /** Atuação em comissões (Senado), da mais recente para a mais antiga. */
+  comissoes: ComissaoAtividade[];
   portalNome: string | null;
   portalUrl: string | null;
 }
@@ -300,18 +320,51 @@ export interface Partido {
   nome: string;
   numero: number;
   logoUrl: string | null;
+  siteOficial?: string | null;
+  programaUrl?: string | null;
+  programaResumo?: string | null;
 }
 
 export interface Usuario {
   id?: string;
   nome: string;
   email: string;
+  /** Data de nascimento ISO (YYYY-MM-DD); somente leitura no perfil. */
+  dataNascimento?: string | null;
+  /** Tem senha definida (conta manual) → exibe "Alterar senha". Conta exclusivamente social = false. */
+  podeAlterarSenha?: boolean;
   [chave: string]: unknown;
+}
+
+/** Candidato resumido exibido numa comparação salva (cartão US-AUTH-06). */
+export interface CandidaturaMini {
+  id: string;
+  nomeUrna: string;
+  partidoSigla?: string | null;
+  fotoUrl?: string | null;
+}
+
+export interface ComparacaoSalva {
+  id: string;
+  a: CandidaturaMini;
+  b: CandidaturaMini;
+}
+
+/** Último quiz do usuário: quando foi feito + o resultado recalculado. */
+export interface UltimoQuiz {
+  finalizadoEm: string;
+  resultado: ResultadoQuiz;
 }
 
 export interface AuthResponse {
   token: string;
+  refreshToken: string;
   usuario: Usuario;
+}
+
+export interface EsqueciSenhaResposta {
+  mensagem: string;
+  contaSocial: boolean;
 }
 
 export interface LoginRequest {
@@ -323,6 +376,9 @@ export interface RegistrarRequest {
   nome: string;
   email: string;
   senha: string;
+  /** Data de nascimento no formato ISO (YYYY-MM-DD); idade mínima de 16 anos. */
+  dataNascimento: string;
+  aceiteLgpd: boolean;
 }
 
 export interface FiltrosCandidatura {

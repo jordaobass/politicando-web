@@ -9,7 +9,13 @@ export const metadata: Metadata = {
   description: "Acesse sua conta no Politicando.",
 };
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ aba?: string }>;
+}) {
+  const { aba } = await searchParams;
+  const abaInicial = aba === "registrar" ? "registrar" : "login";
   return (
     <div className="relative flex min-h-[calc(100svh-3.5rem)] w-full items-center justify-center overflow-hidden bg-gradient-to-b from-secondary/60 to-background px-4 py-10">
       {/* Blobs flutuantes de fundo */}
@@ -28,7 +34,7 @@ export default function LoginPage() {
           <span className="text-2xl font-bold text-primary">Politicando</span>
         </Link>
 
-        <CardAutenticacao />
+        <CardAutenticacao abaInicial={abaInicial} />
       </div>
     </div>
   );

@@ -1,8 +1,7 @@
 "use client";
 
-import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
+import { URL_LOGIN_GOOGLE } from "@/lib/api";
 
 /** Logo do Google nas suas 4 cores oficiais. */
 function GoogleIcon() {
@@ -28,36 +27,21 @@ function GoogleIcon() {
   );
 }
 
-/** Logo da Apple, sempre em preto. */
-function AppleIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="size-5" aria-hidden="true" focusable="false">
-      <path
-        fill="#000000"
-        d="M16.365 1.43c0 1.14-.42 2.21-1.12 3.01-.84.96-2.2 1.7-3.32 1.61-.14-1.12.43-2.3 1.1-3.04.74-.83 2.04-1.46 3.34-1.58zM20.79 17.2c-.6 1.38-.89 1.99-1.66 3.2-1.07 1.68-2.58 3.78-4.46 3.8-1.67.01-2.1-1.09-4.36-1.08-2.26.01-2.73 1.1-4.4 1.08-1.88-.02-3.31-1.91-4.38-3.59-2.99-4.71-2.29-10.55.67-12.91 1.16-.93 2.55-1.47 3.86-1.47 1.39 0 2.27.98 4.27.98 1.94 0 3.12-.98 4.86-.98 1.18 0 2.43.32 3.32 1.13-2.92 1.6-2.45 5.77.88 6.83-.27.79-.51 1.36-.9 2.01z"
-      />
-    </svg>
-  );
-}
-
 const ESTILO_BOTAO =
   "h-12 w-full justify-center gap-3 border-zinc-200 bg-white text-base font-medium text-zinc-800 hover:bg-zinc-50";
 
-/** Botões de login social: Google e Apple (visuais — integração OAuth é próximo passo). */
+/** Botão de login social: Google (OAuth real no backend). */
 export function BotoesSociais() {
-  function aviso(provedor: string) {
-    toast.info(`Login com ${provedor} estará disponível em breve.`);
+  function entrarComGoogle() {
+    // Navegação de página inteira: o fluxo OAuth roda todo no backend e volta em /auth/callback.
+    window.location.href = URL_LOGIN_GOOGLE;
   }
 
   return (
     <div className="grid gap-3">
-      <Button type="button" variant="outline" className={ESTILO_BOTAO} onClick={() => aviso("Google")}>
+      <Button type="button" variant="outline" className={ESTILO_BOTAO} onClick={entrarComGoogle}>
         <GoogleIcon />
         Entrar com Google
-      </Button>
-      <Button type="button" variant="outline" className={ESTILO_BOTAO} onClick={() => aviso("Apple")}>
-        <AppleIcon />
-        Entrar com Apple
       </Button>
     </div>
   );

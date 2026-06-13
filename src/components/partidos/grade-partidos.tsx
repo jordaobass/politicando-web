@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { GradeSkeleton, EstadoErro, EstadoVazio } from "@/components/comum/estados";
@@ -47,36 +48,32 @@ export function GradePartidos() {
 
 function CardPartido({ partido }: { partido: Partido }) {
   return (
-    <Card>
-      <CardContent className="flex flex-col items-center gap-3 text-center">
-        <div className="flex size-16 items-center justify-center overflow-hidden rounded-lg bg-muted">
-          {partido.logoUrl ? (
-            <Image
-              src={partido.logoUrl}
-              alt={`Logo do ${partido.sigla}`}
-              width={64}
-              height={64}
-              className="size-full object-contain"
-              unoptimized
-            />
-          ) : (
-            <span className="text-lg font-bold text-muted-foreground">
-              {partido.sigla}
-            </span>
-          )}
-        </div>
-        <div>
-          <p className="font-semibold text-foreground">{partido.sigla}</p>
-          <p className="line-clamp-2 text-xs text-muted-foreground">
-            {partido.nome}
-          </p>
-          {partido.numero ? (
-            <p className="mt-1 text-xs tabular-nums text-muted-foreground">
-              Nº {partido.numero}
-            </p>
-          ) : null}
-        </div>
-      </CardContent>
-    </Card>
+    <Link href={`/partidos/${partido.id}`} className="block">
+      <Card className="h-full transition-shadow hover:shadow-md">
+        <CardContent className="flex flex-col items-center gap-3 text-center">
+          <div className="flex size-16 items-center justify-center overflow-hidden rounded-lg bg-muted">
+            {partido.logoUrl ? (
+              <Image
+                src={partido.logoUrl}
+                alt={`Logo do ${partido.sigla}`}
+                width={64}
+                height={64}
+                className="size-full object-contain"
+                unoptimized
+              />
+            ) : (
+              <span className="text-lg font-bold text-muted-foreground">{partido.sigla}</span>
+            )}
+          </div>
+          <div>
+            <p className="font-semibold text-foreground">{partido.sigla}</p>
+            <p className="line-clamp-2 text-xs text-muted-foreground">{partido.nome}</p>
+            {partido.numero ? (
+              <p className="mt-1 text-xs tabular-nums text-muted-foreground">Nº {partido.numero}</p>
+            ) : null}
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
   );
 }

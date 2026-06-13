@@ -12,6 +12,7 @@ import type {
   Categoria,
   CategoriaOpiniao,
   CompararResultado,
+  ComparacaoSalva,
   EnviarRespostasRequest,
   FiltrosCandidatura,
   LoginRequest,
@@ -21,6 +22,9 @@ import type {
   PoliticoPerfil,
   RegistrarRequest,
   ResultadoQuiz,
+  UltimoQuiz,
+  Usuario,
+  EsqueciSenhaResposta,
 } from "@/lib/types";
 
 export const API_BASE_URL =
@@ -155,6 +159,10 @@ export function buscarPartidos(): Promise<Partido[]> {
   return request<Partido[]>("/partidos");
 }
 
+export function buscarPartido(id: string): Promise<Partido> {
+  return request<Partido>(`/partidos/${id}`);
+}
+
 // ---------------------------------------------------------------------------
 // Autenticação
 // ---------------------------------------------------------------------------
@@ -173,24 +181,107 @@ export function registrar(body: RegistrarRequest): Promise<AuthResponse> {
   });
 }
 
-/** Solicita o link de redefinição (resposta sempre OK; não revela se o e-mail existe). */
-export function esqueciSenha(email: string): Promise<boolean> {
-  return request<boolean>("/auth/esqueci-senha", {
+/** Solicita o link de redefinição. Resposta neutra; sinaliza conta exclusivamente social. */
+export function esqueciSenha(email: string): Promise<EsqueciSenhaResposta> {
+  return request<EsqueciSenhaResposta>("/auth/esqueci-senha", {
     method: "POST",
     body: JSON.stringify({ email }),
   });
 }
 
-/** Redefine a senha a partir do token recebido no link. */
+/** Redefine a senha e já autentica o usuário (auto-login, cartão US-AUTH-04). */
 export function redefinirSenha(body: {
   email: string;
   token: string;
   novaSenha: string;
-}): Promise<boolean> {
-  return request<boolean>("/auth/redefinir-senha", {
+}): Promise<AuthResponse> {
+  return request<AuthResponse>("/auth/redefinir-senha", {
     method: "POST",
     body: JSON.stringify(body),
   });
+}
+
+/** Renova a sessão (rotaciona o refresh token e devolve um novo JWT de 30 dias). */
+export function renovarSessao(refreshToken: string): Promise<AuthResponse> {
+  return request<AuthResponse>("/auth/refresh", {
+    method: "POST",
+    body: JSON.stringify({ refreshToken }),
+  });
+}
+
+/** Encerra a sessão no servidor revogando o refresh token. */
+export function logout(refreshToken: string): Promise<void> {
+  return request<void>("/auth/logout", {
+    method: "POST",
+    body: JSON.stringify({ refreshToken }),
+  });
+}
+
+/** Dados do usuário autenticado — usado pelo callback do login social para montar a sessão. */
+export function meuPerfil(token: string): Promise<Usuario> {
+  return request<Usuario>("/auth/me", { token });
+}
+
+/** Etapa complementar do OAuth: salva a data de nascimento do usuário autenticado (US-AUTH-02). */
+export function completarCadastro(
+  dataNascimento: string,
+  token: string,
+): Promise<Usuario> {
+  return request<Usuario>("/auth/completar-cadastro", {
+    method: "POST",
+    token,
+    body: JSON.stringify({ dataNascimento }),
+  });
+}
+
+/** Atualiza nome e data de nascimento do usuário autenticado (cartão US-AUTH-06). */
+export function atualizarPerfil(
+  dados: { nome: string; dataNascimento?: string | null },
+  token: string,
+): Promise<Usuario> {
+  return request<Usuario>("/auth/me", {
+    method: "PUT",
+    token,
+    body: JSON.stringify(dados),
+  });
+}
+
+/** URL para iniciar o login com Google (navegação de página inteira; o fluxo é todo no backend). */
+export const URL_LOGIN_GOOGLE = `${API_BASE_URL}/auth/google`;
+
+// ---------------------------------------------------------------------------
+// Meu Perfil — último quiz e comparações salvas (cartão US-AUTH-06)
+// ---------------------------------------------------------------------------
+
+/** Último quiz do usuário (ou null se nunca realizou — backend responde 204). */
+export async function meuUltimoQuiz(token: string): Promise<UltimoQuiz | null> {
+  return (await request<UltimoQuiz | null>("/quiz/meu-ultimo", { token })) ?? null;
+}
+
+export function listarComparacoesSalvas(
+  pagina: number,
+  token: string,
+): Promise<PaginaResultado<ComparacaoSalva>> {
+  return request<PaginaResultado<ComparacaoSalva>>(
+    `/comparacoes${montarQuery({ pagina })}`,
+    { token },
+  );
+}
+
+export function salvarComparacao(
+  candidaturaAId: string,
+  candidaturaBId: string,
+  token: string,
+): Promise<ComparacaoSalva> {
+  return request<ComparacaoSalva>("/comparacoes", {
+    method: "POST",
+    token,
+    body: JSON.stringify({ candidaturaAId, candidaturaBId }),
+  });
+}
+
+export function excluirComparacao(id: string, token: string): Promise<void> {
+  return request<void>(`/comparacoes/${id}`, { method: "DELETE", token });
 }
 
 // ---------------------------------------------------------------------------

@@ -19,9 +19,22 @@ const ABAS: { id: Aba; rotulo: string }[] = [
  * Conteúdo de autenticação (abas, formulários, sociais e alternância), sem o card externo.
  * Reutilizado na página de login e no modal de fim de quiz. `aoConcluir` é chamado no sucesso.
  */
-export function ConteudoAutenticacao({ aoConcluir }: { aoConcluir?: () => void }) {
-  const [aba, setAba] = useState<Aba>("login");
+export function ConteudoAutenticacao({
+  aoConcluir,
+  abaInicial = "login",
+}: {
+  aoConcluir?: () => void;
+  abaInicial?: Aba;
+}) {
+  const [aba, setAba] = useState<Aba>(abaInicial);
   const [recuperando, setRecuperando] = useState(false);
+  // E-mail propagado do cadastro para a aba de login (link "Entrar" do e-mail já cadastrado).
+  const [emailLogin, setEmailLogin] = useState("");
+
+  function irParaLogin(email: string) {
+    setEmailLogin(email);
+    setAba("login");
+  }
 
   // Modo recuperação de senha: oculta abas e sociais.
   if (recuperando) {
@@ -61,9 +74,13 @@ export function ConteudoAutenticacao({ aoConcluir }: { aoConcluir?: () => void }
 
       <div key={aba} className="animate-in fade-in slide-in-from-right-3 duration-300">
         {aba === "login" ? (
-          <FormularioLogin aoConcluir={aoConcluir} aoEsquecer={() => setRecuperando(true)} />
+          <FormularioLogin
+            aoConcluir={aoConcluir}
+            aoEsquecer={() => setRecuperando(true)}
+            emailInicial={emailLogin}
+          />
         ) : (
-          <FormularioRegistro aoConcluir={aoConcluir} />
+          <FormularioRegistro aoConcluir={aoConcluir} aoIrParaLogin={irParaLogin} />
         )}
       </div>
 

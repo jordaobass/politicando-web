@@ -1,0 +1,53 @@
+name: Security
+
+# Esteira de segurança: segredos (Gitleaks), dependências vulneráveis (npm audit)
+# e scan de arquivos/Dockerfile (Trivy). Roda em PR/push e semanalmente.
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+  schedule:
+    - cron: "0 6 * * 1" # toda segunda, 06:00 UTC
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sec-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  segredos:
+    name: Secret scan (Gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # histórico completo para varrer commits antigos
+      - name: Gitleaks
+        run: |
+          curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.18.4/gitleaks_8.18.4_linux_x64.tar.gz | tar -xz gitleaks
+          ./gitleaks detect --source . --redact --no-banner --exit-code 1
+
+  dependencias:
+    name: Dependências vulneráveis (npm audit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: npm audit (falha em high/critical de produção)
+        run: npm audit --omit=dev --audit-level=high
+
+  arquivos:
+    name: Scan de arquivos/Dockerfile (Trivy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Instalar Trivy
+        run: curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
+      - name: Trivy (filesystem)
+        run: trivy fs --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 --no-progress .

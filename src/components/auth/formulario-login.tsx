@@ -17,9 +17,12 @@ import { loginSchema, type LoginFormValues } from "@/lib/schemas";
 export function FormularioLogin({
   aoConcluir,
   aoEsquecer,
+  emailInicial = "",
 }: {
   aoConcluir?: () => void;
   aoEsquecer?: () => void;
+  /** Pré-preenche o e-mail (vindo do link "Entrar" no cadastro de e-mail já existente). */
+  emailInicial?: string;
 }) {
   const router = useRouter();
   const { entrar } = useSessao();
@@ -31,16 +34,16 @@ export function FormularioLogin({
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", senha: "" },
+    defaultValues: { email: emailInicial, senha: "" },
   });
 
   async function aoEnviar(valores: LoginFormValues) {
     try {
       const resposta = await mutation.mutateAsync(valores);
       entrar(resposta);
-      toast.success("Login realizado com sucesso!");
+      toast.success(`Bem-vindo de volta, ${resposta.usuario.nome}!`);
       if (aoConcluir) aoConcluir();
-      else router.push("/perfil");
+      else router.push("/candidatos");
     } catch {
       toast.error("Não foi possível entrar. Verifique suas credenciais.");
     }
