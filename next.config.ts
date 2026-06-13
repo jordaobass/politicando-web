@@ -17,6 +17,9 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "**" },
       { protocol: "http", hostname: "**" },
     ],
+    // Cache das imagens OTIMIZADAS (only as que passam pelo /_next/image — ex.: destaques
+    // da landing) no edge da Vercel por 30 dias, para não rebuscar a origem externa lenta.
+    minimumCacheTTL: 2_592_000,
   },
 };
 

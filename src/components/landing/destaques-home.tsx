@@ -47,7 +47,7 @@ export function DestaquesHome() {
         >
           {itens.map((c) => (
             <SwiperSlide key={c.id} className="!w-44">
-              <CartaoCandidato candidato={c} className="shadow-md" />
+              <CartaoCandidato candidato={c} otimizarFoto className="shadow-md" />
             </SwiperSlide>
           ))}
         </Swiper>
@@ -61,6 +61,7 @@ export function DestaquesHome() {
             <CartaoCandidato
               candidato={c}
               comHover
+              otimizarFoto
               className="transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-xl"
             />
           </Link>

@@ -20,6 +20,14 @@ interface FotoCandidatoProps {
   posicao?: "center" | "top";
   /** Estilos inline (ex.: cor de borda dinâmica por partido). */
   style?: CSSProperties;
+  /**
+   * Otimiza a imagem pelo /_next/image da Vercel (cache no edge CDN) em vez de servir a
+   * URL externa crua. Use em conjuntos pequenos e repetidos (ex.: destaques da landing) —
+   * NÃO ligue nas listagens grandes, que estourariam a cota de transformação da Vercel.
+   */
+  otimizar?: boolean;
+  /** Carrega a imagem com prioridade (above-the-fold; só faz sentido com otimizar). */
+  prioritaria?: boolean;
 }
 
 /**
@@ -34,6 +42,8 @@ export function FotoCandidato({
   ajuste = "cover",
   posicao = "center",
   style,
+  otimizar = false,
+  prioritaria = false,
 }: FotoCandidatoProps) {
   const [comErro, setComErro] = useState(false);
   const semImagem = !fotoUrl || comErro;
@@ -63,7 +73,8 @@ export function FotoCandidato({
             posicao === "top" && "object-top",
           )}
           onError={() => setComErro(true)}
-          unoptimized
+          unoptimized={!otimizar}
+          priority={prioritaria}
         />
       )}
     </div>

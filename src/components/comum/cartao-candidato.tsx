@@ -9,6 +9,8 @@ interface CartaoCandidatoProps {
   /** Ativa zoom da foto + selo "Ver perfil" no hover. Requer um ancestral com a classe `group`. */
   comHover?: boolean;
   className?: string;
+  /** Otimiza/cacheia a foto pelo edge da Vercel (usar só em conjuntos pequenos, ex.: landing). */
+  otimizarFoto?: boolean;
 }
 
 /**
@@ -18,7 +20,7 @@ interface CartaoCandidatoProps {
  * O wrapper de navegação (Link) ou de slider (SwiperSlide) fica por conta de quem usa —
  * assim o mesmo cartão serve tanto para o carrossel do mobile quanto para a grade do desktop.
  */
-export function CartaoCandidato({ candidato, comHover = false, className }: CartaoCandidatoProps) {
+export function CartaoCandidato({ candidato, comHover = false, className, otimizarFoto = false }: CartaoCandidatoProps) {
   return (
     <div
       style={{ borderTopColor: corPartido(candidato.partidoSigla) ?? "var(--border)" }}
@@ -32,6 +34,8 @@ export function CartaoCandidato({ candidato, comHover = false, className }: Cart
           fotoUrl={candidato.fotoUrl}
           nome={candidato.nomeUrna}
           circular={false}
+          otimizar={otimizarFoto}
+          prioritaria={otimizarFoto}
           className={cn(
             "size-full",
             comHover && "transition-transform duration-500 group-hover:scale-110",
