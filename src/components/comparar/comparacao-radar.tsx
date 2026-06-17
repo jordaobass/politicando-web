@@ -5,11 +5,14 @@ import type { CandidaturaDetalhe } from "@/lib/types";
 /** Cores fixas das séries A e B (usadas no radar, na legenda e no detalhe). */
 export const CORES_COMPARACAO = { a: "#2563eb", b: "#ea580c" } as const;
 
-/** Lista de categorias na ordem de A, completada com as exclusivas de B. */
+/** Eixo institucional fica fora do comparativo (spec lista 8 temas). */
+const EIXO_FORA = "Instituições e Democracia";
+
+/** Lista de categorias na ordem de A, completada com as exclusivas de B (sem o eixo institucional). */
 export function categoriasUnidas(a: CandidaturaDetalhe, b: CandidaturaDetalhe): string[] {
   const nomes = a.scores.map((s) => s.categoria);
   for (const s of b.scores) if (!nomes.includes(s.categoria)) nomes.push(s.categoria);
-  return nomes;
+  return nomes.filter((c) => c !== EIXO_FORA);
 }
 
 function valoresPor(categorias: string[], dado: CandidaturaDetalhe): number[] {
@@ -51,6 +54,11 @@ export function ComparacaoRadar({ a, b }: { a: CandidaturaDetalhe; b: Candidatur
             </span>
           ))}
         </div>
+        <p className="max-w-prose text-center text-sm text-muted-foreground">
+          O gráfico mostra o nível de engajamento de cada candidato nos 8 temas avaliados, numa
+          escala de 0 a 5. Quanto maior a área, maior o envolvimento com aquele tema. Isso não
+          indica posição ideológica.
+        </p>
       </CardContent>
     </Card>
   );

@@ -29,6 +29,7 @@ import { CartaoContagem } from "@/components/candidatos/atividade/cartao-contage
 import { PainelPresenca } from "@/components/candidatos/atividade/painel-presenca";
 import { PainelGabinete } from "@/components/candidatos/atividade/painel-gabinete";
 import { PainelComissoes } from "@/components/candidatos/atividade/painel-comissoes";
+import { PainelGestaoEstadual } from "@/components/candidatos/atividade/painel-gestao-estadual";
 import { PainelAnaliseTematica } from "@/components/candidatos/painel-analise-tematica";
 import { BlocoBloqueado } from "@/components/candidatos/bloco-bloqueado";
 import { useAtividade, useCandidatura } from "@/hooks/use-api";
@@ -211,6 +212,11 @@ export function DetalheCandidato({ id }: { id: string }) {
             )}
           </CardContent>
         </Card>
+      )}
+
+      {/* Gestão estadual (só Governador): execução orçamentária por eixo (SICONFI). */}
+      {data.gestaoEstadual && data.gestaoEstadual.eixos.length > 0 && (
+        <PainelGestaoEstadual gestao={data.gestaoEstadual} uf={data.uf} />
       )}
 
       {/* Score + Projetos de lei (só métricas) — cards visuais lado a lado (sem abas).

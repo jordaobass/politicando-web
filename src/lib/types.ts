@@ -156,6 +156,20 @@ export interface FiliacaoPartido {
   atual: boolean;
 }
 
+/** Fatia do orçamento estadual num eixo temático (SICONFI) — gestão estadual. */
+export interface GestaoEstadualItem {
+  eixo: string;
+  eixoNome: string;
+  percentual: number;
+  valorMilhoes: number;
+}
+
+/** Bloco "Gestão estadual": execução orçamentária por eixo da UF, num exercício. */
+export interface GestaoEstadual {
+  ano: number;
+  eixos: GestaoEstadualItem[];
+}
+
 export interface CandidaturaDetalhe {
   id: string;
   politico: PoliticoPerfil;
@@ -172,6 +186,8 @@ export interface CandidaturaDetalhe {
   historicoCandidaturas?: CandidaturaHistorico[];
   exercicios?: ExercicioCargo[];
   filiacoes?: FiliacaoPartido[];
+  /** Execução orçamentária por eixo da UF (só Governador). */
+  gestaoEstadual?: GestaoEstadual | null;
 }
 
 export interface CompararResultado {

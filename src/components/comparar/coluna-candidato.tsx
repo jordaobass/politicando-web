@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { CartaoCandidato } from "@/components/comum/cartao-candidato";
+import { formatarCargo } from "@/lib/format";
 import type { CandidaturaDetalhe, CandidaturaResumo } from "@/lib/types";
 
 /** Coluna de comparação: card pôster (igual ao da home) com link para o perfil. */
@@ -29,6 +30,11 @@ export function ColunaCandidato({ dado }: { dado: CandidaturaDetalhe }) {
         comHover
         className="transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-xl"
       />
+      {/* Cargo (+ UF quando aplicável) abaixo do card — spec US-COMP-02 pede cargo no resultado. */}
+      <p className="mt-2 text-center text-sm text-muted-foreground">
+        {formatarCargo(dado.cargo)}
+        {dado.uf && dado.uf !== "BR" ? ` · ${dado.uf}` : ""}
+      </p>
     </Link>
   );
 }
