@@ -9,7 +9,7 @@ import { BarraScore } from "@/components/comum/barra-score";
 import { PainelGestaoEstadual } from "@/components/candidatos/atividade/painel-gestao-estadual";
 import { formatarCargo } from "@/lib/format";
 import { useSessao } from "@/hooks/use-sessao";
-import type { CandidaturaDetalhe, ExercicioCargo } from "@/lib/types";
+import type { CandidaturaDetalhe, ExercicioCargo, ScoreCategoria } from "@/lib/types";
 
 /** Eixo institucional não entra no score por tema do perfil (spec lista 8 temas). */
 const EIXO_FORA = "Instituições e Democracia";
@@ -44,17 +44,17 @@ export function PerfilGovernador({ data }: { data: CandidaturaDetalhe }) {
           {scores.length === 0 ? (
             <p className="text-sm text-muted-foreground">Ainda não há score calculado para este candidato.</p>
           ) : (
-            scores.map((s) => (
-              <div key={s.categoria} className="space-y-1">
-                <BarraScore rotulo={s.categoria} valor={s.engajamento ?? 0} escalaMax={5} />
-                {s.justificativa && <p className="text-sm text-muted-foreground">{s.justificativa}</p>}
-                {s.confianca != null && (
-                  <p className="text-xs text-muted-foreground">
-                    Confiança da análise: {Math.round(s.confianca * 100)}%
-                  </p>
-                )}
+            <>
+              <div className="space-y-3">
+                {scores.map((s) => (
+                  <BarraScore key={s.categoria} rotulo={s.categoria} valor={s.engajamento ?? 0} escalaMax={5} />
+                ))}
               </div>
-            ))
+              <p className="border-t border-border pt-3 text-xs text-muted-foreground">
+                Notas estimadas pela prioridade do orçamento estadual (SICONFI 2025) e pelo plano de
+                governo 2022. Análise preliminar do Politicando{confiancaMedia(scores) ? ` · confiança média ${confiancaMedia(scores)}%` : ""}.
+              </p>
+            </>
           )}
         </CardContent>
       </Card>
@@ -151,4 +151,11 @@ export function PerfilGovernador({ data }: { data: CandidaturaDetalhe }) {
 function rotuloCargo(e: ExercicioCargo): string {
   const cargo = formatarCargo(e.cargo);
   return e.uf && e.uf !== "BR" ? `${cargo} · ${e.uf}` : cargo;
+}
+
+/** Confiança média (%) das notas, para a nota de metodologia do bloco de score. */
+function confiancaMedia(scores: ScoreCategoria[]): number | null {
+  const cs = scores.map((s) => s.confianca).filter((c): c is number => c != null);
+  if (cs.length === 0) return null;
+  return Math.round((cs.reduce((a, b) => a + b, 0) / cs.length) * 100);
 }

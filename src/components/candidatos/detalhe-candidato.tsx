@@ -144,7 +144,8 @@ export function DetalheCandidato({ id }: { id: string }) {
                 </Badge>
                 {data.numeroUrna != null && <Badge variant="outline">Nº {data.numeroUrna}</Badge>}
                 {tipoHistoricoRotulo && <Badge variant="secondary">{tipoHistoricoRotulo}</Badge>}
-                {data.origem && <BadgeOrigem origem={data.origem} />}
+                {/* Evita badge redundante: o tipo de histórico já comunica o mandato. */}
+                {data.origem && !tipoHistoricoRotulo && <BadgeOrigem origem={data.origem} />}
               </div>
 
               {gabineteRecente && (
