@@ -29,11 +29,20 @@ import { CartaoContagem } from "@/components/candidatos/atividade/cartao-contage
 import { PainelPresenca } from "@/components/candidatos/atividade/painel-presenca";
 import { PainelGabinete } from "@/components/candidatos/atividade/painel-gabinete";
 import { PainelComissoes } from "@/components/candidatos/atividade/painel-comissoes";
-import { PainelGestaoEstadual } from "@/components/candidatos/atividade/painel-gestao-estadual";
+import { PerfilGovernador } from "@/components/candidatos/perfil-governador";
 import { PainelAnaliseTematica } from "@/components/candidatos/painel-analise-tematica";
 import { BlocoBloqueado } from "@/components/candidatos/bloco-bloqueado";
 import { useAtividade, useCandidatura } from "@/hooks/use-api";
 import { useSessao } from "@/hooks/use-sessao";
+
+/** Rótulo amigável do tipo de histórico (US-GOV-01) exibido como badge na identidade. */
+const ROTULO_TIPO_HISTORICO: Record<string, string> = {
+  ex_governador: "Mandato como governador",
+  mandato_federal: "Mandato federal",
+  prefeito: "Mandato como prefeito",
+  deputado_estadual: "Mandato estadual",
+  sem_mandato: "Sem mandato anterior",
+};
 
 /** Perfil completo de uma candidatura (identidade única do político + atividade legislativa). */
 export function DetalheCandidato({ id }: { id: string }) {
@@ -73,6 +82,8 @@ export function DetalheCandidato({ id }: { id: string }) {
   const temGabinete = gabinetes.length > 0;
   const temComissoes = (atividade?.comissoes?.length ?? 0) > 0;
   const ehSenador = (data.cargo ?? "").toLowerCase().includes("senador");
+  const ehGovernador = (data.cargo ?? "").toLowerCase().includes("governador");
+  const tipoHistoricoRotulo = ROTULO_TIPO_HISTORICO[data.tipoHistorico ?? ""] ?? null;
   // Bloco "Score por tema" exibe os 8 temas gerais do card (US-*-03); o eixo
   // institucional fica fora DESTE bloco — segue contando no match e na análise temática.
   const scoresDoScore = data.scores.filter((s) => s.categoria !== "Instituições e Democracia");
@@ -131,6 +142,8 @@ export function DetalheCandidato({ id }: { id: string }) {
                     ? `${formatarCargo(data.cargo)} · ${data.uf}`
                     : formatarCargo(data.cargo)}
                 </Badge>
+                {data.numeroUrna != null && <Badge variant="outline">Nº {data.numeroUrna}</Badge>}
+                {tipoHistoricoRotulo && <Badge variant="secondary">{tipoHistoricoRotulo}</Badge>}
                 {data.origem && <BadgeOrigem origem={data.origem} />}
               </div>
 
@@ -191,6 +204,11 @@ export function DetalheCandidato({ id }: { id: string }) {
           se o usuário fez o quiz; caso contrário, valor ofuscado + botão para fazer o quiz. */}
       <CardCompatibilidade candidaturaId={data.id} nomeUrna={politico.nomeUrna} />
 
+      {ehGovernador ? (
+        /* Perfil de Governador nos blocos da spec (US-GOV-02..05). */
+        <PerfilGovernador data={data} />
+      ) : (
+        <>
       {/* Resumo da análise (observação da IA). Para cargos com atividade legislativa ele aparece
           dentro do card "Projetos de lei"; sem atividade (Presidente/Governador), ganha card próprio
           para não sumir da tela. */}
@@ -212,11 +230,6 @@ export function DetalheCandidato({ id }: { id: string }) {
             )}
           </CardContent>
         </Card>
-      )}
-
-      {/* Gestão estadual (só Governador): execução orçamentária por eixo (SICONFI). */}
-      {data.gestaoEstadual && data.gestaoEstadual.eixos.length > 0 && (
-        <PainelGestaoEstadual gestao={data.gestaoEstadual} uf={data.uf} />
       )}
 
       {/* Score + Projetos de lei (só métricas) — cards visuais lado a lado (sem abas).
@@ -382,6 +395,8 @@ export function DetalheCandidato({ id }: { id: string }) {
             </CardContent>
           </Card>
         ))}
+        </>
+      )}
     </div>
   );
 }

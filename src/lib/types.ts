@@ -170,6 +170,19 @@ export interface GestaoEstadual {
   eixos: GestaoEstadualItem[];
 }
 
+/** Resumo do plano de governo num eixo temático (US-GOV-05). */
+export interface PlanoGovernoTema {
+  eixo: string;
+  eixoNome: string;
+  resumo?: string | null;
+}
+
+/** Bloco "Plano de governo por tema": trechos do plano oficial por eixo, num ano. */
+export interface PlanoGoverno {
+  ano: number;
+  temas: PlanoGovernoTema[];
+}
+
 export interface CandidaturaDetalhe {
   id: string;
   politico: PoliticoPerfil;
@@ -188,6 +201,12 @@ export interface CandidaturaDetalhe {
   filiacoes?: FiliacaoPartido[];
   /** Execução orçamentária por eixo da UF (só Governador). */
   gestaoEstadual?: GestaoEstadual | null;
+  /** Número eleitoral (urna). */
+  numeroUrna?: number | null;
+  /** Tipo de histórico do candidato (ex_governador, mandato_federal, sem_mandato…). */
+  tipoHistorico?: string | null;
+  /** Plano de governo por tema (US-GOV-05). */
+  planoGoverno?: PlanoGoverno | null;
 }
 
 export interface CompararResultado {
