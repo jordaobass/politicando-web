@@ -1,6 +1,7 @@
 import { Building2Icon } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import type { GestaoEstadual } from "@/lib/types";
 
 /**
@@ -8,9 +9,17 @@ import type { GestaoEstadual } from "@/lib/types";
  * percentual de EXECUÇÃO do orçamento (liquidado sobre a dotação atualizada) no exercício, com o
  * total empenhado como contexto. Fonte SICONFI/Tesouro Nacional.
  */
-export function PainelGestaoEstadual({ gestao, uf }: { gestao: GestaoEstadual; uf: string }) {
+export function PainelGestaoEstadual({
+  gestao,
+  uf,
+  className,
+}: {
+  gestao: GestaoEstadual;
+  uf: string;
+  className?: string;
+}) {
   return (
-    <Card data-testid="bloco-gestao-estadual">
+    <Card data-testid="bloco-gestao-estadual" className={cn(className)}>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-lg">
           <Building2Icon className="size-4 text-primary" aria-hidden="true" />

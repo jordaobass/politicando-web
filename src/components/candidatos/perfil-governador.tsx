@@ -29,8 +29,10 @@ export function PerfilGovernador({ data }: { data: CandidaturaDetalhe }) {
 
   return (
     <div className="space-y-6">
-      {/* US-GOV-02 — Score por tema (0–5 + justificativa + confiança; sem posição ideológica). */}
-      <Card data-testid="bloco-score-governador">
+      {/* Layout em 2 colunas (como no senador): Score | Gestão, depois Histórico | Plano. */}
+      <div className="grid items-stretch gap-6 lg:grid-cols-2">
+      {/* US-GOV-02 — Score por tema (0–5; sem posição ideológica). */}
+      <Card data-testid="bloco-score-governador" className="h-full">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <SparklesIcon className="size-4 text-primary" aria-hidden="true" />
@@ -59,8 +61,15 @@ export function PerfilGovernador({ data }: { data: CandidaturaDetalhe }) {
         </CardContent>
       </Card>
 
+      {/* US-GOV-04 — Dados do mandato estadual: pareado com o Score (ambos por tema). */}
+      {data.gestaoEstadual && data.gestaoEstadual.eixos.length > 0 && (
+        <PainelGestaoEstadual gestao={data.gestaoEstadual} uf={data.uf} className="h-full" />
+      )}
+      </div>
+
+      <div className="grid items-stretch gap-6 lg:grid-cols-2">
       {/* US-GOV-03 — Histórico. */}
-      <Card data-testid="bloco-historico">
+      <Card data-testid="bloco-historico" className="h-full">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <HistoryIcon className="size-4 text-primary" aria-hidden="true" />
@@ -96,13 +105,8 @@ export function PerfilGovernador({ data }: { data: CandidaturaDetalhe }) {
         </CardContent>
       </Card>
 
-      {/* US-GOV-04 — Dados do mandato estadual (orçamento executado por tema). */}
-      {data.gestaoEstadual && data.gestaoEstadual.eixos.length > 0 && (
-        <PainelGestaoEstadual gestao={data.gestaoEstadual} uf={data.uf} />
-      )}
-
       {/* US-GOV-05 — Plano de governo por tema (gated p/ não autenticado). */}
-      <Card data-testid="bloco-plano-governo">
+      <Card data-testid="bloco-plano-governo" className="h-full">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <FileTextIcon className="size-4 text-primary" aria-hidden="true" />
@@ -144,6 +148,7 @@ export function PerfilGovernador({ data }: { data: CandidaturaDetalhe }) {
           )}
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }
