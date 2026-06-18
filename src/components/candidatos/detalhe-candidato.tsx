@@ -30,6 +30,7 @@ import { PainelPresenca } from "@/components/candidatos/atividade/painel-presenc
 import { PainelGabinete } from "@/components/candidatos/atividade/painel-gabinete";
 import { PainelComissoes } from "@/components/candidatos/atividade/painel-comissoes";
 import { PerfilGovernador } from "@/components/candidatos/perfil-governador";
+import { PerfilPresidente } from "@/components/candidatos/perfil-presidente";
 import { PainelAnaliseTematica } from "@/components/candidatos/painel-analise-tematica";
 import { BlocoBloqueado } from "@/components/candidatos/bloco-bloqueado";
 import { useAtividade, useCandidatura } from "@/hooks/use-api";
@@ -37,6 +38,7 @@ import { useSessao } from "@/hooks/use-sessao";
 
 /** Rótulo amigável do tipo de histórico (US-GOV-01) exibido como badge na identidade. */
 const ROTULO_TIPO_HISTORICO: Record<string, string> = {
+  ex_presidente: "Mandato como presidente",
   ex_governador: "Mandato como governador",
   mandato_federal: "Mandato federal",
   prefeito: "Mandato como prefeito",
@@ -83,6 +85,7 @@ export function DetalheCandidato({ id }: { id: string }) {
   const temComissoes = (atividade?.comissoes?.length ?? 0) > 0;
   const ehSenador = (data.cargo ?? "").toLowerCase().includes("senador");
   const ehGovernador = (data.cargo ?? "").toLowerCase().includes("governador");
+  const ehPresidente = (data.cargo ?? "").toLowerCase().includes("presidente");
   const tipoHistoricoRotulo = ROTULO_TIPO_HISTORICO[data.tipoHistorico ?? ""] ?? null;
   // Bloco "Score por tema" exibe os 8 temas gerais do card (US-*-03); o eixo
   // institucional fica fora DESTE bloco — segue contando no match e na análise temática.
@@ -208,6 +211,9 @@ export function DetalheCandidato({ id }: { id: string }) {
       {ehGovernador ? (
         /* Perfil de Governador nos blocos da spec (US-GOV-02..05). */
         <PerfilGovernador data={data} />
+      ) : ehPresidente ? (
+        /* Perfil de Presidente nos blocos da spec (US-PRES-02..06). */
+        <PerfilPresidente data={data} />
       ) : (
         <>
       {/* Resumo da análise (observação da IA). Para cargos com atividade legislativa ele aparece
