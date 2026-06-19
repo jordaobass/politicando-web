@@ -15,11 +15,11 @@ export const CARGOS = [
 export type Cargo = (typeof CARGOS)[number]["valor"];
 
 /**
- * Cargos exibidos no filtro da listagem na Release 1 (entrega enxuta): só Senador e
- * Deputado Federal. Presidente, Governador e Deputado Estadual ficam fora do filtro.
+ * Cargos exibidos no filtro da listagem: Presidente, Governador, Senador e Deputado Federal
+ * (cargos com dados/score na plataforma). Deputado Estadual fica fora (sem ingestão dedicada).
  */
-export const CARGOS_FILTRO = CARGOS.filter(
-  (c) => c.valor === "Senador" || c.valor === "DeputadoFederal",
+export const CARGOS_FILTRO = CARGOS.filter((c) =>
+  ["Presidente", "Governador", "Senador", "DeputadoFederal"].includes(c.valor),
 );
 
 export const UFS = [

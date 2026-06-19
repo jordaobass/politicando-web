@@ -7,6 +7,7 @@ import "swiper/css";
 import "swiper/css/effect-coverflow";
 
 import { CartaoCandidato } from "@/components/comum/cartao-candidato";
+import { useSessao } from "@/hooks/use-sessao";
 import type { CandidaturaResumo } from "@/lib/types";
 
 /**
@@ -22,6 +23,10 @@ const DESTAQUES: CandidaturaResumo[] = [
 ];
 
 export function DestaquesHome() {
+  const { autenticado } = useSessao();
+  // Filtro de acesso: logado vai ao perfil; visitante é levado ao cadastro/login.
+  const destino = (id: string) => (autenticado ? `/candidatos/${id}` : "/login?aba=registrar");
+
   return (
     <>
       {/* Mobile: slider coverflow (vê os 3, central em destaque) */}
@@ -37,7 +42,9 @@ export function DestaquesHome() {
         >
           {DESTAQUES.map((c) => (
             <SwiperSlide key={c.id} className="!w-44">
-              <CartaoCandidato candidato={c} className="shadow-md" />
+              <Link href={destino(c.id)} aria-label={`Ver ${c.nomeUrna}`} className="block">
+                <CartaoCandidato candidato={c} className="shadow-md" />
+              </Link>
             </SwiperSlide>
           ))}
         </Swiper>
@@ -47,7 +54,7 @@ export function DestaquesHome() {
       {/* Desktop: cartões lado a lado */}
       <div className="hidden items-stretch justify-center gap-6 sm:flex">
         {DESTAQUES.map((c) => (
-          <Link key={c.id} href={`/candidatos/${c.id}`} className="group block w-56 shrink-0">
+          <Link key={c.id} href={destino(c.id)} className="group block w-56 shrink-0">
             <CartaoCandidato
               candidato={c}
               comHover
