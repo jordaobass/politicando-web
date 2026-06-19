@@ -197,7 +197,7 @@ function Resultado({ aId, bId, autenticado }: { aId: string; bId: string; autent
 
   if (isLoading) {
     return (
-      <div className="grid gap-6 sm:grid-cols-2">
+      <div className="grid grid-cols-2 gap-3 sm:gap-6">
         <Skeleton className="h-96 w-full rounded-xl" />
         <Skeleton className="h-96 w-full rounded-xl" />
       </div>
@@ -214,7 +214,7 @@ function Resultado({ aId, bId, autenticado }: { aId: string; bId: string; autent
 
   return (
     <div className="space-y-8">
-      <div className="grid gap-6 sm:grid-cols-2">
+      <div className="grid grid-cols-2 gap-3 sm:gap-6">
         <ColunaCandidato dado={data.a} />
         <ColunaCandidato dado={data.b} />
       </div>

@@ -30,7 +30,14 @@ export default async function LoginPage({
           href="/"
           className="animate-in fade-in slide-in-from-top-2 mb-6 flex items-center justify-center gap-2.5 duration-500"
         >
-          <Image src="/icon.svg" alt="" width={40} height={40} className="size-10" unoptimized />
+          <Image
+            src="/logo-politicando.jpeg"
+            alt="Politicando"
+            width={40}
+            height={40}
+            className="size-10 rounded-md"
+            priority
+          />
           <span className="text-2xl font-bold text-primary">Politicando</span>
         </Link>
 
