@@ -3,12 +3,11 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ChevronLeftIcon, StarIcon } from "lucide-react";
+import { ChevronLeftIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 import { GradeSkeleton, EstadoErro } from "@/components/comum/estados";
 import { usePerguntas, useEnviarRespostas } from "@/hooks/use-api";
 import {
@@ -25,8 +24,6 @@ export function QuizRunner() {
 
   const [indice, setIndice] = useState(0);
   const [respostas, setRespostas] = useState<Map<string, number>>(new Map());
-  // Perguntas que o eleitor marcou como "especialmente importantes" (dobram o peso).
-  const [importantes, setImportantes] = useState<Set<string>>(new Set());
 
   const ordenadas = useMemo(
     () => [...(perguntas ?? [])].sort((a, b) => a.ordem - b.ordem),
@@ -56,13 +53,9 @@ export function QuizRunner() {
   const progresso = Math.round((indice / total) * 100);
   const ultima = indice === total - 1;
 
-  function registrar(valor: number | null) {
+  function registrar(valor: number) {
     const novas = new Map(respostas);
-    if (valor === null) {
-      novas.delete(atual.id);
-    } else {
-      novas.set(atual.id, valor);
-    }
+    novas.set(atual.id, valor);
     setRespostas(novas);
 
     if (ultima) {
@@ -72,22 +65,9 @@ export function QuizRunner() {
     }
   }
 
-  function alternarImportante(perguntaId: string) {
-    setImportantes((anterior) => {
-      const proximo = new Set(anterior);
-      if (proximo.has(perguntaId)) proximo.delete(perguntaId);
-      else proximo.add(perguntaId);
-      return proximo;
-    });
-  }
-
   async function finalizar(mapa: Map<string, number>) {
     const corpo: RespostaQuiz[] = Array.from(mapa.entries()).map(
-      ([perguntaId, valor]) => ({
-        perguntaId,
-        valor,
-        importante: importantes.has(perguntaId),
-      }),
+      ([perguntaId, valor]) => ({ perguntaId, valor }),
     );
 
     try {
@@ -134,24 +114,6 @@ export function QuizRunner() {
             </h2>
           </div>
 
-          <button
-            type="button"
-            onClick={() => alternarImportante(atual.id)}
-            aria-pressed={importantes.has(atual.id)}
-            className={cn(
-              "flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors",
-              importantes.has(atual.id)
-                ? "border-primary bg-primary/10 text-primary"
-                : "border-border text-muted-foreground hover:bg-muted",
-            )}
-          >
-            <StarIcon
-              className={cn("size-4", importantes.has(atual.id) && "fill-current")}
-              aria-hidden="true"
-            />
-            Esta pauta é especialmente importante pra mim
-          </button>
-
           <fieldset className="space-y-2">
             <legend className="sr-only">Escala de concordância</legend>
             {ESCALA_RESPOSTAS.map((opcao) => (
@@ -181,13 +143,6 @@ export function QuizRunner() {
         >
           <ChevronLeftIcon className="size-4" aria-hidden="true" />
           Voltar
-        </Button>
-        <Button
-          variant="link"
-          onClick={() => registrar(null)}
-          disabled={enviar.isPending}
-        >
-          {ultima ? "Pular e finalizar" : "Pular esta pergunta"}
         </Button>
       </div>
 

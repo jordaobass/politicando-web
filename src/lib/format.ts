@@ -47,6 +47,18 @@ export function classeBarraNivel(nivel: NivelCompatibilidade): string {
   }
 }
 
+/**
+ * Posição ideológica legível a partir da nota 0..100 (0 = esquerda, 50 = centro, 100 = direita).
+ * Mesma régua usada no perfil do candidato e no perfil do usuário (eixos alinhados).
+ */
+export function rotuloPosicao(posicao: number): string {
+  if (posicao <= 20) return "Esquerda";
+  if (posicao <= 40) return "Centro-esquerda";
+  if (posicao < 60) return "Centro";
+  if (posicao < 80) return "Centro-direita";
+  return "Direita";
+}
+
 /** Deriva o nível de compatibilidade a partir do percentual (mesmos cortes do backend). */
 export function nivelPorValor(valor: number): NivelCompatibilidade {
   const p = paraEscala100(valor);

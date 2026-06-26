@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { CampoSenha } from "@/components/auth/campo-senha";
 import { useLogin } from "@/hooks/use-api";
 import { useSessao } from "@/hooks/use-sessao";
+import { paginaDeRetorno } from "@/lib/navegacao";
 import { loginSchema, type LoginFormValues } from "@/lib/schemas";
 
 /** Formulário de login com RHF + Zod. `aoConcluir` para uso em modal; `aoEsquecer` abre a recuperação. */
@@ -43,7 +44,7 @@ export function FormularioLogin({
       entrar(resposta);
       toast.success(`Bem-vindo de volta, ${resposta.usuario.nome}!`);
       if (aoConcluir) aoConcluir();
-      else router.push("/candidatos");
+      else router.push(paginaDeRetorno("/candidatos"));
     } catch {
       toast.error("Não foi possível entrar. Verifique suas credenciais.");
     }

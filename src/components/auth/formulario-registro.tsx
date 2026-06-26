@@ -15,6 +15,7 @@ import { ChecklistSenha } from "@/components/auth/checklist-senha";
 import { useRegistrar } from "@/hooks/use-api";
 import { useSessao } from "@/hooks/use-sessao";
 import { ApiError } from "@/lib/api";
+import { paginaDeRetorno } from "@/lib/navegacao";
 import {
   MENSAGEM_IDADE_MINIMA,
   registrarSchema,
@@ -71,7 +72,7 @@ export function FormularioRegistro({
       entrar(resposta);
       toast.success(`Bem-vindo, ${resposta.usuario.nome}!`);
       if (aoConcluir) aoConcluir();
-      else router.push("/quiz");
+      else router.push(paginaDeRetorno("/quiz"));
     } catch (erro) {
       // E-mail já cadastrado (409): mostra mensagem inline com link para a aba de login.
       if (erro instanceof ApiError && erro.status === 409) {

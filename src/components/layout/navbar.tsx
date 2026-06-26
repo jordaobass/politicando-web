@@ -10,10 +10,10 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useSessao } from "@/hooks/use-sessao";
 
-// Release 1 (entrega enxuta): "Candidatos" e "Comparar" navegam; Quiz e Partidos aparecem
-// mas ficam desabilitados (exibidos, porém não navegáveis).
+// Release 1 (entrega enxuta): "Quiz", "Candidatos" e "Comparar" navegam; "Partidos" aparece
+// mas fica desabilitado (exibido, porém não navegável).
 const LINKS = [
-  { href: "/quiz", rotulo: "Quiz", navegavel: false },
+  { href: "/quiz", rotulo: "Quiz", navegavel: true },
   { href: "/candidatos", rotulo: "Candidatos", navegavel: true },
   { href: "/comparar", rotulo: "Comparar", navegavel: true },
   { href: "/partidos", rotulo: "Partidos", navegavel: false },

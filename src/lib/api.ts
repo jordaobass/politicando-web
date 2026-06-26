@@ -104,10 +104,15 @@ export function buscarPerguntas(): Promise<Pergunta[]> {
   return request<Pergunta[]>("/quiz/perguntas");
 }
 
-export function enviarRespostas(body: EnviarRespostasRequest): Promise<ResultadoQuiz> {
+export function enviarRespostas(
+  body: EnviarRespostasRequest,
+  token?: string | null,
+): Promise<ResultadoQuiz> {
+  // Token (quando logado) vincula a sessão do quiz ao usuário → "meu último quiz" salva (US-AUTH-06).
   return request<ResultadoQuiz>("/quiz/respostas", {
     method: "POST",
     body: JSON.stringify(body),
+    token,
   });
 }
 

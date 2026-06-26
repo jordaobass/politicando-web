@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { QuizRunner } from "@/components/quiz/quiz-runner";
+import { IniciarQuiz } from "@/components/quiz/iniciar-quiz";
 
 export const metadata: Metadata = {
   title: "Quiz de afinidade",
@@ -20,7 +20,7 @@ export default function QuizPage() {
           concorda com cada afirmação.
         </p>
       </div>
-      <QuizRunner />
+      <IniciarQuiz />
     </div>
   );
 }

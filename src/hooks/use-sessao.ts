@@ -3,7 +3,7 @@
 import { useCallback, useSyncExternalStore } from "react";
 
 import { logout } from "@/lib/api";
-import { CHAVE_SESSAO } from "@/lib/constantes";
+import { CHAVE_SESSAO, CHAVE_RESULTADO_QUIZ } from "@/lib/constantes";
 import type { AuthResponse, Usuario } from "@/lib/types";
 
 // Store externa simples sobre o localStorage para a sessão (mock do protótipo).
@@ -61,6 +61,9 @@ export function useSessao() {
       // sessão corrompida — segue direto para a limpeza local
     }
     localStorage.removeItem(CHAVE_SESSAO);
+    // Limpa o resultado do quiz em cache: sem isso, a compatibilidade continua visível após o
+    // logout (a tela de resultado lê de sessionStorage). Correção do bug "vejo compat. deslogado".
+    sessionStorage.removeItem(CHAVE_RESULTADO_QUIZ);
     notificar();
   }, []);
 
