@@ -36,7 +36,14 @@ export function ComparacaoCategorias({
 
   return (
     <section className="space-y-3" data-testid="comparacao-temas">
-      <h2 className="text-lg font-semibold text-foreground">Comparação por tema</h2>
+      <div className="space-y-1">
+        <h2 className="text-lg font-semibold text-foreground">Comparação por tema</h2>
+        <p className="max-w-prose text-sm text-muted-foreground">
+          A barra mostra <strong className="font-semibold text-foreground">o quanto cada
+          candidato fala e prioriza o tema</strong> (0 a 5) — não é nota de quem é melhor nem
+          posição ideológica. Abra um tema para ver a análise de cada um.
+        </p>
+      </div>
       <ul className="space-y-3">
         {categorias.map((cat, i) => (
           <li key={cat}>
@@ -85,8 +92,8 @@ function CardTema({
       >
         <span className="w-32 shrink-0 font-semibold text-foreground sm:w-40">{categoria}</span>
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-          <BarraTema cor={CORES_COMPARACAO.a} valor={a.score?.engajamento} />
-          <BarraTema cor={CORES_COMPARACAO.b} valor={b.score?.engajamento} />
+          <BarraTema nome={a.nome} cor={CORES_COMPARACAO.a} valor={a.score?.engajamento} />
+          <BarraTema nome={b.nome} cor={CORES_COMPARACAO.b} valor={b.score?.engajamento} />
         </div>
         <ChevronDownIcon
           className={cn(
@@ -108,11 +115,14 @@ function CardTema({
 }
 
 /** Barra horizontal de score 0–5 com o valor numérico ao lado, na cor do candidato. */
-function BarraTema({ cor, valor }: { cor: string; valor?: number | null }) {
+function BarraTema({ nome, cor, valor }: { nome: string; cor: string; valor?: number | null }) {
   const v = valor ?? 0;
+  const formatado = v.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   return (
     <div className="flex items-center gap-2">
-      <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+      {/* Leitor de tela: associa o valor ao candidato (o gráfico/número visual é decorativo). */}
+      <span className="sr-only">{`${nome}: prioriza este tema ${formatado} de 5`}</span>
+      <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted" aria-hidden="true">
         <div
           className="h-full rounded-full"
           style={{ width: `${(v / 5) * 100}%`, backgroundColor: cor }}
@@ -121,8 +131,9 @@ function BarraTema({ cor, valor }: { cor: string; valor?: number | null }) {
       <span
         className="w-8 shrink-0 text-right text-sm font-semibold tabular-nums"
         style={{ color: cor }}
+        aria-hidden="true"
       >
-        {v.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+        {formatado}
       </span>
     </div>
   );

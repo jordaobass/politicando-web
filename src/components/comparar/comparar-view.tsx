@@ -20,6 +20,7 @@ import { SeletorCandidaturaFiltrado } from "@/components/comparar/seletor-candid
 import { ColunaCandidato } from "@/components/comparar/coluna-candidato";
 import { ComparacaoRadar } from "@/components/comparar/comparacao-radar";
 import { ComparacaoCategorias } from "@/components/comparar/comparacao-categorias";
+import { RegistroCuradoria } from "@/components/comparar/registro-curadoria";
 import { BotaoSalvarComparacao } from "@/components/comparar/botao-salvar-comparacao";
 import { EstadoErro } from "@/components/comum/estados";
 import { CARGOS, UFS } from "@/lib/constantes";
@@ -197,7 +198,7 @@ function Resultado({ aId, bId, autenticado }: { aId: string; bId: string; autent
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-2 gap-3 sm:gap-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
         <Skeleton className="h-96 w-full rounded-xl" />
         <Skeleton className="h-96 w-full rounded-xl" />
       </div>
@@ -214,11 +215,12 @@ function Resultado({ aId, bId, autenticado }: { aId: string; bId: string; autent
 
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-2 gap-3 sm:gap-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
         <ColunaCandidato dado={data.a} />
         <ColunaCandidato dado={data.b} />
       </div>
       <ComparacaoCategorias a={data.a} b={data.b} autenticado={autenticado} />
+      <RegistroCuradoria a={data.a} b={data.b} />
       <ComparacaoRadar a={data.a} b={data.b} />
     </div>
   );

@@ -79,6 +79,10 @@
   --chart-3: #d97706;
   --chart-4: #dc2626;
   --chart-5: #6b7280;
+  /* Séries de comparação A/B (radar, barras, legenda). Escolhidas p/ passar 4,5:1 como TEXTO
+     sobre card no tema claro — azul (A) e laranja (B), distintas entre si e do --primary. */
+  --serie-a: #1d4ed8;
+  --serie-b: #c2410c;
   --radius: 0.625rem;
   --sidebar: #ffffff;
   --sidebar-foreground: #111827;
@@ -114,6 +118,9 @@
   --chart-3: #e0992e;
   --chart-4: #f0564a;
   --chart-5: #9aa5b8;
+  /* Séries A/B clareadas p/ passar 4,5:1 como texto sobre card escuro. */
+  --serie-a: #60a5fa;
+  --serie-b: #fb923c;
   --sidebar: #131725;
   --sidebar-foreground: #f7f8fa;
   --sidebar-primary: #4f82d4;
