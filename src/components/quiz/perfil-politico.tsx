@@ -1,15 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { rotuloPosicao } from "@/lib/format";
 import type { PerfilCategoria } from "@/lib/types";
 
-/** Converte posição (-1..1 ou -100..100) em rótulo e percentual da barra. */
-function descreverPosicao(posicao: number) {
-  const escala = Math.abs(posicao) <= 1 ? posicao * 100 : posicao;
-  const limitado = Math.max(-100, Math.min(100, escala));
-  const percentual = (limitado + 100) / 2; // 0..100, sendo 50 o centro
-  return { percentual };
-}
-
-/** Mostra o perfil político do usuário (posição por categoria). */
+/**
+ * Perfil político do usuário: posição por categoria na MESMA régua esquerda↔direita usada no
+ * perfil do candidato (PainelAnaliseTematica), para que os dois scores fiquem visualmente
+ * alinhados e comparáveis. A nota chega 0..100 (50 = centro), igual à do candidato.
+ */
 export function PerfilPolitico({ perfil }: { perfil: PerfilCategoria[] }) {
   return (
     <Card>
@@ -23,23 +20,25 @@ export function PerfilPolitico({ perfil }: { perfil: PerfilCategoria[] }) {
           </p>
         )}
         {perfil.map((item) => {
-          const { percentual } = descreverPosicao(item.posicao);
+          const posicao = Math.max(0, Math.min(100, item.posicao));
           return (
-            <div key={item.categoriaId} className="space-y-1.5">
-              <p className="text-sm font-medium text-foreground">
-                {item.categoria}
-              </p>
-              <div className="relative h-2 w-full overflow-hidden rounded-full bg-muted">
-                <div
-                  className="absolute top-0 h-full w-0.5 -translate-x-1/2 bg-border"
-                  style={{ left: "50%" }}
-                  aria-hidden="true"
-                />
-                <div
-                  className="absolute top-0 size-2 -translate-x-1/2 rounded-full bg-primary"
-                  style={{ left: `${percentual}%` }}
-                  aria-hidden="true"
-                />
+            <div key={item.categoriaId} className="space-y-2">
+              <h3 className="font-medium text-foreground">{item.categoria}</h3>
+
+              {/* Régua esquerda ↔ direita com marcador na posição do eleitor (mesma do candidato). */}
+              <div className="space-y-1">
+                <div className="relative h-2 w-full rounded-full bg-gradient-to-r from-chart-3/40 via-muted to-chart-4/40">
+                  <div
+                    className="absolute top-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-background bg-primary shadow"
+                    style={{ left: `${posicao}%` }}
+                    aria-hidden="true"
+                  />
+                </div>
+                <div className="flex justify-between text-[0.7rem] text-muted-foreground">
+                  <span>Esquerda</span>
+                  <span className="font-medium text-foreground">{rotuloPosicao(posicao)}</span>
+                  <span>Direita</span>
+                </div>
               </div>
             </div>
           );

@@ -1,16 +1,5 @@
+import { rotuloPosicao } from "@/lib/format";
 import type { ScoreCategoria } from "@/lib/types";
-
-/**
- * Posição ideológica legível derivada da nota 0..100 (0 = esquerda, 100 = direita).
- * Usada como rótulo do marcador quando não há atividade legislativa para exibir.
- */
-function rotuloPosicao(posicao: number): string {
-  if (posicao <= 20) return "Esquerda";
-  if (posicao <= 40) return "Centro-esquerda";
-  if (posicao < 60) return "Centro";
-  if (posicao < 80) return "Centro-direita";
-  return "Direita";
-}
 
 function rotuloEngajamento(engajamento: number): string {
   if (engajamento <= 0) return "Sem atuação";

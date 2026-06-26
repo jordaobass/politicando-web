@@ -2,8 +2,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RadarComparacao } from "@/components/landing/radar-comparacao";
 import type { CandidaturaDetalhe } from "@/lib/types";
 
-/** Cores fixas das séries A e B (usadas no radar, na legenda e no detalhe). */
-export const CORES_COMPARACAO = { a: "#2563eb", b: "#ea580c" } as const;
+/**
+ * Cores das séries A e B (radar, legenda, barras, detalhe), via tokens de tema (`--serie-a/b`).
+ * Resolvem por var() no claro/escuro, garantindo contraste AA do valor como texto nos dois temas.
+ */
+export const CORES_COMPARACAO = { a: "var(--serie-a)", b: "var(--serie-b)" } as const;
 
 /** Eixo institucional fica fora do comparativo (spec lista 8 temas). */
 const EIXO_FORA = "Instituições e Democracia";
@@ -22,12 +25,6 @@ function valoresPor(categorias: string[], dado: CandidaturaDetalhe): number[] {
   return categorias.map((c) => (mapa.get(c) ?? 0) * 20);
 }
 
-/** Rótulos curtos só para o radar (evita cortar texto); o detalhe usa o nome completo. */
-const ABREVIACAO: Record<string, string> = {
-  "Meio Ambiente": "Meio Amb.",
-  "Direitos Humanos": "Dir. Hum.",
-};
-
 /** Gráfico estrela com as posições de A e B sobrepostas + legenda. */
 export function ComparacaoRadar({ a, b }: { a: CandidaturaDetalhe; b: CandidaturaDetalhe }) {
   const categorias = categoriasUnidas(a, b);
@@ -37,7 +34,7 @@ export function ComparacaoRadar({ a, b }: { a: CandidaturaDetalhe; b: Candidatur
     <Card>
       <CardContent className="flex flex-col items-center gap-4">
         <RadarComparacao
-          categorias={categorias.map((c) => ABREVIACAO[c] ?? c)}
+          categorias={categorias}
           series={[
             { nome: a.politico.nomeUrna, cor: CORES_COMPARACAO.a, valores: valoresPor(categorias, a) },
             { nome: b.politico.nomeUrna, cor: CORES_COMPARACAO.b, valores: valoresPor(categorias, b) },

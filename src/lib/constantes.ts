@@ -47,3 +47,6 @@ export const CHAVE_SESSAO = "politicando:sessao";
 
 /** Chave da UF do eleitor (filtro dos cargos estaduais no resultado do quiz). */
 export const CHAVE_UF = "politicando:uf";
+
+/** Última página "real" visitada — usada para voltar a ela após o login (returnTo). */
+export const CHAVE_ULTIMA_PAGINA = "politicando:ultima-pagina";

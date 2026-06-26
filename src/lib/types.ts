@@ -21,8 +21,6 @@ export interface Pergunta {
 export interface RespostaQuiz {
   perguntaId: string;
   valor: number;
-  /** Eleitor marcou esta pauta como especialmente importante (dobra o peso no match). */
-  importante?: boolean;
 }
 
 export interface EnviarRespostasRequest {
@@ -195,6 +193,8 @@ export interface CandidaturaDetalhe {
   propostasResumo: string | null;
   /** Resumo geral gerado pela análise de IA do candidato. */
   observacaoIa: string | null;
+  /** Observação de curadoria (manual): proveniência do score e registro de governo, com fontes. */
+  observacaoCuradoria: string | null;
   scores: ScoreCategoria[];
   historicoCandidaturas?: CandidaturaHistorico[];
   exercicios?: ExercicioCargo[];

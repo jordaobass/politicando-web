@@ -1,9 +1,21 @@
+"use client";
+
+import { useId, useState } from "react";
 import Link from "next/link";
+import { ChevronDownIcon, ArrowRightIcon } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CabecalhoPolitico } from "@/components/comum/cabecalho-politico";
-import { formatarPercentual, classesBadgeNivel } from "@/lib/format";
+import {
+  formatarPercentual,
+  classesBadgeNivel,
+  classeBarraNivel,
+  paraEscala100,
+  nivelPorValor,
+} from "@/lib/format";
+import { cn } from "@/lib/utils";
 import type { ResultadoCandidato } from "@/lib/types";
 
 /** Card de candidato com o percentual de match obtido no quiz (identidade única). */
@@ -12,9 +24,13 @@ export function CardResultadoCandidato({
 }: {
   candidato: ResultadoCandidato;
 }) {
+  const [aberto, setAberto] = useState(false);
+  const idTemas = useId();
+  const temBreakdown = candidato.porCategoria.length > 0;
+
   return (
     <Card className="transition-colors hover:border-primary/40">
-      <CardContent>
+      <CardContent className="space-y-3">
         <Link href={`/candidatos/${candidato.candidaturaId}`} className="block">
           <CabecalhoPolitico
             nomeUrna={candidato.nomeUrna}
@@ -22,6 +38,7 @@ export function CardResultadoCandidato({
             cargo={candidato.cargo}
             uf={candidato.uf}
             partidoSigla={candidato.partidoSigla}
+            partidoLogoUrl={candidato.partidoLogoUrl}
             orientacao="horizontal"
             tamanhoFoto="sm"
             acao={
@@ -36,6 +53,58 @@ export function CardResultadoCandidato({
             }
           />
         </Link>
+
+        {temBreakdown && (
+          <div className="border-t pt-2">
+            <button
+              type="button"
+              onClick={() => setAberto((valor) => !valor)}
+              aria-expanded={aberto}
+              aria-controls={idTemas}
+              className="flex w-full items-center justify-between rounded-md px-1 py-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Afinidade por tema
+              <ChevronDownIcon
+                className={cn(
+                  "size-4 transition-transform motion-reduce:transition-none",
+                  aberto && "rotate-180",
+                )}
+                aria-hidden="true"
+              />
+            </button>
+            {aberto && (
+              <ul id={idTemas} className="space-y-2.5 pt-2">
+                {candidato.porCategoria.map((tema) => (
+                  <li key={tema.categoriaId} className="space-y-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-foreground">{tema.categoria}</span>
+                      <span className="tabular-nums text-muted-foreground">
+                        {formatarPercentual(tema.compatibilidade)}
+                      </span>
+                    </div>
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                      <div
+                        className={cn(
+                          "h-full rounded-full",
+                          classeBarraNivel(nivelPorValor(tema.compatibilidade)),
+                        )}
+                        style={{ width: `${paraEscala100(tema.compatibilidade)}%` }}
+                      />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+
+        {/* CTA explícito de perfil: o card inteiro já é clicável, mas o botão deixa a ação visível. */}
+        <Button asChild variant="outline" size="sm" className="w-full">
+          <Link href={`/candidatos/${candidato.candidaturaId}`}>
+            Ver perfil completo
+            <ArrowRightIcon className="size-4" aria-hidden="true" />
+          </Link>
+        </Button>
       </CardContent>
     </Card>
   );

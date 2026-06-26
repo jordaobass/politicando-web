@@ -8,6 +8,8 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 
+import { useSessao } from "@/hooks/use-sessao";
+
 import {
   atualizarPerfil,
   buscarAtividade,
@@ -68,8 +70,9 @@ export function usePerguntas() {
 }
 
 export function useEnviarRespostas() {
+  const { sessao } = useSessao();
   return useMutation({
-    mutationFn: (body: EnviarRespostasRequest) => enviarRespostas(body),
+    mutationFn: (body: EnviarRespostasRequest) => enviarRespostas(body, sessao?.token ?? null),
   });
 }
 
