@@ -47,7 +47,10 @@ export function SeletorCandidaturaFiltrado({
     cargos: [cargo],
     ufs: uf ? [uf] : undefined,
     q: termoDebounced.trim() || undefined,
-    tamanho: 8,
+    // Alto o bastante para listar todos do cargo/UF (dep. federal máx. ~70 num estado) e o scroll
+    // percorrer a lista inteira — sem obrigar a buscar por nome (correção do card v2). A busca
+    // por nome continua estreitando os resultados.
+    tamanho: 100,
   });
   const itens = (data?.itens ?? []).filter((c) => c.id !== excluirId);
 
