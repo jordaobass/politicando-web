@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BookmarkIcon, ListIcon } from "lucide-react";
 import Link from "next/link";
 
@@ -18,7 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { SelectSimples } from "@/components/comum/select-simples";
 import { SeletorCandidaturaFiltrado } from "@/components/comparar/seletor-candidatura-filtrado";
 import { ColunaCandidato } from "@/components/comparar/coluna-candidato";
-import { ComparacaoRadar } from "@/components/comparar/comparacao-radar";
+import { ComparacaoRadar, CORES_COMPARACAO } from "@/components/comparar/comparacao-radar";
 import { ComparacaoCategorias } from "@/components/comparar/comparacao-categorias";
 import { RegistroCuradoria } from "@/components/comparar/registro-curadoria";
 import { BotaoSalvarComparacao } from "@/components/comparar/botao-salvar-comparacao";
@@ -70,6 +70,16 @@ export function CompararView({ aInicial = "", bInicial = "" }: CompararViewProps
 
   const temSelecao = Boolean(a || b);
   const buscaHabilitada = Boolean(cargo) && (!exigeEstado(cargo) || Boolean(uf));
+
+  // Reflete a seleção A/B na URL (sem re-render) para que, ao abrir um perfil e voltar, a
+  // comparação seja restaurada em vez de vir vazia (correção do card v2, obs. da Ricella).
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (a) params.set("a", a.id);
+    if (b) params.set("b", b.id);
+    const qs = params.toString();
+    window.history.replaceState(null, "", qs ? `/comparar?${qs}` : "/comparar");
+  }, [a, b]);
 
   /** Troca de filtro: pede confirmação se já houver candidato; senão aplica direto. */
   function alterarFiltro(campo: "cargo" | "uf", valor: string) {
@@ -195,6 +205,8 @@ export function CompararView({ aInicial = "", bInicial = "" }: CompararViewProps
 /** Resultado da comparação: cards A/B + temas + radar (US-COMP-02). */
 function Resultado({ aId, bId, autenticado }: { aId: string; bId: string; autenticado: boolean }) {
   const { data, isLoading, isError } = useComparar(aId, bId);
+  // Passada aos perfis para o botão "Voltar para comparação" (item 6d do card v2).
+  const voltarUrl = `/comparar?a=${aId}&b=${bId}`;
 
   if (isLoading) {
     return (
@@ -216,8 +228,8 @@ function Resultado({ aId, bId, autenticado }: { aId: string; bId: string; autent
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
-        <ColunaCandidato dado={data.a} />
-        <ColunaCandidato dado={data.b} />
+        <ColunaCandidato dado={data.a} cor={CORES_COMPARACAO.a} voltarUrl={voltarUrl} />
+        <ColunaCandidato dado={data.b} cor={CORES_COMPARACAO.b} voltarUrl={voltarUrl} />
       </div>
       <ComparacaoCategorias a={data.a} b={data.b} autenticado={autenticado} />
       <RegistroCuradoria a={data.a} b={data.b} />

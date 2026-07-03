@@ -11,6 +11,11 @@ interface CartaoCandidatoProps {
   className?: string;
   /** Otimiza/cacheia a foto pelo edge da Vercel (usar só em conjuntos pequenos, ex.: landing). */
   otimizarFoto?: boolean;
+  /**
+   * Cor da borda-topo. Padrão = cor do partido. No comparativo usamos a cor da SÉRIE (A/B) para
+   * o cartão bater com a faixa e distinguir os dois lados mesmo quando são do mesmo partido.
+   */
+  corTopo?: string;
 }
 
 /**
@@ -20,10 +25,10 @@ interface CartaoCandidatoProps {
  * O wrapper de navegação (Link) ou de slider (SwiperSlide) fica por conta de quem usa —
  * assim o mesmo cartão serve tanto para o carrossel do mobile quanto para a grade do desktop.
  */
-export function CartaoCandidato({ candidato, comHover = false, className, otimizarFoto = false }: CartaoCandidatoProps) {
+export function CartaoCandidato({ candidato, comHover = false, className, otimizarFoto = false, corTopo }: CartaoCandidatoProps) {
   return (
     <div
-      style={{ borderTopColor: corPartido(candidato.partidoSigla) ?? "var(--border)" }}
+      style={{ borderTopColor: corTopo ?? corPartido(candidato.partidoSigla) ?? "var(--border)" }}
       className={cn(
         "overflow-hidden rounded-2xl border-t-4 border-border bg-card shadow-sm",
         className,

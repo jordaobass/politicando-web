@@ -1,6 +1,8 @@
 "use client";
 
 import { useArmazenamento, useHidratado } from "@/hooks/use-storage";
+import { useMeuUltimoQuiz } from "@/hooks/use-api";
+import { useSessao } from "@/hooks/use-sessao";
 import { CHAVE_RESULTADO_QUIZ } from "@/lib/constantes";
 import type { ResultadoCandidato, ResultadoQuiz } from "@/lib/types";
 
@@ -31,12 +33,46 @@ export function useResultadoQuiz(): EstadoResultadoQuiz {
   return { carregado, resultado: parsear(bruto) };
 }
 
-/** Atalho: devolve o resultado do quiz para uma candidatura específica (ou null). */
+/**
+ * Resultado "efetivo" do quiz: usa o cache da aba (sessionStorage) e, para o usuário LOGADO sem
+ * cache (ex.: nova sessão/aba), cai para o último resultado salvo no servidor. Também expõe
+ * `autenticado` para a tela decidir a mensagem de estado-vazio (card v2, item 5).
+ */
+export function useResultadoEfetivo(): {
+  carregado: boolean;
+  resultado: ResultadoQuiz | null;
+  autenticado: boolean;
+} {
+  const { carregado, resultado } = useResultadoQuiz();
+  const { autenticado, sessao } = useSessao();
+
+  const tokenFallback = carregado && !resultado && sessao?.token ? sessao.token : null;
+  const { data: ultimo, isLoading } = useMeuUltimoQuiz(tokenFallback);
+
+  return {
+    carregado: carregado && !isLoading,
+    resultado: resultado ?? ultimo?.resultado ?? null,
+    autenticado,
+  };
+}
+
+/**
+ * Atalho: devolve o resultado do quiz para uma candidatura específica (ou null).
+ * O cache é por aba (sessionStorage); para o usuário LOGADO, se não houver cache (ex.: nova guia,
+ * link "abrir em outra guia"), busca o último resultado do servidor. Correção do card v2.
+ */
 export function useCompatibilidadeCandidato(candidaturaId: string): {
   carregado: boolean;
   candidato: ResultadoCandidato | null;
 } {
   const { carregado, resultado } = useResultadoQuiz();
-  const candidato = resultado?.resultado.find((r) => r.candidaturaId === candidaturaId) ?? null;
-  return { carregado, candidato };
+  const { sessao } = useSessao();
+
+  // Fallback servidor só quando: já hidratou, não há cache local e o usuário está logado.
+  const tokenFallback = carregado && !resultado && sessao?.token ? sessao.token : null;
+  const { data: ultimo, isLoading } = useMeuUltimoQuiz(tokenFallback);
+
+  const efetivo = resultado ?? ultimo?.resultado ?? null;
+  const candidato = efetivo?.resultado.find((r) => r.candidaturaId === candidaturaId) ?? null;
+  return { carregado: carregado && !isLoading, candidato };
 }
