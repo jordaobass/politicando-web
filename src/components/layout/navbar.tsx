@@ -8,6 +8,7 @@ import { MenuIcon, XIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { MenuQuiz } from "@/components/layout/menu-quiz";
 import { useSessao } from "@/hooks/use-sessao";
 
 // Release 1 (entrega enxuta): "Quiz", "Candidatos" e "Comparar" navegam; "Partidos" aparece
@@ -70,7 +71,9 @@ export function Navbar() {
 
         <ul className="hidden items-center gap-1 md:flex">
           {LINKS.map((link) =>
-            link.navegavel ? (
+            link.href === "/quiz" && link.navegavel ? (
+              <MenuQuiz key={link.href} ativo={ehAtivo("/quiz")} />
+            ) : link.navegavel ? (
               <li key={link.href}>
                 <Link
                   href={link.href}
@@ -155,7 +158,16 @@ export function Navbar() {
       {aberto && (
         <div className="border-t border-white/10 md:hidden">
           <ul className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-3">
-            {[...LINKS, ...(autenticado ? [{ href: "/perfil", rotulo: `Olá, ${primeiroNome}`, navegavel: true }] : [{ href: "/login", rotulo: "Entrar", navegavel: true }])].map((link) =>
+            {[
+              ...LINKS.flatMap((link) =>
+                link.href === "/quiz" && link.navegavel
+                  ? [link, { href: "/quiz/resultado", rotulo: "Meu resultado", navegavel: true }]
+                  : [link],
+              ),
+              ...(autenticado
+                ? [{ href: "/perfil", rotulo: `Olá, ${primeiroNome}`, navegavel: true }]
+                : [{ href: "/login", rotulo: "Entrar", navegavel: true }]),
+            ].map((link) =>
               link.navegavel ? (
                 <li key={link.href}>
                   <Link

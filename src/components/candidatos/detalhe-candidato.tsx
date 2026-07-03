@@ -32,6 +32,7 @@ import { PainelComissoes } from "@/components/candidatos/atividade/painel-comiss
 import { PerfilGovernador } from "@/components/candidatos/perfil-governador";
 import { PerfilPresidente } from "@/components/candidatos/perfil-presidente";
 import { PainelAnaliseTematica } from "@/components/candidatos/painel-analise-tematica";
+import { ResumoTema } from "@/components/candidatos/resumo-tema";
 import { BlocoBloqueado } from "@/components/candidatos/bloco-bloqueado";
 import { useAtividade, useCandidatura } from "@/hooks/use-api";
 import { useSessao } from "@/hooks/use-sessao";
@@ -264,13 +265,16 @@ export function DetalheCandidato({ id }: { id: string }) {
               ) : (
                 <div className="space-y-3">
                   {scoresDoScore.map((score) => (
-                    <BarraScore
-                      key={score.categoria}
-                      rotulo={score.categoria}
-                      /* Engajamento 0..5 (decimal). Quando ainda não calculado, mostra 0. */
-                      valor={score.engajamento ?? 0}
-                      escalaMax={5}
-                    />
+                    <div key={score.categoria} className="space-y-1.5">
+                      <BarraScore
+                        rotulo={score.categoria}
+                        /* Engajamento 0..5 (decimal). Quando ainda não calculado, mostra 0. */
+                        valor={score.engajamento ?? 0}
+                        escalaMax={5}
+                      />
+                      {/* Resumo da IA por tema, colapsável — consistente com presidente/governador. */}
+                      <ResumoTema sintese={score.posicaoSintese} justificativa={score.justificativa} />
+                    </div>
                   ))}
                 </div>
               )}

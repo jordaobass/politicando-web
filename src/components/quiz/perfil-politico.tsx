@@ -25,9 +25,9 @@ export function PerfilPolitico({ perfil }: { perfil: PerfilCategoria[] }) {
             <div key={item.categoriaId} className="space-y-2">
               <h3 className="font-medium text-foreground">{item.categoria}</h3>
 
-              {/* Régua esquerda ↔ direita com marcador na posição do eleitor (mesma do candidato). */}
+              {/* Régua progressista ↔ conservador com marcador na posição do eleitor (mesma do candidato). */}
               <div className="space-y-1">
-                <div className="relative h-2 w-full rounded-full bg-gradient-to-r from-chart-3/40 via-muted to-chart-4/40">
+                <div className="relative h-2 w-full rounded-full bg-gradient-to-r from-serie-a/40 via-muted to-chart-4/40">
                   <div
                     className="absolute top-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-background bg-primary shadow"
                     style={{ left: `${posicao}%` }}
@@ -35,9 +35,9 @@ export function PerfilPolitico({ perfil }: { perfil: PerfilCategoria[] }) {
                   />
                 </div>
                 <div className="flex justify-between text-[0.7rem] text-muted-foreground">
-                  <span>Esquerda</span>
+                  <span>Progressista</span>
                   <span className="font-medium text-foreground">{rotuloPosicao(posicao)}</span>
-                  <span>Direita</span>
+                  <span>Conservador</span>
                 </div>
               </div>
             </div>

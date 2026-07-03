@@ -2,16 +2,16 @@
 
 import { useId, useMemo } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { UserPlusIcon, MapPinIcon, LockIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { EstadoVazio } from "@/components/comum/estados";
+import { EstadoVazio, GradeSkeleton } from "@/components/comum/estados";
 import { PerfilPolitico } from "@/components/quiz/perfil-politico";
 import { CardResultadoCandidato } from "@/components/quiz/card-resultado-candidato";
-import { useSessao } from "@/hooks/use-sessao";
-import { useResultadoQuiz } from "@/hooks/use-resultado-quiz";
+import { useResultadoEfetivo } from "@/hooks/use-resultado-quiz";
 import { useArmazenamento } from "@/hooks/use-storage";
 import { CHAVE_UF, UFS } from "@/lib/constantes";
 import type { ResultadoCandidato } from "@/lib/types";
@@ -33,8 +33,8 @@ const CLASSE_SELECT =
   "h-9 rounded-md border bg-field px-3 text-sm text-field-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export function ResultadoView() {
-  const { resultado } = useResultadoQuiz();
-  const { autenticado } = useSessao();
+  const router = useRouter();
+  const { resultado, autenticado, carregado } = useResultadoEfetivo();
   const [uf, gravarUf] = useArmazenamento("local", CHAVE_UF);
 
   const porCargo = useMemo(() => {
@@ -47,15 +47,44 @@ export function ResultadoView() {
     return mapa;
   }, [resultado]);
 
+  // Ainda carregando (hidratação/busca do servidor): não pisca o estado-vazio.
+  if (!carregado) {
+    return <GradeSkeleton quantidade={1} />;
+  }
+
+  // Sem resultado: mensagem/ações conforme o estado (item 5 do card Correções v2).
   if (!resultado) {
-    return (
+    return autenticado ? (
       <EstadoVazio
-        titulo="Nenhum resultado encontrado"
-        descricao="Faça o quiz para ver seu perfil e seus matches."
+        titulo="Você ainda não realizou o quiz"
+        descricao="Gostaria de fazer agora?"
         acao={
-          <Button asChild>
-            <Link href="/quiz">Fazer o quiz</Link>
-          </Button>
+          <div className="flex flex-wrap justify-center gap-2">
+            <Button asChild>
+              <Link href="/quiz">Sim, fazer o quiz</Link>
+            </Button>
+            <Button variant="outline" onClick={() => router.back()}>
+              Não, voltar
+            </Button>
+          </div>
+        }
+      />
+    ) : (
+      <EstadoVazio
+        titulo="Você ainda não realizou o quiz e não tem cadastro"
+        descricao="O que gostaria de fazer?"
+        acao={
+          <div className="flex flex-wrap justify-center gap-2">
+            <Button asChild>
+              <Link href="/login?aba=registrar">Fazer cadastro</Link>
+            </Button>
+            <Button asChild variant="secondary">
+              <Link href="/quiz">Fazer o quiz</Link>
+            </Button>
+            <Button variant="outline" onClick={() => router.back()}>
+              Voltar
+            </Button>
+          </div>
         }
       />
     );
