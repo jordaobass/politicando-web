@@ -146,7 +146,7 @@ export function Navbar() {
         <Button
           variant="ghost"
           size="icon"
-          className="text-primary-foreground hover:bg-white/10 md:hidden"
+          className="size-11 text-primary-foreground hover:bg-white/10 md:hidden"
           aria-label={aberto ? "Fechar menu" : "Abrir menu"}
           aria-expanded={aberto}
           onClick={() => setAberto((valor) => !valor)}
@@ -175,6 +175,8 @@ export function Navbar() {
                     onClick={() => setAberto(false)}
                     className={cn(
                       "block rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-white/10",
+                      // "Meu resultado" é submenu do Quiz: recuo para indicar a hierarquia.
+                      link.href === "/quiz/resultado" && "pl-6",
                       ehAtivo(link.href)
                         ? "text-white"
                         : "text-primary-foreground/75",
