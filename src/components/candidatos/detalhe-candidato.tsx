@@ -207,7 +207,12 @@ export function DetalheCandidato({ id }: { id: string }) {
 
       {/* CTA principal: card de compatibilidade ocupa toda a largura. Mostra valor real
           se o usuário fez o quiz; caso contrário, valor ofuscado + botão para fazer o quiz. */}
-      <CardCompatibilidade candidaturaId={data.id} nomeUrna={politico.nomeUrna} />
+      <CardCompatibilidade
+        candidaturaId={data.id}
+        nomeUrna={politico.nomeUrna}
+        cargo={data.cargo}
+        uf={data.uf}
+      />
 
       {ehGovernador ? (
         /* Perfil de Governador nos blocos da spec (US-GOV-02..05). */

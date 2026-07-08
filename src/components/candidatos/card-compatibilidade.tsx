@@ -9,7 +9,10 @@ import { Badge } from "@/components/ui/badge";
 import { useCompatibilidadeCandidato } from "@/hooks/use-resultado-quiz";
 import { useSessao } from "@/hooks/use-sessao";
 import { Donut } from "@/components/comum/donut";
+import { cn } from "@/lib/utils";
 import {
+  classeBotaoNivel,
+  classeTextoNivel,
   classesBadgeNivel,
   formatarPercentual,
   paraEscala100,
@@ -18,6 +21,9 @@ import {
 interface Props {
   candidaturaId: string;
   nomeUrna: string;
+  /** Cargo e UF do candidato — usados para abrir a tela de resultado na aba/estado certos. */
+  cargo: string;
+  uf: string;
 }
 
 /**
@@ -26,7 +32,7 @@ interface Props {
  *  2. logado sem quiz → incentivo + "Fazer o teste" (azul);
  *  3. não logado → valor ofuscado + "Fazer o quiz" (azul).
  */
-export function CardCompatibilidade({ candidaturaId, nomeUrna }: Props) {
+export function CardCompatibilidade({ candidaturaId, nomeUrna, cargo, uf }: Props) {
   const { carregado, candidato } = useCompatibilidadeCandidato(candidaturaId);
   const { autenticado } = useSessao();
 
@@ -47,8 +53,8 @@ export function CardCompatibilidade({ candidaturaId, nomeUrna }: Props) {
       <Card>
         <CardContent className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Donut valor={paraEscala100(candidato.compatibilidade)} classeCor="text-accent">
-              <span className="text-2xl font-bold text-accent tabular-nums">
+            <Donut valor={paraEscala100(candidato.compatibilidade)} classeCor={classeTextoNivel(candidato.nivel)}>
+              <span className={cn("text-2xl font-bold tabular-nums", classeTextoNivel(candidato.nivel))}>
                 {formatarPercentual(candidato.compatibilidade)}
               </span>
             </Donut>
@@ -62,8 +68,11 @@ export function CardCompatibilidade({ candidaturaId, nomeUrna }: Props) {
               <p className="text-sm text-muted-foreground">Baseado nas suas respostas do quiz</p>
             </div>
           </div>
-          <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
-            <Link href="/quiz/resultado">Ver detalhes</Link>
+          {/* Botão acompanha a cor da bola de % e abre o resultado na aba/UF deste candidato. */}
+          <Button asChild size="lg" className={classeBotaoNivel(candidato.nivel)}>
+            <Link href={`/quiz/resultado?cargo=${encodeURIComponent(cargo)}&uf=${encodeURIComponent(uf)}`}>
+              Ver meu resultado
+            </Link>
           </Button>
         </CardContent>
       </Card>

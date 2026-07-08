@@ -11,13 +11,12 @@ import { Button } from "@/components/ui/button";
 import { MenuQuiz } from "@/components/layout/menu-quiz";
 import { useSessao } from "@/hooks/use-sessao";
 
-// Release 1 (entrega enxuta): "Quiz", "Candidatos" e "Comparar" navegam; "Partidos" aparece
-// mas fica desabilitado (exibido, porém não navegável).
+// Todos os itens do menu navegam (a página /partidos foi habilitada — Correções v3, item 4).
 const LINKS = [
   { href: "/quiz", rotulo: "Quiz", navegavel: true },
   { href: "/candidatos", rotulo: "Candidatos", navegavel: true },
   { href: "/comparar", rotulo: "Comparar", navegavel: true },
-  { href: "/partidos", rotulo: "Partidos", navegavel: false },
+  { href: "/partidos", rotulo: "Partidos", navegavel: true },
 ];
 
 /** Barra de navegação global (tema navy do protótipo) com links e CTA de login. */

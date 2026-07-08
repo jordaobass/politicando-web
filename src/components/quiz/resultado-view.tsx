@@ -1,8 +1,8 @@
 "use client";
 
-import { useId, useMemo } from "react";
+import { useEffect, useId, useMemo, useRef } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { UserPlusIcon, MapPinIcon, LockIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -34,8 +34,20 @@ const CLASSE_SELECT =
 
 export function ResultadoView() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const cargoParam = searchParams.get("cargo");
+  const ufParam = searchParams.get("uf");
   const { resultado, autenticado, carregado } = useResultadoEfetivo();
   const [uf, gravarUf] = useArmazenamento("local", CHAVE_UF);
+
+  // Chegando de "Ver meu resultado" de um candidato: pré-seleciona a UF dele uma vez (cargos
+  // estaduais). Depois o usuário pode trocar livremente. Item 8 do card Correções v3.
+  const ufAplicada = useRef(false);
+  useEffect(() => {
+    if (ufAplicada.current) return;
+    if (ufParam && ufParam !== "BR") gravarUf(ufParam);
+    ufAplicada.current = true;
+  }, [ufParam, gravarUf]);
 
   const porCargo = useMemo(() => {
     const mapa = new Map<string, ResultadoCandidato[]>();
@@ -94,6 +106,11 @@ export function ResultadoView() {
     (c) => (porCargo.get(c.valor)?.length ?? 0) > 0,
   );
 
+  // Aba inicial: o cargo vindo da URL (perfil do candidato), se disponível; senão, o primeiro.
+  const cargoInicial =
+    (cargoParam && cargosDisponiveis.some((c) => c.valor === cargoParam) && cargoParam) ||
+    cargosDisponiveis[0]?.valor;
+
   return (
     <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
       <div className="space-y-6">
@@ -116,7 +133,7 @@ export function ResultadoView() {
             descricao="Ainda não há candidatos compatíveis para mostrar."
           />
         ) : (
-          <Tabs defaultValue={cargosDisponiveis[0].valor}>
+          <Tabs defaultValue={cargoInicial}>
             <TabsList variant="line" className="h-auto w-full flex-wrap justify-start">
               {cargosDisponiveis.map((c) => (
                 <TabsTrigger key={c.valor} value={c.valor} className="flex-none">

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import { ResultadoView } from "@/components/quiz/resultado-view";
+import { GradeSkeleton } from "@/components/comum/estados";
 
 export const metadata: Metadata = {
   title: "Seu resultado",
@@ -18,7 +20,9 @@ export default function ResultadoPage() {
           Aqui está seu perfil político e os candidatos com maior afinidade.
         </p>
       </div>
-      <ResultadoView />
+      <Suspense fallback={<GradeSkeleton quantidade={1} />}>
+        <ResultadoView />
+      </Suspense>
     </div>
   );
 }

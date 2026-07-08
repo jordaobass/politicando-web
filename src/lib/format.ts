@@ -47,6 +47,34 @@ export function classeBarraNivel(nivel: NivelCompatibilidade): string {
   }
 }
 
+/** Cor de TEXTO do nível (usada no donut/percentual do card de compatibilidade). */
+export function classeTextoNivel(nivel: NivelCompatibilidade): string {
+  switch (nivel) {
+    case "Alta":
+      return "text-chart-2";
+    case "Boa":
+      return "text-chart-1";
+    case "Moderada":
+      return "text-chart-3";
+    default:
+      return "text-chart-4";
+  }
+}
+
+/** Cor de BOTÃO do nível — acompanha a cor da bola de % (Correções v3, item 8). */
+export function classeBotaoNivel(nivel: NivelCompatibilidade): string {
+  switch (nivel) {
+    case "Alta":
+      return "bg-chart-2 text-white hover:bg-chart-2/90";
+    case "Boa":
+      return "bg-chart-1 text-white hover:bg-chart-1/90";
+    case "Moderada":
+      return "bg-chart-3 text-white hover:bg-chart-3/90";
+    default:
+      return "bg-chart-4 text-white hover:bg-chart-4/90";
+  }
+}
+
 /**
  * Posição ideológica legível a partir da nota 0..100 (0 = progressista, 50 = neutro, 100 = conservador).
  * Mesma régua usada no perfil do candidato e no perfil do usuário (eixos alinhados).
