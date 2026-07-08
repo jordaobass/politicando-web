@@ -25,10 +25,9 @@ export function QuizRunner() {
   const [indice, setIndice] = useState(0);
   const [respostas, setRespostas] = useState<Map<string, number>>(new Map());
 
-  const ordenadas = useMemo(
-    () => [...(perguntas ?? [])].sort((a, b) => a.ordem - b.ordem),
-    [perguntas],
-  );
+  // O backend já entrega as perguntas AGRUPADAS por categoria (ordena por Categoria.Ordem);
+  // preservamos essa ordem em vez de reordenar por "ordem" global (Correções v3, item 5).
+  const ordenadas = useMemo(() => perguntas ?? [], [perguntas]);
 
   if (isLoading) {
     return <GradeSkeleton quantidade={1} />;
