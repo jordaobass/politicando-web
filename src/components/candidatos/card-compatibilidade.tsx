@@ -47,8 +47,9 @@ export function CardCompatibilidade({ candidaturaId, nomeUrna, cargo, uf }: Prop
     );
   }
 
-  // Estado 1 — fez o quiz: donut verde com o percentual real.
-  if (candidato) {
+  // Estado 1 — LOGADO e fez o quiz: donut colorido com o percentual real. Exibir o resultado
+  // exige login (item 11): não logado, mesmo com cache, cai no estado ofuscado abaixo.
+  if (candidato && autenticado) {
     return (
       <Card>
         <CardContent className="flex flex-wrap items-center justify-between gap-4">
@@ -98,7 +99,9 @@ export function CardCompatibilidade({ candidaturaId, nomeUrna, cargo, uf }: Prop
     );
   }
 
-  // Estado 3 — não logado: valor ofuscado (blur) + CTA "Fazer o quiz".
+  // Estado 3 — não logado: valor ofuscado (blur). Se JÁ fez o quiz (tem cache), pede login para
+  // exibir; senão, incentiva a fazer o quiz.
+  const jaFezQuiz = Boolean(candidato);
   return (
     <Card>
       <CardContent className="flex flex-col items-stretch gap-2 p-2 sm:flex-row">
@@ -115,7 +118,9 @@ export function CardCompatibilidade({ candidaturaId, nomeUrna, cargo, uf }: Prop
           <div className="absolute inset-0 flex items-center justify-center gap-2 bg-background/55 px-3 text-center backdrop-blur-[2px]">
             <LockIcon className="size-4 shrink-0 text-primary" aria-hidden="true" />
             <p className="text-sm font-medium text-foreground">
-              Descubra sua compatibilidade com {nomeUrna}
+              {jaFezQuiz
+                ? `Entre na sua conta para ver sua compatibilidade com ${nomeUrna}`
+                : `Descubra sua compatibilidade com ${nomeUrna}`}
             </p>
           </div>
         </div>
@@ -123,7 +128,7 @@ export function CardCompatibilidade({ candidaturaId, nomeUrna, cargo, uf }: Prop
           asChild
           className="h-auto bg-primary px-8 font-semibold text-primary-foreground hover:bg-primary/90"
         >
-          <Link href="/quiz">Fazer o quiz</Link>
+          <Link href={jaFezQuiz ? "/login" : "/quiz"}>{jaFezQuiz ? "Entrar" : "Fazer o quiz"}</Link>
         </Button>
       </CardContent>
     </Card>
