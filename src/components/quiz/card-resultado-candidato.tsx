@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 import Link from "next/link";
-import { ChevronDownIcon, ArrowRightIcon } from "lucide-react";
+import { ChevronDownIcon, ArrowRightIcon, ArrowLeftRightIcon } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -63,7 +63,7 @@ export function CardResultadoCandidato({
               aria-controls={idTemas}
               className="flex w-full items-center justify-between rounded-md px-1 py-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              Afinidade por tema
+              {aberto ? "Ocultar afinidade" : "Exibir afinidade"}
               <ChevronDownIcon
                 className={cn(
                   "size-4 transition-transform motion-reduce:transition-none",
@@ -98,13 +98,22 @@ export function CardResultadoCandidato({
           </div>
         )}
 
-        {/* CTA explícito de perfil: o card inteiro já é clicável, mas o botão deixa a ação visível. */}
-        <Button asChild variant="outline" size="sm" className="w-full">
-          <Link href={`/candidatos/${candidato.candidaturaId}`}>
-            Ver perfil completo
-            <ArrowRightIcon className="size-4" aria-hidden="true" />
-          </Link>
-        </Button>
+        {/* Duas ações lado a lado: "Ver perfil" (primário, azul) e "Comparar" (abre a
+            comparação já com este candidato no slot A). */}
+        <div className="flex gap-2">
+          <Button asChild size="sm" className="flex-1">
+            <Link href={`/candidatos/${candidato.candidaturaId}`}>
+              Ver perfil
+              <ArrowRightIcon className="size-4" aria-hidden="true" />
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="sm" className="flex-1">
+            <Link href={`/comparar?a=${candidato.candidaturaId}`}>
+              Comparar
+              <ArrowLeftRightIcon className="size-4" aria-hidden="true" />
+            </Link>
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

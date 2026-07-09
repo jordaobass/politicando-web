@@ -4,6 +4,7 @@ import { CalendarClockIcon, FileTextIcon, HistoryIcon, SparklesIcon, WalletIcon 
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarraScore } from "@/components/comum/barra-score";
+import { ResumoTema } from "@/components/candidatos/resumo-tema";
 import { formatarCargo } from "@/lib/format";
 import type { CandidaturaDetalhe, ExercicioCargo } from "@/lib/types";
 
@@ -26,7 +27,7 @@ export function PerfilPresidente({ data }: { data: CandidaturaDetalhe }) {
   return (
     <div className="space-y-6">
       <div className="grid items-stretch gap-6 lg:grid-cols-2">
-        {/* US-PRES-02 — Score por tema (0–5 + justificativa + confiança; sem posição ideológica). */}
+        {/* US-PRES-02 — Score por tema (0–5 + análise colapsável; sem posição ideológica). */}
         <Card data-testid="bloco-score-presidente" className="h-full">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg">
@@ -42,14 +43,11 @@ export function PerfilPresidente({ data }: { data: CandidaturaDetalhe }) {
               <p className="text-sm text-muted-foreground">Ainda não há score calculado para este candidato.</p>
             ) : (
               scores.map((s) => (
-                <div key={s.categoria} className="space-y-1">
+                <div key={s.categoria} className="space-y-1.5">
                   <BarraScore rotulo={s.categoria} valor={s.engajamento ?? 0} escalaMax={5} />
-                  {s.justificativa && <p className="text-sm text-muted-foreground">{s.justificativa}</p>}
-                  {s.confianca != null && (
-                    <p className="text-xs text-muted-foreground">
-                      Confiança da análise: {Math.round(s.confianca * 100)}%
-                    </p>
-                  )}
+                  {/* Análise da IA colapsável (fechada por padrão), padrão dos outros perfis;
+                      sem a % de confiança (Correções v3, item 9). */}
+                  <ResumoTema sintese={s.posicaoSintese} justificativa={s.justificativa} />
                 </div>
               ))
             )}

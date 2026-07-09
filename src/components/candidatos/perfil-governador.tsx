@@ -6,10 +6,11 @@ import { FileTextIcon, HistoryIcon, LockIcon, SparklesIcon } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BarraScore } from "@/components/comum/barra-score";
+import { ResumoTema } from "@/components/candidatos/resumo-tema";
 import { PainelGestaoEstadual } from "@/components/candidatos/atividade/painel-gestao-estadual";
 import { formatarCargo } from "@/lib/format";
 import { useSessao } from "@/hooks/use-sessao";
-import type { CandidaturaDetalhe, ExercicioCargo, ScoreCategoria } from "@/lib/types";
+import type { CandidaturaDetalhe, ExercicioCargo } from "@/lib/types";
 
 /** Eixo institucional não entra no score por tema do perfil (spec lista 8 temas). */
 const EIXO_FORA = "Instituições e Democracia";
@@ -49,12 +50,17 @@ export function PerfilGovernador({ data }: { data: CandidaturaDetalhe }) {
             <>
               <div className="space-y-3">
                 {scores.map((s) => (
-                  <BarraScore key={s.categoria} rotulo={s.categoria} valor={s.engajamento ?? 0} escalaMax={5} />
+                  <div key={s.categoria} className="space-y-1.5">
+                    <BarraScore rotulo={s.categoria} valor={s.engajamento ?? 0} escalaMax={5} />
+                    {/* Análise da IA colapsável (fechada por padrão), padrão dos outros perfis
+                        (Correções v3, item 10). */}
+                    <ResumoTema sintese={s.posicaoSintese} justificativa={s.justificativa} />
+                  </div>
                 ))}
               </div>
               <p className="border-t border-border pt-3 text-xs text-muted-foreground">
                 Notas estimadas pela prioridade do orçamento estadual (SICONFI 2025) e pelo plano de
-                governo 2022. Análise preliminar do Politicando{confiancaMedia(scores) ? ` · confiança média ${confiancaMedia(scores)}%` : ""}.
+                governo 2022. Análise preliminar do Politicando.
               </p>
             </>
           )}
@@ -158,9 +164,3 @@ function rotuloCargo(e: ExercicioCargo): string {
   return e.uf && e.uf !== "BR" ? `${cargo} · ${e.uf}` : cargo;
 }
 
-/** Confiança média (%) das notas, para a nota de metodologia do bloco de score. */
-function confiancaMedia(scores: ScoreCategoria[]): number | null {
-  const cs = scores.map((s) => s.confianca).filter((c): c is number => c != null);
-  if (cs.length === 0) return null;
-  return Math.round((cs.reduce((a, b) => a + b, 0) / cs.length) * 100);
-}
