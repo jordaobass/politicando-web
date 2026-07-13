@@ -16,7 +16,14 @@ export default function RedefinirSenhaPage() {
     <div className="relative flex min-h-[calc(100svh-3.5rem)] w-full items-center justify-center overflow-hidden bg-gradient-to-b from-secondary/60 to-background px-4 py-10">
       <div className="w-full max-w-md space-y-6">
         <Link href="/" className="flex items-center justify-center gap-2.5">
-          <Image src="/icon.svg" alt="" width={40} height={40} className="size-10" unoptimized />
+          <Image
+            src="/logo-politicando.jpeg"
+            alt=""
+            width={40}
+            height={40}
+            className="size-10 rounded"
+            unoptimized
+          />
           <span className="text-2xl font-bold text-primary">Politicando</span>
         </Link>
 

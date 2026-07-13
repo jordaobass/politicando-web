@@ -78,9 +78,15 @@ export function DetalhePartido({ id }: { id: string }) {
         </CardHeader>
         <CardContent>
           {data.programaResumo ? (
-            <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
-              {data.programaResumo}
-            </p>
+            <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
+              {data.programaResumo
+                .split(/\n\s*\n/)
+                .map((paragrafo) => paragrafo.trim())
+                .filter(Boolean)
+                .map((paragrafo, i) => (
+                  <p key={i}>{paragrafo}</p>
+                ))}
+            </div>
           ) : (
             <p className="text-sm text-muted-foreground">
               O programa deste partido ainda não foi cadastrado.
