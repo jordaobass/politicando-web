@@ -39,16 +39,20 @@ interface CompararViewProps {
   bInicial?: string;
 }
 
+type Pendente = { tipo: "cargo" | "ufA" | "ufB"; valor: string };
+
 export function CompararView({ aInicial = "", bInicial = "" }: CompararViewProps) {
   const { autenticado } = useSessao();
   const [cargo, setCargo] = useState("");
-  const [uf, setUf] = useState("");
+  // Estado POR candidato (Correções v5, item 2): permite comparar entre UFs diferentes.
+  const [ufA, setUfA] = useState("");
+  const [ufB, setUfB] = useState("");
   const [a, setA] = useState<CandidaturaResumo | null>(null);
   const [b, setB] = useState<CandidaturaResumo | null>(null);
-  // Troca de cargo/estado pendente de confirmação (quando já há candidato escolhido).
-  const [pendente, setPendente] = useState<{ campo: "cargo" | "uf"; valor: string } | null>(null);
+  // Troca (cargo/estado) pendente de confirmação quando limparia um candidato já escolhido.
+  const [pendente, setPendente] = useState<Pendente | null>(null);
 
-  // Pré-preenchimento ao chegar do card/perfil: deriva cargo/UF do Candidato A (US-COMP-01, cenário 4).
+  // Pré-preenchimento ao chegar do card/perfil ou de uma comparação salva (US-COMP-01, cenário 4).
   // Ajuste de estado na fase de render (padrão React p/ sincronizar dado externo uma vez), sem effect.
   const { data: detalheA } = useCandidatura(aInicial);
   const { data: detalheB } = useCandidatura(bInicial);
@@ -56,20 +60,21 @@ export function CompararView({ aInicial = "", bInicial = "" }: CompararViewProps
   if (aInicial && detalheA && preenchidoDe !== aInicial) {
     setPreenchidoDe(aInicial);
     setCargo(detalheA.cargo);
-    setUf(exigeEstado(detalheA.cargo) ? detalheA.uf : "");
+    setUfA(exigeEstado(detalheA.cargo) ? detalheA.uf : "");
     setA(resumoDe(detalheA.id, detalheA.cargo, detalheA.uf, detalheA.politico.nomeUrna,
       detalheA.partidoSigla, detalheA.partidoLogoUrl, detalheA.politico.fotoUrl));
   }
-  // Deep-link com os dois (ex.: abrir uma comparação salva): pré-preenche o Candidato B também.
   const [preenchidoBDe, setPreenchidoBDe] = useState<string | null>(null);
   if (bInicial && detalheB && preenchidoBDe !== bInicial) {
     setPreenchidoBDe(bInicial);
+    setUfB(exigeEstado(detalheB.cargo) ? detalheB.uf : "");
     setB(resumoDe(detalheB.id, detalheB.cargo, detalheB.uf, detalheB.politico.nomeUrna,
       detalheB.partidoSigla, detalheB.partidoLogoUrl, detalheB.politico.fotoUrl));
   }
 
-  const temSelecao = Boolean(a || b);
-  const buscaHabilitada = Boolean(cargo) && (!exigeEstado(cargo) || Boolean(uf));
+  const precisaEstado = exigeEstado(cargo);
+  const aHabilitado = Boolean(cargo) && (!precisaEstado || Boolean(ufA));
+  const bHabilitado = aHabilitado && Boolean(a) && (!precisaEstado || Boolean(ufB));
 
   // Reflete a seleção A/B na URL (sem re-render) para que, ao abrir um perfil e voltar, a
   // comparação seja restaurada em vez de vir vazia (correção do card v2, obs. da Ricella).
@@ -81,29 +86,36 @@ export function CompararView({ aInicial = "", bInicial = "" }: CompararViewProps
     window.history.replaceState(null, "", qs ? `/comparar?${qs}` : "/comparar");
   }, [a, b]);
 
-  /** Troca de filtro: pede confirmação se já houver candidato; senão aplica direto. */
-  function alterarFiltro(campo: "cargo" | "uf", valor: string) {
-    if (temSelecao) {
-      setPendente({ campo, valor });
-      return;
-    }
-    aplicarFiltro(campo, valor);
+  /** Troca o cargo: se já houver candidato, confirma (limpa tudo); senão aplica direto. */
+  function trocarCargo(valor: string) {
+    if (a || b) return setPendente({ tipo: "cargo", valor });
+    aplicarCargo(valor);
   }
-
-  function aplicarFiltro(campo: "cargo" | "uf", valor: string) {
-    if (campo === "cargo") {
-      setCargo(valor);
-      if (!exigeEstado(valor)) setUf("");
-    } else {
-      setUf(valor);
-    }
+  function aplicarCargo(valor: string) {
+    setCargo(valor);
+    setUfA("");
+    setUfB("");
+  }
+  /** Troca o estado de um lado: se aquele candidato já está escolhido, confirma (limpa só ele). */
+  function trocarUf(lado: "A" | "B", valor: string) {
+    const escolhido = lado === "A" ? a : b;
+    if (escolhido) return setPendente({ tipo: lado === "A" ? "ufA" : "ufB", valor });
+    (lado === "A" ? setUfA : setUfB)(valor);
   }
 
   function confirmarTroca() {
     if (!pendente) return;
-    setA(null);
-    setB(null);
-    aplicarFiltro(pendente.campo, pendente.valor);
+    if (pendente.tipo === "cargo") {
+      setA(null);
+      setB(null);
+      aplicarCargo(pendente.valor);
+    } else if (pendente.tipo === "ufA") {
+      setA(null);
+      setUfA(pendente.valor);
+    } else {
+      setB(null);
+      setUfB(pendente.valor);
+    }
     setPendente(null);
   }
 
@@ -127,57 +139,47 @@ export function CompararView({ aInicial = "", bInicial = "" }: CompararViewProps
         )}
       </div>
 
-      {/* Filtros: Cargo + Estado (condicional). */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2">
-          <Label>Cargo</Label>
-          <SelectSimples
-            valor={cargo}
-            onValueChange={(v) => alterarFiltro("cargo", v)}
-            placeholder="Selecione o cargo"
-            opcoes={CARGOS_COMPARACAO.map((c) => ({ valor: c.valor, rotulo: c.rotulo }))}
-          />
-        </div>
-        {exigeEstado(cargo) && (
-          <div className="space-y-2">
-            <Label>Estado</Label>
-            <SelectSimples
-              valor={uf}
-              onValueChange={(v) => alterarFiltro("uf", v)}
-              placeholder="Selecione o estado"
-              opcoes={UFS.map((u) => ({ valor: u, rotulo: u }))}
-            />
-          </div>
-        )}
+      {/* Cargo (compartilhado). O estado agora é por candidato — permite comparar entre UFs. */}
+      <div className="max-w-sm space-y-2">
+        <Label>Cargo</Label>
+        <SelectSimples
+          valor={cargo}
+          onValueChange={trocarCargo}
+          placeholder="Selecione o cargo"
+          opcoes={CARGOS_COMPARACAO.map((c) => ({ valor: c.valor, rotulo: c.rotulo }))}
+        />
       </div>
 
-      {/* Seleção dos candidatos: A habilita após cargo/UF; B habilita após A. */}
+      {/* Cada candidato tem seu próprio estado (quando o cargo exige) + seletor. */}
       <div className="grid gap-4 sm:grid-cols-2">
-        {buscaHabilitada ? (
-          <SeletorCandidaturaFiltrado
-            rotulo="Candidato A"
-            cargo={cargo}
-            uf={exigeEstado(cargo) ? uf : undefined}
-            selecionado={a}
-            onSelecionar={setA}
-            excluirId={b?.id}
-          />
-        ) : (
-          <CampoDesabilitado rotulo="Candidato A" texto="Selecione o cargo e o estado primeiro" />
-        )}
-
-        {buscaHabilitada && a ? (
-          <SeletorCandidaturaFiltrado
-            rotulo="Candidato B"
-            cargo={cargo}
-            uf={exigeEstado(cargo) ? uf : undefined}
-            selecionado={b}
-            onSelecionar={setB}
-            excluirId={a?.id}
-          />
-        ) : (
-          <CampoDesabilitado rotulo="Candidato B" texto="Escolha o Candidato A primeiro" />
-        )}
+        <ColunaSelecao
+          rotulo="Candidato A"
+          cargo={cargo}
+          precisaEstado={precisaEstado}
+          uf={ufA}
+          onUf={(v) => trocarUf("A", v)}
+          habilitado={aHabilitado}
+          textoDesabilitado={
+            !cargo ? "Selecione o cargo primeiro" : "Selecione o estado do Candidato A"
+          }
+          selecionado={a}
+          onSelecionar={setA}
+          excluirId={b?.id}
+        />
+        <ColunaSelecao
+          rotulo="Candidato B"
+          cargo={cargo}
+          precisaEstado={precisaEstado}
+          uf={ufB}
+          onUf={(v) => trocarUf("B", v)}
+          habilitado={bHabilitado}
+          textoDesabilitado={
+            !a ? "Escolha o Candidato A primeiro" : "Selecione o estado do Candidato B"
+          }
+          selecionado={b}
+          onSelecionar={setB}
+          excluirId={a?.id}
+        />
       </div>
 
       {a && b && <Resultado aId={a.id} bId={b.id} autenticado={autenticado} />}
@@ -185,9 +187,11 @@ export function CompararView({ aInicial = "", bInicial = "" }: CompararViewProps
       <Dialog open={pendente !== null} onOpenChange={(aberto) => !aberto && setPendente(null)}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Trocar {pendente?.campo === "uf" ? "estado" : "cargo"}?</DialogTitle>
+            <DialogTitle>Trocar {pendente?.tipo === "cargo" ? "cargo" : "estado"}?</DialogTitle>
             <DialogDescription>
-              Mudar o cargo ou estado vai limpar os candidatos selecionados. Deseja continuar?
+              {pendente?.tipo === "cargo"
+                ? "Mudar o cargo vai limpar os dois candidatos selecionados. Deseja continuar?"
+                : "Mudar o estado vai limpar o candidato já escolhido nesta coluna. Deseja continuar?"}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -198,6 +202,59 @@ export function CompararView({ aInicial = "", bInicial = "" }: CompararViewProps
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
+  );
+}
+
+/** Coluna de seleção de um candidato: estado próprio (quando o cargo exige) + seletor. */
+function ColunaSelecao({
+  rotulo,
+  cargo,
+  precisaEstado,
+  uf,
+  onUf,
+  habilitado,
+  textoDesabilitado,
+  selecionado,
+  onSelecionar,
+  excluirId,
+}: {
+  rotulo: string;
+  cargo: string;
+  precisaEstado: boolean;
+  uf: string;
+  onUf: (v: string) => void;
+  habilitado: boolean;
+  textoDesabilitado: string;
+  selecionado: CandidaturaResumo | null;
+  onSelecionar: (c: CandidaturaResumo | null) => void;
+  excluirId?: string;
+}) {
+  return (
+    <div className="space-y-2">
+      {precisaEstado && Boolean(cargo) && (
+        <div className="space-y-1.5">
+          <Label className="text-xs text-muted-foreground">Estado do {rotulo}</Label>
+          <SelectSimples
+            valor={uf}
+            onValueChange={onUf}
+            placeholder="Selecione o estado"
+            opcoes={UFS.map((u) => ({ valor: u, rotulo: u }))}
+          />
+        </div>
+      )}
+      {habilitado ? (
+        <SeletorCandidaturaFiltrado
+          rotulo={rotulo}
+          cargo={cargo}
+          uf={precisaEstado ? uf : undefined}
+          selecionado={selecionado}
+          onSelecionar={onSelecionar}
+          excluirId={excluirId}
+        />
+      ) : (
+        <CampoDesabilitado rotulo={rotulo} texto={textoDesabilitado} />
+      )}
     </div>
   );
 }
