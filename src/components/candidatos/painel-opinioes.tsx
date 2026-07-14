@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { CheckIcon, MinusIcon, XIcon, HelpCircleIcon } from "lucide-react";
+import { TextoRico } from "@/components/comum/texto-rico";
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -140,7 +141,7 @@ function CartaoOpiniao({
         </Badge>
       </div>
       {opiniao.justificativa && (
-        <p className="text-sm text-muted-foreground">{opiniao.justificativa}</p>
+        <TextoRico texto={opiniao.justificativa} className="text-sm text-muted-foreground" />
       )}
     </article>
   );

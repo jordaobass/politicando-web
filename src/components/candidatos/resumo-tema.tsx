@@ -4,6 +4,7 @@ import { useId, useState } from "react";
 import { ChevronDownIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { TextoRico } from "@/components/comum/texto-rico";
 
 /**
  * Resumo da IA por tema (síntese + justificativa), colapsável e fechado por padrão.
@@ -40,7 +41,7 @@ export function ResumoTema({
       {aberto && (
         <div id={id} className="space-y-1 pt-1.5">
           {sintese && <p className="text-sm font-medium text-foreground">{sintese}</p>}
-          {justificativa && <p className="text-sm text-muted-foreground">{justificativa}</p>}
+          {justificativa && <TextoRico texto={justificativa} className="text-sm text-muted-foreground" />}
         </div>
       )}
     </div>

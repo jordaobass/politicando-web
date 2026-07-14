@@ -1,5 +1,6 @@
 "use client";
 
+import { TextoRico } from "@/components/comum/texto-rico";
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { ExternalLinkIcon } from "lucide-react";
@@ -78,15 +79,10 @@ export function DetalhePartido({ id }: { id: string }) {
         </CardHeader>
         <CardContent>
           {data.programaResumo ? (
-            <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
-              {data.programaResumo
-                .split(/\n\s*\n/)
-                .map((paragrafo) => paragrafo.trim())
-                .filter(Boolean)
-                .map((paragrafo, i) => (
-                  <p key={i}>{paragrafo}</p>
-                ))}
-            </div>
+            <TextoRico
+              texto={data.programaResumo}
+              className="text-sm leading-relaxed text-muted-foreground"
+            />
           ) : (
             <p className="text-sm text-muted-foreground">
               O programa deste partido ainda não foi cadastrado.

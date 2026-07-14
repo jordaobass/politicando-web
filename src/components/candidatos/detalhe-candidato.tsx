@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FotoCandidato } from "@/components/comum/foto-candidato";
+import { TextoRico } from "@/components/comum/texto-rico";
 import { BadgeOrigem } from "@/components/comum/badge-origem";
 import { BarraScore } from "@/components/comum/barra-score";
 import { IconeInstagram } from "@/components/comum/icone-instagram";
@@ -234,12 +235,12 @@ export function DetalheCandidato({ id }: { id: string }) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <p className="text-sm text-muted-foreground">{data.observacaoIa}</p>
+            <TextoRico texto={data.observacaoIa} className="text-sm text-muted-foreground" />
             {data.propostasResumo && (
-              <p className="text-sm text-muted-foreground">
+              <div className="text-sm text-muted-foreground">
                 <span className="font-medium text-foreground">Propostas: </span>
-                {data.propostasResumo}
-              </p>
+                <TextoRico texto={data.propostasResumo} className="mt-1 text-sm text-muted-foreground" />
+              </div>
             )}
           </CardContent>
         </Card>
