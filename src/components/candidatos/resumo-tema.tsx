@@ -40,7 +40,7 @@ export function ResumoTema({
       </button>
       {aberto && (
         <div id={id} className="space-y-1 pt-1.5">
-          {sintese && <p className="text-sm font-medium text-foreground">{sintese}</p>}
+          {sintese && <TextoRico texto={sintese} className="text-sm font-medium text-foreground" />}
           {justificativa && <TextoRico texto={justificativa} className="text-sm text-muted-foreground" />}
         </div>
       )}

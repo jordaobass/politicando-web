@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FotoCandidato } from "@/components/comum/foto-candidato";
-import { TextoRico } from "@/components/comum/texto-rico";
+import { TextoRico, textoSimples } from "@/components/comum/texto-rico";
 import { BadgeOrigem } from "@/components/comum/badge-origem";
 import { BarraScore } from "@/components/comum/barra-score";
 import { IconeInstagram } from "@/components/comum/icone-instagram";
@@ -262,7 +262,9 @@ export function DetalheCandidato({ id }: { id: string }) {
             </CardHeader>
             <CardContent className="space-y-4">
               {data.propostasResumo && (
-                <p className="line-clamp-4 text-sm text-muted-foreground">{data.propostasResumo}</p>
+                <p className="line-clamp-4 text-sm text-muted-foreground">
+                  {textoSimples(data.propostasResumo)}
+                </p>
               )}
               {scoresDoScore.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
@@ -325,11 +327,14 @@ export function DetalheCandidato({ id }: { id: string }) {
                     <SparklesIcon className="size-4 text-primary" aria-hidden="true" />
                     Resumo
                   </p>
-                  <p className="text-sm text-muted-foreground">
-                    {resumo.projetosTotal + (ehSenador ? resumo.fiscalizacaoTotal : 0) === 0
-                      ? `${ehSenador ? "Este senador" : politico.nomeUrna} não possui proposições cadastradas.`
-                      : (data.observacaoIa ?? "Resumo temporariamente indisponível.")}
-                  </p>
+                  <TextoRico
+                    texto={
+                      resumo.projetosTotal + (ehSenador ? resumo.fiscalizacaoTotal : 0) === 0
+                        ? `${ehSenador ? "Este senador" : politico.nomeUrna} não possui proposições cadastradas.`
+                        : (data.observacaoIa ?? "Resumo temporariamente indisponível.")
+                    }
+                    className="text-sm text-muted-foreground"
+                  />
                 </div>
               </CardContent>
             </Card>

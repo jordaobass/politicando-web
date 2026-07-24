@@ -6,6 +6,7 @@ import { FileTextIcon, HistoryIcon, LockIcon, SparklesIcon } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BarraScore } from "@/components/comum/barra-score";
+import { TextoRico } from "@/components/comum/texto-rico";
 import { ResumoTema } from "@/components/candidatos/resumo-tema";
 import { PainelGestaoEstadual } from "@/components/candidatos/atividade/painel-gestao-estadual";
 import { formatarCargo } from "@/lib/format";
@@ -145,9 +146,13 @@ export function PerfilGovernador({ data }: { data: CandidaturaDetalhe }) {
               {data.planoGoverno.temas.map((t) => (
                 <li key={t.eixo} className="space-y-1">
                   <p className="text-sm font-semibold text-foreground">{t.eixoNome}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {t.resumo ?? "Proposta para este tema não consta no plano de governo."}
-                  </p>
+                  {t.resumo ? (
+                    <TextoRico texto={t.resumo} className="text-sm text-muted-foreground" />
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      Proposta para este tema não consta no plano de governo.
+                    </p>
+                  )}
                 </li>
               ))}
             </ul>

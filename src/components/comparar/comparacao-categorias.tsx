@@ -6,6 +6,7 @@ import { ChevronDownIcon, LockIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { TextoRico } from "@/components/comum/texto-rico";
 import { CORES_COMPARACAO } from "@/components/comparar/comparacao-radar";
 import type { CandidaturaDetalhe, ScoreCategoria } from "@/lib/types";
 
@@ -155,7 +156,11 @@ function LadoJustificativa({
         <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: cor }} />
         <span className="text-sm font-medium text-foreground">{nome}</span>
       </div>
-      <p className="text-sm text-muted-foreground">{texto || "Análise não disponível"}</p>
+      {texto ? (
+        <TextoRico texto={texto} className="text-sm text-muted-foreground" />
+      ) : (
+        <p className="text-sm text-muted-foreground">Análise não disponível</p>
+      )}
     </div>
   );
 }
