@@ -2,6 +2,22 @@ import { type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * Remove marcadores markdown, virando texto plano — para prévias com `line-clamp` (onde não cabem
+ * blocos/parágrafos). Tira **negrito**, `##` títulos, bullets e numeração no início da linha.
+ */
+export function textoSimples(texto: string): string {
+  return texto
+    .replace(/\r/g, "")
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/(^|\n)\s*#{1,6}\s+/g, "$1")
+    .replace(/(^|\n)\s*[-•*]\s+/g, "$1")
+    .replace(/(^|\n)\s*\d+\.\s+/g, "$1")
+    .replace(/\n{2,}/g, " — ")
+    .replace(/\n/g, " ")
+    .trim();
+}
+
 /** Renderiza ênfase **negrito** de forma SEGURA (constrói nós React, sem HTML). */
 function inline(texto: string): ReactNode[] {
   const partes: ReactNode[] = [];
@@ -32,19 +48,26 @@ export function TextoRico({ texto, className }: { texto: string; className?: str
   const linhas = texto.replace(/\r/g, "").split("\n");
   const blocos: ReactNode[] = [];
   let lista: string[] = [];
+  let listaOrdenada = false;
   let paragrafo: string[] = [];
   let chave = 0;
 
   const fecharLista = () => {
     if (!lista.length) return;
     const itens = lista;
+    const ordenada = listaOrdenada;
     lista = [];
+    const conteudo = itens.map((item, i) => <li key={i}>{inline(item)}</li>);
     blocos.push(
-      <ul key={chave++} className="list-disc space-y-1 pl-5">
-        {itens.map((item, i) => (
-          <li key={i}>{inline(item)}</li>
-        ))}
-      </ul>,
+      ordenada ? (
+        <ol key={chave++} className="list-decimal space-y-1 pl-5">
+          {conteudo}
+        </ol>
+      ) : (
+        <ul key={chave++} className="list-disc space-y-1 pl-5">
+          {conteudo}
+        </ul>
+      ),
     );
   };
   const fecharParagrafo = () => {
@@ -56,10 +79,27 @@ export function TextoRico({ texto, className }: { texto: string; className?: str
 
   for (const bruta of linhas) {
     const linha = bruta.trim();
+    const titulo = /^#{1,6}\s+(.+)$/.exec(linha);
     const bullet = /^([-•*])\s+/.exec(linha);
-    if (bullet) {
+    const ordenado = /^\d+[.)]\s+(.+)$/.exec(linha);
+    if (titulo) {
       fecharParagrafo();
+      fecharLista();
+      blocos.push(
+        <p key={chave++} className="font-semibold text-foreground">
+          {inline(titulo[1])}
+        </p>,
+      );
+    } else if (bullet) {
+      fecharParagrafo();
+      if (listaOrdenada) fecharLista();
+      listaOrdenada = false;
       lista.push(linha.slice(bullet[0].length));
+    } else if (ordenado) {
+      fecharParagrafo();
+      if (!listaOrdenada) fecharLista();
+      listaOrdenada = true;
+      lista.push(ordenado[1]);
     } else if (linha === "") {
       fecharParagrafo();
       fecharLista();
