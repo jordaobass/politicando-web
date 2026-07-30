@@ -13,7 +13,7 @@ export function Hero() {
       <h1 className="max-w-4xl text-4xl font-bold tracking-tight text-balance text-foreground sm:text-5xl md:text-6xl">
         Vote com base em{" "}
         <span className="text-accent">fatos</span>, não em{" "}
-        <span className="text-destructive/80 line-through decoration-2">promessas</span>.
+        <span className="text-destructive line-through decoration-2">promessas</span>.
       </h1>
 
       <p className="max-w-xl text-lg text-muted-foreground">
