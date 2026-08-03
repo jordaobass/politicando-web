@@ -50,7 +50,8 @@ export default function EmBrevePage() {
 
       <p className="text-sm text-muted-foreground">
         Vote com base em{" "}
-        <span className="font-semibold text-accent">fatos</span>, não em promessas.
+        <span className="font-semibold text-accent">fatos</span>, não em{" "}
+        <span className="font-semibold text-destructive">promessas</span>.
       </p>
     </main>
   );
