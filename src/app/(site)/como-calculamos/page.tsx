@@ -20,6 +20,34 @@ const TEMAS = [
   "Ciência & Tecnologia",
 ] as const;
 
+/**
+ * Os dois números por tema. Separá-los na explicação é o próprio conserto: a versão anterior
+ * desta página dizia que a nota media "intensidade de atuação, não posicionamento", o que fez
+ * leitores concluírem que o match ranqueava por engajamento (Correções v6, item 4).
+ */
+const NUMEROS = [
+  {
+    titulo: "Afinidade",
+    descricao:
+      "o quanto a posição do candidato no tema se aproxima da sua, medida na mesma régua de 0 a 100 que o quiz usa para posicionar você.",
+    papel: "É este número que entra no seu match.",
+  },
+  {
+    titulo: "Atuação",
+    descricao:
+      "o quanto o candidato de fato trabalhou o tema — projetos, votos, relatorias e comissões —, numa escala de 0 a 5.",
+    papel: "Informativo: não entra no cálculo do match.",
+  },
+] as const;
+
+/** Passo a passo do match, na ordem em que acontece. */
+const ETAPAS_MATCH = [
+  "Você responde o quiz. Cada resposta posiciona você entre 0 e 100 no tema da pergunta.",
+  "O candidato já tem uma posição de 0 a 100 no mesmo tema, obtida do histórico público dele.",
+  "A afinidade no tema é o quanto essas duas posições estão próximas: quanto menor a distância, maior a afinidade.",
+  "O match final é a média das afinidades dos temas que você respondeu, com mais peso nos temas em que você respondeu com mais convicção.",
+] as const;
+
 /** Tipos de evidência, em ordem de prioridade (maior peso primeiro). */
 const EVIDENCIAS = [
   {
@@ -72,11 +100,12 @@ export default function ComoCalculamosPage() {
 
       <section className="space-y-3" data-testid="secao-o-que-e">
         <h2 className="text-xl font-semibold text-foreground">
-          O que é a pontuação?
+          Dois números, duas perguntas diferentes
         </h2>
         <p className="text-muted-foreground">
-          Cada candidato recebe uma pontuação de 0 a 5 em cada um dos 8 temas que
-          o Politicando avalia:
+          Em cada um dos 8 temas que o Politicando avalia, o candidato recebe{" "}
+          <strong className="text-foreground">dois</strong> números — eles
+          respondem a perguntas distintas e não devem ser lidos como um só:
         </p>
         <ul className="flex flex-wrap gap-2">
           {TEMAS.map((tema) => (
@@ -88,15 +117,51 @@ export default function ComoCalculamosPage() {
             </li>
           ))}
         </ul>
-        <p className="text-muted-foreground">
-          Essa pontuação reflete o quanto o candidato se envolveu com aquele tema
-          ao longo do seu histórico político, com base em dados públicos. Quanto
-          maior a pontuação, maior foi o engajamento com o tema.
-        </p>
+        <dl className="grid gap-3 sm:grid-cols-2">
+          {NUMEROS.map((numero) => (
+            <div
+              key={numero.titulo}
+              className="space-y-1.5 rounded-lg border border-border bg-card p-4"
+            >
+              <dt className="font-semibold text-foreground">{numero.titulo}</dt>
+              <dd className="text-sm text-muted-foreground">
+                {numero.descricao}
+                <span className="mt-2 block font-medium text-foreground">
+                  {numero.papel}
+                </span>
+              </dd>
+            </div>
+          ))}
+        </dl>
         <p className="rounded-lg border border-border bg-muted/40 p-4 text-sm text-muted-foreground">
-          <strong className="text-foreground">Importante:</strong> a pontuação
-          não indica se o candidato é a favor ou contra uma causa. Ela mede
-          intensidade de atuação, não posicionamento ideológico.
+          <strong className="text-foreground">Por que separar:</strong> atuar
+          muito num tema não diz de que lado o candidato está. Alguém pode ter
+          dezenas de projetos sobre economia e defender exatamente o oposto do
+          que você pensa. Por isso quem entra na conta do seu match é a{" "}
+          <strong className="text-foreground">posição</strong>, e a atuação fica
+          ao lado como informação — nunca somada a ela.
+        </p>
+      </section>
+
+      <section className="space-y-3" data-testid="secao-como-e-o-match">
+        <h2 className="text-xl font-semibold text-foreground">
+          Como o seu match é calculado
+        </h2>
+        <ol className="space-y-3">
+          {ETAPAS_MATCH.map((etapa, indice) => (
+            <li key={etapa} className="flex gap-3">
+              <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-bold text-accent-foreground">
+                {indice + 1}
+              </span>
+              <p className="text-muted-foreground">{etapa}</p>
+            </li>
+          ))}
+        </ol>
+        <p className="text-muted-foreground">
+          O cálculo é determinístico: as mesmas respostas produzem sempre o mesmo
+          resultado. A inteligência artificial não participa dessa conta — ela é
+          usada antes, para ler o histórico público e posicionar o candidato em
+          cada tema.
         </p>
       </section>
 
@@ -126,15 +191,26 @@ export default function ComoCalculamosPage() {
         </p>
       </section>
 
-      <section className="space-y-3" data-testid="secao-sem-historico">
+      <section
+        className="space-y-3"
+        id="secao-sem-historico"
+        data-testid="secao-sem-historico"
+      >
         <h2 className="text-xl font-semibold text-foreground">
           E candidatos sem histórico?
         </h2>
         <p className="text-muted-foreground">
-          Candidatos que concorrem pela primeira vez, sem mandato anterior,
-          recebem pontuação máxima de 1 em todos os temas. Isso indica que não há
-          histórico suficiente para uma avaliação mais aprofundada, e não que o
-          candidato é ruim ou bom.
+          Quem concorre pela primeira vez, sem mandato anterior, costuma não ter
+          registro público suficiente para ser posicionado num tema. Nesse caso o
+          tema simplesmente{" "}
+          <strong className="text-foreground">fica de fora do seu match</strong>,
+          em vez de entrar como se o candidato fosse de centro.
+        </p>
+        <p className="text-muted-foreground">
+          Isso é falta de histórico, não avaliação negativa — um estreante não é
+          pior nem melhor por não ter passado. Quando um candidato aparece com o
+          match apurado em poucos temas, a tela informa em quantos ele foi
+          avaliado, para que você saiba sobre o que aquele número está falando.
         </p>
       </section>
 

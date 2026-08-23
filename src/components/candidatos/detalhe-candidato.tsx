@@ -21,7 +21,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { FotoCandidato } from "@/components/comum/foto-candidato";
 import { TextoRico, textoSimples } from "@/components/comum/texto-rico";
 import { BadgeOrigem } from "@/components/comum/badge-origem";
-import { BarraScore } from "@/components/comum/barra-score";
 import { IconeInstagram } from "@/components/comum/icone-instagram";
 import { CardCompatibilidade } from "@/components/candidatos/card-compatibilidade";
 import { formatarCargo, formatarReais } from "@/lib/format";
@@ -34,7 +33,6 @@ import { PainelComissoes } from "@/components/candidatos/atividade/painel-comiss
 import { PerfilGovernador } from "@/components/candidatos/perfil-governador";
 import { PerfilPresidente } from "@/components/candidatos/perfil-presidente";
 import { PainelAnaliseTematica } from "@/components/candidatos/painel-analise-tematica";
-import { ResumoTema } from "@/components/candidatos/resumo-tema";
 import { BlocoBloqueado } from "@/components/candidatos/bloco-bloqueado";
 import { useAtividade, useCandidatura } from "@/hooks/use-api";
 import { useSessao } from "@/hooks/use-sessao";
@@ -273,10 +271,11 @@ export function DetalheCandidato({ id }: { id: string }) {
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <SparklesIcon className="size-4 text-primary" aria-hidden="true" />
-                Score por tema
+                Posição e atuação por tema
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                Atuação em cada tema, de 0 (sem evidência) a 5 (protagonista), pela análise de IA.
+                Onde {politico.nomeUrna} se posiciona em cada tema (esquerda ↔ direita) e o quanto
+                atua nele. Só a posição entra no cálculo de match.
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -290,20 +289,10 @@ export function DetalheCandidato({ id }: { id: string }) {
                   Ainda não há scores calculados para este candidato.
                 </p>
               ) : (
-                <div className="space-y-3">
-                  {scoresDoScore.map((score) => (
-                    <div key={score.categoria} className="space-y-1.5">
-                      <BarraScore
-                        rotulo={score.categoria}
-                        /* Engajamento 0..5 (decimal). Quando ainda não calculado, mostra 0. */
-                        valor={score.engajamento ?? 0}
-                        escalaMax={5}
-                      />
-                      {/* Resumo da IA por tema, colapsável — consistente com presidente/governador. */}
-                      <ResumoTema sintese={score.posicaoSintese} justificativa={score.justificativa} />
-                    </div>
-                  ))}
-                </div>
+                /* Mesmo painel de Presidente/Governador (Correções v6, item 4): antes daqui saía
+                   só a barra de engajamento, sem a posição — foi essa tela que fez o número ser
+                   lido como "o quanto o candidato concorda comigo". */
+                <PainelAnaliseTematica scores={scoresDoScore} />
               )}
             </CardContent>
           </Card>
