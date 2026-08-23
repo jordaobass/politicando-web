@@ -7,6 +7,7 @@ import {
   GitCompareIcon,
   LandmarkIcon,
   ScrollTextIcon,
+  WalletIcon,
   SparklesIcon,
   XCircleIcon,
 } from "lucide-react";
@@ -153,18 +154,36 @@ export function DetalheCandidato({ id }: { id: string }) {
                 {data.origem && !tipoHistoricoRotulo && <BadgeOrigem origem={data.origem} />}
               </div>
 
-              {gabineteRecente && (
-                <div
-                  title="Verba pública mensal que o parlamentar recebe para custear o mandato (passagens, combustível, escritório, divulgação). Nome oficial: Cota Parlamentar — CEAP."
-                  className="flex w-fit items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-1.5 text-sm"
-                >
-                  <LandmarkIcon className="size-4 text-primary" aria-hidden="true" />
-                  <span className="text-muted-foreground">
-                    Gastos do mandato {gabineteRecente.ano}:
-                  </span>
-                  <span className="font-semibold tabular-nums text-foreground">
-                    {formatarReais(gabineteRecente.total)}
-                  </span>
+              {(gabineteRecente || data.patrimonioDeclarado != null) && (
+                <div className="flex flex-wrap items-center gap-2">
+                  {gabineteRecente && (
+                    <div
+                      title="Verba pública mensal que o parlamentar recebe para custear o mandato (passagens, combustível, escritório, divulgação). Nome oficial: Cota Parlamentar — CEAP."
+                      className="flex w-fit items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-1.5 text-sm"
+                    >
+                      <LandmarkIcon className="size-4 text-primary" aria-hidden="true" />
+                      <span className="text-muted-foreground">
+                        Gastos do mandato {gabineteRecente.ano}:
+                      </span>
+                      <span className="font-semibold tabular-nums text-foreground">
+                        {formatarReais(gabineteRecente.total)}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Nulo = o TSE ainda não foi importado para este cargo; zero é declaração válida. */}
+                  {data.patrimonioDeclarado != null && (
+                    <div
+                      title="Soma dos bens que o candidato declarou ao TSE no registro da candidatura."
+                      className="flex w-fit items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-1.5 text-sm"
+                    >
+                      <WalletIcon className="size-4 text-primary" aria-hidden="true" />
+                      <span className="text-muted-foreground">Patrimônio declarado:</span>
+                      <span className="font-semibold tabular-nums text-foreground">
+                        {formatarReais(data.patrimonioDeclarado)}
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
 

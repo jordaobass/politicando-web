@@ -203,6 +203,8 @@ export interface CandidaturaDetalhe {
   gestaoEstadual?: GestaoEstadual | null;
   /** Número eleitoral (urna). */
   numeroUrna?: number | null;
+  /** Total de bens declarados ao TSE. Nulo = não importado; zero = declarou nada. */
+  patrimonioDeclarado?: number | null;
   /** Tipo de histórico do candidato (ex_governador, mandato_federal, sem_mandato…). */
   tipoHistorico?: string | null;
   /** Plano de governo por tema (US-GOV-05). */
