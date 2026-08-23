@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { ChevronLeftIcon } from "lucide-react";
 
@@ -17,7 +18,10 @@ export default async function PartidoPage(props: {
           Voltar para partidos
         </Link>
       </Button>
-      <DetalhePartido id={id} />
+      {/* A seção de candidatos lê cargo/página da query string (useSearchParams). */}
+      <Suspense fallback={<div className="h-64 animate-pulse rounded-xl bg-muted" />}>
+        <DetalhePartido id={id} />
+      </Suspense>
     </div>
   );
 }
