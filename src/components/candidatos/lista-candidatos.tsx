@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { CardCandidato } from "@/components/candidatos/card-candidato";
 import { Paginacao } from "@/components/comum/paginacao";
@@ -15,27 +15,62 @@ import {
 import { GradeSkeleton, EstadoErro, EstadoVazio } from "@/components/comum/estados";
 import { useCandidaturas } from "@/hooks/use-api";
 import { useDebounce } from "@/hooks/use-debounce";
+import {
+  lerBooleano,
+  lerLista,
+  lerNumero,
+  lerTexto,
+  useEstadoNaUrl,
+} from "@/hooks/use-estado-na-url";
 
 const TAMANHO_PAGINA = 12;
-
-const FILTROS_INICIAIS: ValoresFiltro = {
-  q: "",
-  cargos: [],
-  ufs: [],
-  partidos: [],
-};
 
 const ORDENACAO_INICIAL: ValoresOrdenacao = { por: "", desc: true };
 
 /**
  * Listagem de candidatos em duas colunas: sidebar de filtros + grade de cards.
  * Todos os filtros (busca, cargo, UF, partido) vão na query da API, preservando a paginação.
+ *
+ * O estado inicial vem da URL e volta para ela a cada mudança (Correções v6, item 3): abrir um
+ * candidato e voltar pelo navegador restaura busca, filtros, ordenação e página.
  */
 export function ListaCandidatos() {
-  const [filtros, setFiltros] = useState<ValoresFiltro>(FILTROS_INICIAIS);
-  const [ordenacao, setOrdenacao] = useState<ValoresOrdenacao>(ORDENACAO_INICIAL);
-  const [pagina, setPagina] = useState(1);
+  const { params, sincronizar } = useEstadoNaUrl();
+  const [filtros, setFiltros] = useState<ValoresFiltro>(() => ({
+    q: lerTexto(params, "q"),
+    cargos: lerLista(params, "cargos"),
+    ufs: lerLista(params, "ufs"),
+    partidos: lerLista(params, "partidos"),
+  }));
+  const [ordenacao, setOrdenacao] = useState<ValoresOrdenacao>(() => ({
+    por: lerTexto(params, "ordenarPor"),
+    desc: lerBooleano(params, "desc", ORDENACAO_INICIAL.desc),
+  }));
+  const [pagina, setPagina] = useState(() => lerNumero(params, "pagina", 1));
   const buscaDebounced = useDebounce(filtros.q);
+
+  // Só o termo JÁ debounced vai para a URL — senão cada tecla digitada viraria uma troca de
+  // rota. Valor no padrão é omitido para a URL limpa continuar sendo `/candidatos`.
+  useEffect(() => {
+    sincronizar({
+      q: buscaDebounced,
+      cargos: filtros.cargos,
+      ufs: filtros.ufs,
+      partidos: filtros.partidos,
+      ordenarPor: ordenacao.por,
+      desc: ordenacao.por && ordenacao.desc !== ORDENACAO_INICIAL.desc ? ordenacao.desc : null,
+      pagina: pagina === 1 ? null : pagina,
+    });
+  }, [
+    sincronizar,
+    buscaDebounced,
+    filtros.cargos,
+    filtros.ufs,
+    filtros.partidos,
+    ordenacao.por,
+    ordenacao.desc,
+    pagina,
+  ]);
 
   const { data, isLoading, isError, isFetching, refetch } = useCandidaturas({
     q: buscaDebounced || undefined,

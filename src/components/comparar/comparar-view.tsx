@@ -37,16 +37,27 @@ const exigeEstado = (cargo: string) => cargo === "Governador" || cargo === "Depu
 interface CompararViewProps {
   aInicial?: string;
   bInicial?: string;
+  cargoInicial?: string;
+  ufAInicial?: string;
+  ufBInicial?: string;
 }
 
 type Pendente = { tipo: "cargo" | "ufA" | "ufB"; valor: string };
 
-export function CompararView({ aInicial = "", bInicial = "" }: CompararViewProps) {
+export function CompararView({
+  aInicial = "",
+  bInicial = "",
+  cargoInicial = "",
+  ufAInicial = "",
+  ufBInicial = "",
+}: CompararViewProps) {
   const { autenticado } = useSessao();
-  const [cargo, setCargo] = useState("");
+  // Cargo e estados também vêm da URL (Correções v6, item 3): quem escolheu o cargo, abriu um
+  // perfil e voltou não pode reencontrar a tela em branco só porque ainda não escolheu ninguém.
+  const [cargo, setCargo] = useState(cargoInicial);
   // Estado POR candidato (Correções v5, item 2): permite comparar entre UFs diferentes.
-  const [ufA, setUfA] = useState("");
-  const [ufB, setUfB] = useState("");
+  const [ufA, setUfA] = useState(ufAInicial);
+  const [ufB, setUfB] = useState(ufBInicial);
   const [a, setA] = useState<CandidaturaResumo | null>(null);
   const [b, setB] = useState<CandidaturaResumo | null>(null);
   // Troca (cargo/estado) pendente de confirmação quando limparia um candidato já escolhido.
@@ -76,15 +87,20 @@ export function CompararView({ aInicial = "", bInicial = "" }: CompararViewProps
   const aHabilitado = Boolean(cargo) && (!precisaEstado || Boolean(ufA));
   const bHabilitado = aHabilitado && Boolean(a) && (!precisaEstado || Boolean(ufB));
 
-  // Reflete a seleção A/B na URL (sem re-render) para que, ao abrir um perfil e voltar, a
+  // Reflete a seleção na URL (sem re-render) para que, ao abrir um perfil e voltar, a
   // comparação seja restaurada em vez de vir vazia (correção do card v2, obs. da Ricella).
+  // `replaceState` em vez do router: gravar por aqui não remonta o Server Component nem
+  // reentra no pré-preenchimento de A/B logo acima.
   useEffect(() => {
     const params = new URLSearchParams();
+    if (cargo) params.set("cargo", cargo);
+    if (ufA) params.set("ufA", ufA);
+    if (ufB) params.set("ufB", ufB);
     if (a) params.set("a", a.id);
     if (b) params.set("b", b.id);
     const qs = params.toString();
     window.history.replaceState(null, "", qs ? `/comparar?${qs}` : "/comparar");
-  }, [a, b]);
+  }, [a, b, cargo, ufA, ufB]);
 
   /** Troca o cargo: se já houver candidato, confirma (limpa tudo); senão aplica direto. */
   function trocarCargo(valor: string) {
