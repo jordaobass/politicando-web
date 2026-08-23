@@ -76,10 +76,28 @@ export function CardResultadoCandidato({
               <ul id={idTemas} className="space-y-2.5 pt-2">
                 {candidato.porCategoria.map((tema) => (
                   <li key={tema.categoriaId} className="space-y-1">
-                    <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center justify-between gap-2 text-xs">
                       <span className="text-foreground">{tema.categoria}</span>
-                      <span className="tabular-nums text-muted-foreground">
-                        {formatarPercentual(tema.compatibilidade)}
+                      {/* Dois números, dois rótulos: afinidade é posição (entra no match),
+                          atuação é o quanto o candidato trabalha o tema (não entra). */}
+                      <span className="flex shrink-0 items-center gap-2 tabular-nums text-muted-foreground">
+                        <span>
+                          Afinidade{" "}
+                          <strong className="font-semibold text-foreground">
+                            {formatarPercentual(tema.compatibilidade)}
+                          </strong>
+                        </span>
+                        {tema.engajamento != null && (
+                          <span
+                            className="border-l border-border pl-2"
+                            title="O quanto o candidato atuou neste tema. Não entra no cálculo do match."
+                          >
+                            Atuação{" "}
+                            <strong className="font-semibold text-foreground">
+                              {tema.engajamento.toFixed(1)}/5
+                            </strong>
+                          </span>
+                        )}
                       </span>
                     </div>
                     <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
@@ -93,6 +111,23 @@ export function CardResultadoCandidato({
                     </div>
                   </li>
                 ))}
+                {/* Um match apurado em poucos temas não vale o mesmo que em todos: dizer sobre
+                    quantos ele foi calculado evita ler 85% de 1 tema como 85% de 9. */}
+                {candidato.eixosAvaliados != null &&
+                  candidato.eixosRespondidos != null &&
+                  candidato.eixosAvaliados < candidato.eixosRespondidos && (
+                    <li className="pt-1 text-xs text-muted-foreground">
+                      Apurado em {candidato.eixosAvaliados} de{" "}
+                      {candidato.eixosRespondidos} temas — nos demais não há histórico
+                      público suficiente para posicionar este candidato.{" "}
+                      <Link
+                        href="/como-calculamos#secao-sem-historico"
+                        className="underline underline-offset-4 hover:text-foreground"
+                      >
+                        Entenda
+                      </Link>
+                    </li>
+                  )}
               </ul>
             )}
           </div>

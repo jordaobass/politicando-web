@@ -37,7 +37,10 @@ export interface PerfilCategoria {
 export interface CompatibilidadeCategoria {
   categoriaId: string;
   categoria: string;
+  /** Afinidade de POSIÇÃO entre eleitor e candidato (0–100). É o que entra no match. */
   compatibilidade: number;
+  /** Atuação do candidato no tema (0–5). Informativo — não entra no match. */
+  engajamento?: number | null;
 }
 
 export type NivelCompatibilidade = "Alta" | "Boa" | "Moderada" | "Baixa";
@@ -53,6 +56,10 @@ export interface ResultadoCandidato {
   compatibilidade: number;
   nivel: NivelCompatibilidade;
   porCategoria: CompatibilidadeCategoria[];
+  /** Em quantos temas o match pôde ser apurado (o candidato tinha posição no tema). */
+  eixosAvaliados?: number;
+  /** Quantos temas o eleitor respondeu — a base de comparação de `eixosAvaliados`. */
+  eixosRespondidos?: number;
 }
 
 export interface ResultadoQuiz {
@@ -203,6 +210,8 @@ export interface CandidaturaDetalhe {
   gestaoEstadual?: GestaoEstadual | null;
   /** Número eleitoral (urna). */
   numeroUrna?: number | null;
+  /** Total de bens declarados ao TSE. Nulo = não importado; zero = declarou nada. */
+  patrimonioDeclarado?: number | null;
   /** Tipo de histórico do candidato (ex_governador, mandato_federal, sem_mandato…). */
   tipoHistorico?: string | null;
   /** Plano de governo por tema (US-GOV-05). */

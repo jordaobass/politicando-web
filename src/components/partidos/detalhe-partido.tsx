@@ -7,6 +7,7 @@ import { ExternalLinkIcon } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EstadoErro } from "@/components/comum/estados";
+import { CandidatosDoPartido } from "@/components/partidos/candidatos-do-partido";
 import { buscarPartido } from "@/lib/api";
 
 /** Perfil do partido: identidade + programa (propostas) raspado/curado. */
@@ -90,6 +91,8 @@ export function DetalhePartido({ id }: { id: string }) {
           )}
         </CardContent>
       </Card>
+
+      <CandidatosDoPartido sigla={data.sigla} />
     </div>
   );
 }
