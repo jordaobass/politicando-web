@@ -14,7 +14,7 @@ import { CardResultadoCandidato } from "@/components/quiz/card-resultado-candida
 import { useResultadoEfetivo } from "@/hooks/use-resultado-quiz";
 import { useArmazenamento } from "@/hooks/use-storage";
 import { CHAVE_UF, UFS } from "@/lib/constantes";
-import type { ResultadoCandidato } from "@/lib/types";
+import type { CoberturaResultado, ResultadoCandidato } from "@/lib/types";
 
 /** Cargos em ordem de exibição. "nacional" = não depende de UF. */
 const CARGOS_ORDENADOS: { valor: string; rotulo: string; nacional: boolean }[] = [
@@ -162,6 +162,10 @@ export function ResultadoView() {
             ))}
           </Tabs>
         )}
+
+        {resultado.cobertura && resultado.cobertura.semDados > 0 && (
+          <AvisoSemDados cobertura={resultado.cobertura} />
+        )}
       </section>
     </div>
   );
@@ -285,6 +289,57 @@ function ListaCargo({
         <CardResultadoCandidato key={c.candidaturaId} candidato={c} />
       ))}
       {bloqueados.length > 0 && <ListaBloqueada candidatos={bloqueados} />}
+    </div>
+  );
+}
+
+const ROTULO_CARGO: Record<string, string> = {
+  Presidente: "presidente",
+  Governador: "governador",
+  Senador: "senador",
+  DeputadoFederal: "deputado federal",
+  DeputadoEstadual: "deputado estadual",
+};
+
+/**
+ * Quem não tem registro público suficiente fica fora do ranking. Sumir em silêncio faria a lista
+ * parecer o universo de candidatos e daria vantagem a quem já tem mandato, que é sobre quem existe
+ * dado oficial. Aqui a ausência é declarada, com o motivo.
+ */
+function AvisoSemDados({ cobertura }: { cobertura: CoberturaResultado }) {
+  const porCargo = Object.entries(cobertura.semDadosPorCargo)
+    .filter(([, quantidade]) => quantidade > 0)
+    .sort((a, b) => b[1] - a[1]);
+
+  return (
+    <div
+      className="space-y-2 rounded-lg border border-border bg-muted/40 p-4 text-sm text-muted-foreground"
+      data-testid="aviso-sem-dados"
+    >
+      <p>
+        <strong className="text-foreground">
+          {cobertura.semDados.toLocaleString("pt-BR")} candidatos ficaram fora deste ranking
+        </strong>{" "}
+        porque ainda não há dados oficiais suficientes para avaliá-los. Não é uma avaliação
+        negativa: significa que não encontramos registro público de atuação para posicioná-los nos
+        temas.
+      </p>
+      {porCargo.length > 0 && (
+        <p>
+          {porCargo
+            .map(([cargo, n]) => `${n.toLocaleString("pt-BR")} para ${ROTULO_CARGO[cargo] ?? cargo}`)
+            .join(", ")}
+          .
+        </p>
+      )}
+      <p>
+        <Link
+          href="/como-calculamos#secao-sem-historico"
+          className="font-medium text-primary underline-offset-2 hover:underline"
+        >
+          Entenda por que alguns candidatos não são avaliados
+        </Link>
+      </p>
     </div>
   );
 }

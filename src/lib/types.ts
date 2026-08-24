@@ -66,6 +66,20 @@ export interface ResultadoQuiz {
   sessaoId: string;
   perfil: PerfilCategoria[];
   resultado: ResultadoCandidato[];
+  /** Quantos candidatos entraram no ranking e quantos ficaram fora por falta de dado oficial. */
+  cobertura?: CoberturaResultado | null;
+}
+
+/**
+ * Cobertura do ranking. Quem não tem registro público suficiente fica de fora, mas precisa ser
+ * anunciado: sem isso a lista se lê como o universo de candidatos, e o resultado parece favorecer
+ * quem já tem mandato quando na verdade só sobre esses existe dado.
+ */
+export interface CoberturaResultado {
+  avaliados: number;
+  semDados: number;
+  /** Quantos ficaram sem dados, por cargo (ex.: { Senador: 233 }). */
+  semDadosPorCargo: Record<string, number>;
 }
 
 /**
