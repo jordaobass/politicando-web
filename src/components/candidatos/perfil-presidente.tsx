@@ -1,10 +1,11 @@
 "use client";
 
-import { CalendarClockIcon, FileTextIcon, HistoryIcon, SparklesIcon, WalletIcon } from "lucide-react";
+import { CalendarClockIcon, HistoryIcon, SparklesIcon, WalletIcon } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarraScore } from "@/components/comum/barra-score";
 import { ResumoTema } from "@/components/candidatos/resumo-tema";
+import { PlanoGovernoBloco } from "@/components/candidatos/plano-governo-bloco";
 import { formatarCargo } from "@/lib/format";
 import type { CandidaturaDetalhe, ExercicioCargo } from "@/lib/types";
 
@@ -17,7 +18,8 @@ const ano = (d?: string | null) => (d ? d.slice(0, 4) : "");
 /**
  * Perfil de Presidente conforme a spec do ClickUp (US-PRES-01..06): Score por Tema (0–5),
  * Histórico, Plano de Governo e Financiamento. A identidade (US-PRES-01) fica no hero
- * compartilhado. Plano e financiamento só ficam disponíveis após o registro no TSE (ago/2026).
+ * compartilhado. O financiamento continua indisponível: falta a integração com a prestação de
+ * contas do TSE.
  */
 export function PerfilPresidente({ data }: { data: CandidaturaDetalhe }) {
   const exercicios = data.exercicios ?? [];
@@ -91,14 +93,10 @@ export function PerfilPresidente({ data }: { data: CandidaturaDetalhe }) {
       </div>
 
       <div className="grid items-stretch gap-6 lg:grid-cols-2">
-        {/* US-PRES-05 — Plano de Governo por Tema (só após o registro oficial no TSE). */}
-        <BlocoIndisponivel
-          testid="bloco-plano-governo"
-          icone={<FileTextIcon className="size-4 text-primary" aria-hidden="true" />}
-          titulo="Plano de governo por tema"
-          texto={`Plano de governo disponível ${POS_REGISTRO}.`}
-        />
-        {/* US-PRES-06 — Financiamento de Campanha (só após o registro oficial no TSE). */}
+        {/* US-PRES-05 — Plano de governo por tema, do pleito em disputa (gated p/ não autenticado). */}
+        <PlanoGovernoBloco plano={data.planoGoverno} className="h-full" />
+        {/* US-PRES-06 — Financiamento de Campanha: depende da prestação de contas do TSE, ainda
+            sem integração (o endpoint de contas está bloqueado para esta rede). */}
         <BlocoIndisponivel
           testid="bloco-financiamento"
           icone={<WalletIcon className="size-4 text-primary" aria-hidden="true" />}
