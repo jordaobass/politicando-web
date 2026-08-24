@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { ROTAS_LEGAIS } from "@/lib/constantes";
+
 const COLUNAS = [
   {
     titulo: "Navegação",
@@ -19,10 +21,8 @@ const COLUNAS = [
   },
   {
     titulo: "Legal",
-    links: [
-      { href: "/", rotulo: "Termos de uso" },
-      { href: "/", rotulo: "Política de privacidade" },
-    ],
+    // Vinham apontando para "/" — links quebrados até as páginas existirem (v6, item 5).
+    links: ROTAS_LEGAIS,
   },
 ];
 

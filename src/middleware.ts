@@ -20,7 +20,13 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Roda em tudo, EXCETO: /admin, /api, internos do Next, a própria /em-breve
-  // e arquivos estáticos (qualquer caminho com ponto: .jpeg, .ico, .txt, ...).
-  matcher: ["/((?!admin|api|_next|em-breve|.*\\.).*)"],
+  // Roda em tudo, EXCETO: /admin, /api, internos do Next, a própria /em-breve,
+  // as quatro páginas legais e arquivos estáticos (caminho com ponto: .ico, .txt...).
+  //
+  // As páginas legais ficam de fora de propósito: documento que rege o uso da
+  // plataforma (e o consentimento já dado por quem entrou antes) precisa continuar
+  // público mesmo com o site fechado em modo "em breve".
+  matcher: [
+    "/((?!admin|api|_next|em-breve|termos-de-uso|privacidade|cookies|consentimento|.*\\.).*)",
+  ],
 };

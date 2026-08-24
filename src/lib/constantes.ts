@@ -50,3 +50,27 @@ export const CHAVE_UF = "politicando:uf";
 
 /** Última página "real" visitada — usada para voltar a ela após o login (returnTo). */
 export const CHAVE_ULTIMA_PAGINA = "politicando:ultima-pagina";
+
+/** Decisão do banner de cookies ("aceitos" | "recusados"); ausente = ainda não decidiu. */
+export const CHAVE_COOKIES = "politicando:cookies";
+
+/** Consentimento do quiz sem login (LGPD art. 11) — guarda a versão aceita do termo. */
+export const CHAVE_CONSENTIMENTO_QUIZ = "politicando:consentimento-quiz";
+
+/**
+ * Versão dos documentos legais em vigor (data de atualização dos .docx do cliente).
+ * Vai junto do consentimento registrado no servidor: sem saber QUAL texto a pessoa
+ * aceitou, o registro não prova nada (LGPD, art. 8º, § 1º).
+ */
+export const VERSAO_DOCUMENTOS_LEGAIS = "2026-08-17";
+
+/**
+ * Rotas dos documentos legais. Ficam acessíveis mesmo com o site em modo "em breve"
+ * (ver `src/middleware.ts`) e entram no sitemap.
+ */
+export const ROTAS_LEGAIS = [
+  { href: "/termos-de-uso", rotulo: "Termos de uso" },
+  { href: "/privacidade", rotulo: "Política de privacidade" },
+  { href: "/cookies", rotulo: "Política de cookies" },
+  { href: "/consentimento", rotulo: "Termo de consentimento" },
+] as const;
