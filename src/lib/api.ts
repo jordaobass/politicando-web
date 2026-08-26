@@ -132,6 +132,7 @@ export function buscarCandidaturas(
     desc: filtros.ordenarPor ? filtros.desc : undefined,
     pagina: filtros.pagina,
     tamanho: filtros.tamanho,
+    incluirInformativos: filtros.incluirInformativos ? true : undefined,
   });
   return request<PaginaResultado<CandidaturaResumo>>(`/candidaturas${query}`);
 }
@@ -260,8 +261,18 @@ export function atualizarPerfil(
  * morre com 500 (aconteceu em produção em 26/08/2026). Com `NEXT_PUBLIC_OAUTH_URL` definida, ida
  * e volta acontecem no mesmo domínio; sem ela (dev), o proxy local já serve.
  */
-export const URL_LOGIN_GOOGLE =
-  `${process.env.NEXT_PUBLIC_OAUTH_URL?.trim() || API_BASE_URL}/auth/google`;
+export const URL_LOGIN_GOOGLE = (() => {
+  const configurada = process.env.NEXT_PUBLIC_OAUTH_URL?.trim();
+  if (!configurada) return `${API_BASE_URL}/auth/google`;
+  // Só o domínio importa: a rota é fixa no backend. Assim tanto faz se a variável vier como
+  // "https://api.exemplo/api", com barra no fim ou até com o endereço de callback colado —
+  // erro fácil de cometer, porque os dois endereços se parecem, e que gerava 404.
+  try {
+    return `${new URL(configurada).origin}/api/auth/google`;
+  } catch {
+    return `${API_BASE_URL}/auth/google`;
+  }
+})();
 
 // ---------------------------------------------------------------------------
 // Meu Perfil — último quiz e comparações salvas (cartão US-AUTH-06)
