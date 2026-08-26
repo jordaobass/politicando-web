@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Loader2Icon } from "lucide-react";
@@ -15,6 +16,7 @@ import { ChecklistSenha } from "@/components/auth/checklist-senha";
 import { useRegistrar } from "@/hooks/use-api";
 import { useSessao } from "@/hooks/use-sessao";
 import { ApiError } from "@/lib/api";
+import { VERSAO_DOCUMENTOS_LEGAIS } from "@/lib/constantes";
 import { paginaDeRetorno } from "@/lib/navegacao";
 import {
   MENSAGEM_IDADE_MINIMA,
@@ -68,6 +70,9 @@ export function FormularioRegistro({
         senha: valores.senha,
         dataNascimento: valores.dataNascimento,
         aceiteLgpd: valores.lgpd,
+        // Sem a versão do texto aceito, o registro de consentimento não prova
+        // COM O QUE a pessoa concordou (LGPD, art. 8º, § 1º).
+        consentimentoVersao: VERSAO_DOCUMENTOS_LEGAIS,
       });
       entrar(resposta);
       toast.success(`Bem-vindo, ${resposta.usuario.nome}!`);
@@ -192,20 +197,38 @@ export function FormularioRegistro({
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="reg-lgpd" className="flex items-start gap-2 text-sm">
+          {/*
+            Aceite único citando os três documentos, na forma da Cláusula 9.1 do
+            Termo de Consentimento, com a manifestação específica sobre opinião
+            política em destaque. Caixa separada só para o dado sensível é decisão
+            C2 do DECISOES.md, pendente do jurídico do cliente.
+          */}
+          <label
+            htmlFor="reg-lgpd"
+            className="flex items-start gap-2 rounded-lg border border-border bg-muted/40 p-3 text-sm"
+          >
             <input
               id="reg-lgpd"
               type="checkbox"
-              className="mt-0.5 size-4 rounded border-input accent-primary"
+              className="mt-0.5 size-4 shrink-0 rounded border-input accent-primary"
               aria-invalid={Boolean(errors.lgpd)}
               {...register("lgpd")}
             />
             <span className="text-muted-foreground">
-              Li e aceito a{" "}
-              <a href="/privacidade" className="text-primary underline">
-                política de privacidade
-              </a>{" "}
-              e o tratamento dos meus dados (LGPD).
+              Li e aceito o{" "}
+              <Link href="/termos-de-uso" className="text-primary underline">
+                Termo de Uso
+              </Link>
+              , a{" "}
+              <Link href="/privacidade" className="text-primary underline">
+                Política de Privacidade
+              </Link>{" "}
+              e o{" "}
+              <Link href="/consentimento" className="text-primary underline">
+                Termo de Consentimento
+              </Link>
+              , e consinto especificamente com o tratamento das minhas respostas ao
+              quiz como dado sensível de opinião política (LGPD, art. 11).
             </span>
           </label>
           {errors.lgpd && (

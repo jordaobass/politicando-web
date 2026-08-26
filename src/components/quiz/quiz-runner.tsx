@@ -13,6 +13,7 @@ import { usePerguntas, useEnviarRespostas } from "@/hooks/use-api";
 import {
   CHAVE_RESULTADO_QUIZ,
   ESCALA_RESPOSTAS,
+  VERSAO_DOCUMENTOS_LEGAIS,
 } from "@/lib/constantes";
 import type { RespostaQuiz } from "@/lib/types";
 
@@ -73,6 +74,9 @@ export function QuizRunner() {
       const resultado = await enviar.mutateAsync({
         sessaoId: null,
         respostas: corpo,
+        // Versão do termo aceito antes da 1ª pergunta (ConsentimentoQuiz) — o backend
+        // grava o registro de consentimento junto da sessão (LGPD art. 11).
+        consentimentoVersao: VERSAO_DOCUMENTOS_LEGAIS,
       });
       sessionStorage.setItem(CHAVE_RESULTADO_QUIZ, JSON.stringify(resultado));
       router.push("/quiz/resultado");
