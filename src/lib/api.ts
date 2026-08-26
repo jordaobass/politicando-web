@@ -132,7 +132,6 @@ export function buscarCandidaturas(
     desc: filtros.ordenarPor ? filtros.desc : undefined,
     pagina: filtros.pagina,
     tamanho: filtros.tamanho,
-    incluirInformativos: filtros.incluirInformativos ? true : undefined,
   });
   return request<PaginaResultado<CandidaturaResumo>>(`/candidaturas${query}`);
 }
