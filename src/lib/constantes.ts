@@ -62,7 +62,7 @@ export const CHAVE_CONSENTIMENTO_QUIZ = "politicando:consentimento-quiz";
  * Vai junto do consentimento registrado no servidor: sem saber QUAL texto a pessoa
  * aceitou, o registro não prova nada (LGPD, art. 8º, § 1º).
  */
-export const VERSAO_DOCUMENTOS_LEGAIS = "2026-08-17";
+export const VERSAO_DOCUMENTOS_LEGAIS = "2026-08-26";
 
 /**
  * Rotas dos documentos legais. Ficam acessíveis mesmo com o site em modo "em breve"

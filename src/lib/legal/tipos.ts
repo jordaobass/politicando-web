@@ -50,5 +50,9 @@ export const ESCOPO_PLATAFORMA = [
   "Demais Funcionalidades",
 ];
 
-/** Data de atualização comum aos quatro documentos desta versão. */
-export const ATUALIZADO_EM = "17 de agosto de 2026";
+/**
+ * Data de atualização comum aos quatro documentos desta versão.
+ * 26/08/2026: remoção do ponto 8 do Termo de Consentimento e do ponto 8 da
+ * Política de Cookies, a pedido do cliente (Correções v7, item 1).
+ */
+export const ATUALIZADO_EM = "26 de agosto de 2026";

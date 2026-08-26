@@ -167,28 +167,7 @@ export const POLITICA_COOKIES: DocumentoLegal = {
         },
       ],
     },
-    {
-      id: "contato",
-      titulo: "8. CANAIS DE CONTATO",
-      blocos: [
-        {
-          tipo: "paragrafo",
-          texto:
-            "8.1. Em caso de dúvidas sobre esta Política de Cookies, o Usuário poderá entrar em contato com o(a) Encarregado(a) pelo Tratamento de Dados Pessoais (DPO):",
-        },
-        {
-          tipo: "lista",
-          itens: [
-            "Encarregado(a): [PREENCHA: NOME DO(A) ENCARREGADO(A)]",
-            "E-mail de contato do DPO: [PREENCHA: e-mail do DPO/Encarregado, ex.: dpo@politicando.site]",
-          ],
-        },
-        {
-          tipo: "paragrafo",
-          texto:
-            '8.2. Alternativamente, o Usuário poderá utilizar o canal de suporte geral da Plataforma, disponível pelo e-mail "politicando@gmail.com", que será respondido em até 72 (setenta e duas) horas.',
-        },
-      ],
-    },
+    // Ponto 8 (Canais de Contato) removido a pedido do cliente (Correções v7, item 1);
+    // era a última seção — nada a renumerar depois dela.
   ],
 };
