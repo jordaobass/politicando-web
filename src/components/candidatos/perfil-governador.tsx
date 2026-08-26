@@ -1,16 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import { FileTextIcon, HistoryIcon, LockIcon, SparklesIcon } from "lucide-react";
+import { HistoryIcon, SparklesIcon } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { BarraScore } from "@/components/comum/barra-score";
-import { TextoRico } from "@/components/comum/texto-rico";
 import { ResumoTema } from "@/components/candidatos/resumo-tema";
+import { PlanoGovernoBloco } from "@/components/candidatos/plano-governo-bloco";
 import { PainelGestaoEstadual } from "@/components/candidatos/atividade/painel-gestao-estadual";
 import { formatarCargo } from "@/lib/format";
-import { useSessao } from "@/hooks/use-sessao";
 import type { CandidaturaDetalhe, ExercicioCargo } from "@/lib/types";
 
 /** Eixo institucional não entra no score por tema do perfil (spec lista 8 temas). */
@@ -23,7 +20,6 @@ const ano = (d?: string | null) => (d ? d.slice(0, 4) : "");
  * A identidade (US-GOV-01) fica no hero compartilhado de DetalheCandidato.
  */
 export function PerfilGovernador({ data }: { data: CandidaturaDetalhe }) {
-  const { autenticado } = useSessao();
   const exercicios = data.exercicios ?? [];
   const mandatoGov = exercicios.find((e) => e.cargo === "Governador") ?? null;
   const outrosCargos = exercicios.filter((e) => e !== mandatoGov);
@@ -113,52 +109,7 @@ export function PerfilGovernador({ data }: { data: CandidaturaDetalhe }) {
       </Card>
 
       {/* US-GOV-05 — Plano de governo por tema (gated p/ não autenticado). */}
-      <Card data-testid="bloco-plano-governo" className="h-full">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <FileTextIcon className="size-4 text-primary" aria-hidden="true" />
-            Plano de governo por tema
-            {data.planoGoverno?.ano ? ` (${data.planoGoverno.ano})` : ""}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {!autenticado ? (
-            <div className="flex flex-col items-center gap-3 py-6 text-center">
-              <LockIcon className="size-7 text-muted-foreground" aria-hidden="true" />
-              <p className="max-w-sm text-sm text-muted-foreground">
-                Crie sua conta para ver o plano de governo completo.
-              </p>
-              <div className="flex flex-wrap justify-center gap-3">
-                <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
-                  <Link href="/login?aba=registrar">Criar conta grátis</Link>
-                </Button>
-                <Button asChild variant="outline">
-                  <Link href="/login">Fazer login</Link>
-                </Button>
-              </div>
-            </div>
-          ) : !data.planoGoverno ? (
-            <p className="text-sm text-muted-foreground">
-              Plano de governo não disponível para este candidato.
-            </p>
-          ) : (
-            <ul className="space-y-4">
-              {data.planoGoverno.temas.map((t) => (
-                <li key={t.eixo} className="space-y-1">
-                  <p className="text-sm font-semibold text-foreground">{t.eixoNome}</p>
-                  {t.resumo ? (
-                    <TextoRico texto={t.resumo} className="text-sm text-muted-foreground" />
-                  ) : (
-                    <p className="text-sm text-muted-foreground">
-                      Proposta para este tema não consta no plano de governo.
-                    </p>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </CardContent>
-      </Card>
+      <PlanoGovernoBloco plano={data.planoGoverno} className="h-full" />
       </div>
     </div>
   );

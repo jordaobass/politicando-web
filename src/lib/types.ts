@@ -66,6 +66,20 @@ export interface ResultadoQuiz {
   sessaoId: string;
   perfil: PerfilCategoria[];
   resultado: ResultadoCandidato[];
+  /** Quantos candidatos entraram no ranking e quantos ficaram fora por falta de dado oficial. */
+  cobertura?: CoberturaResultado | null;
+}
+
+/**
+ * Cobertura do ranking. Quem não tem registro público suficiente fica de fora, mas precisa ser
+ * anunciado: sem isso a lista se lê como o universo de candidatos, e o resultado parece favorecer
+ * quem já tem mandato quando na verdade só sobre esses existe dado.
+ */
+export interface CoberturaResultado {
+  avaliados: number;
+  semDados: number;
+  /** Quantos ficaram sem dados, por cargo (ex.: { Senador: 233 }). */
+  semDadosPorCargo: Record<string, number>;
 }
 
 /**
@@ -175,14 +189,17 @@ export interface GestaoEstadual {
   eixos: GestaoEstadualItem[];
 }
 
-/** Resumo do plano de governo num eixo temático (US-GOV-05). */
+/** Resumo do plano de governo num eixo temático (US-PRES-05 / US-GOV-05). */
 export interface PlanoGovernoTema {
   eixo: string;
   eixoNome: string;
   resumo?: string | null;
 }
 
-/** Bloco "Plano de governo por tema": trechos do plano oficial por eixo, num ano. */
+/**
+ * Bloco "Plano de governo por tema": trechos do plano oficial por eixo. O ano é sempre o da
+ * eleição da candidatura — o backend não devolve plano de pleito anterior.
+ */
 export interface PlanoGoverno {
   ano: number;
   temas: PlanoGovernoTema[];
@@ -195,6 +212,8 @@ export interface CandidaturaDetalhe {
   partidoLogoUrl?: string | null;
   cargo: string;
   uf: string;
+  /** Ano da eleição desta candidatura (define o pleito do plano de governo exibido). */
+  anoEleicao: number;
   origem: OrigemCandidatura;
   situacao: string | null;
   propostasResumo: string | null;
@@ -214,7 +233,7 @@ export interface CandidaturaDetalhe {
   patrimonioDeclarado?: number | null;
   /** Tipo de histórico do candidato (ex_governador, mandato_federal, sem_mandato…). */
   tipoHistorico?: string | null;
-  /** Plano de governo por tema (US-GOV-05). */
+  /** Plano de governo por tema (US-PRES-05 / US-GOV-05). */
   planoGoverno?: PlanoGoverno | null;
 }
 
