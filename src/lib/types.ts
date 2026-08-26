@@ -26,6 +26,12 @@ export interface RespostaQuiz {
 export interface EnviarRespostasRequest {
   sessaoId?: string | null;
   respostas: RespostaQuiz[];
+  /**
+   * Versão do Termo de Consentimento aceita antes de iniciar o quiz (ex.: "2026-08-17").
+   * Obrigatória para quem responde sem login — é o que registra o consentimento do
+   * tratamento de opinião política (LGPD art. 11).
+   */
+  consentimentoVersao?: string | null;
 }
 
 export interface PerfilCategoria {
@@ -442,6 +448,8 @@ export interface RegistrarRequest {
   /** Data de nascimento no formato ISO (YYYY-MM-DD); idade mínima de 16 anos. */
   dataNascimento: string;
   aceiteLgpd: boolean;
+  /** Versão dos documentos legais aceita no cadastro (ex.: "2026-08-17"). */
+  consentimentoVersao?: string | null;
 }
 
 export interface FiltrosCandidatura {
