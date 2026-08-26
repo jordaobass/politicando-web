@@ -251,8 +251,17 @@ export function atualizarPerfil(
   });
 }
 
-/** URL para iniciar o login com Google (navegação de página inteira; o fluxo é todo no backend). */
-export const URL_LOGIN_GOOGLE = `${API_BASE_URL}/auth/google`;
+/**
+ * URL para iniciar o login com Google (navegação de página inteira; o fluxo é todo no backend).
+ *
+ * Precisa apontar para o domínio PÚBLICO da API, não para o proxy `/api` deste site: o cookie de
+ * correlação do OAuth é gravado no domínio onde o fluxo começa, e o Google devolve no domínio
+ * cadastrado como redirect_uri. Começando aqui e terminando lá, o cookie não viaja e o login
+ * morre com 500 (aconteceu em produção em 26/08/2026). Com `NEXT_PUBLIC_OAUTH_URL` definida, ida
+ * e volta acontecem no mesmo domínio; sem ela (dev), o proxy local já serve.
+ */
+export const URL_LOGIN_GOOGLE =
+  `${process.env.NEXT_PUBLIC_OAUTH_URL?.trim() || API_BASE_URL}/auth/google`;
 
 // ---------------------------------------------------------------------------
 // Meu Perfil — último quiz e comparações salvas (cartão US-AUTH-06)
