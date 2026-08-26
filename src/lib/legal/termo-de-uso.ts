@@ -5,7 +5,7 @@ import {
   type DocumentoLegal,
 } from "@/lib/legal/tipos";
 
-/** Termos e Condições de Uso — conversão fiel do .docx do cliente (17/08/2026). */
+/** Termos e Condições de Uso — conversão fiel do PDF do cliente (26/08/2026). */
 export const TERMO_DE_USO: DocumentoLegal = {
   titulo: "Termos e Condições de Uso",
   descricao:
@@ -322,7 +322,7 @@ export const TERMO_DE_USO: DocumentoLegal = {
         {
           tipo: "paragrafo",
           texto:
-            "6.10. Encarregado pelo Tratamento de Dados (DPO): nos termos do art. 41 da LGPD, o Politicando indica como canal de comunicação com os titulares de dados e com a ANPD o(a) Encarregado(a) [PREENCHA: NOME DO(A) ENCARREGADO(A)], que pode ser contatado(a) pelo e-mail [PREENCHA: e-mail do DPO/Encarregado], para esclarecimento de dúvidas, solicitações de exercício de direitos do titular ou registro de incidentes relacionados ao tratamento de dados pessoais.",
+            "6.10. Encarregado pelo Tratamento de Dados (DPO): nos termos do art. 41 da LGPD, o Politicando indica como canal de comunicação com os titulares de dados e com a ANPD o(a) Encarregado(a) Pedro Weinberg Lima, que pode ser contatado(a) pelo e-mail politicandoapp26@gmail.com, para esclarecimento de dúvidas, solicitações de exercício de direitos do titular ou registro de incidentes relacionados ao tratamento de dados pessoais.",
         },
       ],
     },
@@ -612,7 +612,7 @@ export const TERMO_DE_USO: DocumentoLegal = {
         {
           tipo: "paragrafo",
           texto:
-            "15.2. O Usuário pode enviar e-mail para “politicando@gmail.com”, que será respondido em até 72 (setenta e duas) horas.",
+            "15.2. O Usuário pode enviar e-mail para “politicandoapp26@gmail.com”.",
         },
       ],
     },
@@ -633,7 +633,7 @@ export const TERMO_DE_USO: DocumentoLegal = {
         {
           tipo: "paragrafo",
           texto:
-            '16.3. Qualquer notificação, aviso ou comunicação individual deverá ser realizada por escrito e entregue por e-mail para o endereço de cadastro do Usuário e para o endereço de e-mail "[PREENCHER]" do Politicando, aplicando-se exclusivamente às relações com o Usuário cadastrado. Em relação ao Usuário não cadastrado, para o qual não há endereço de contato disponível, as notificações, avisos e comunicações de caráter geral serão válidas e eficazes quando realizadas por meio de publicação destacada na própria Plataforma, nos termos do item 14.2.',
+            '16.3. Qualquer notificação, aviso ou comunicação individual deverá ser realizada por escrito e entregue por e-mail para o endereço de cadastro do Usuário e para o endereço de e-mail "politicandoapp26@gmail.com" do Politicando, aplicando-se exclusivamente às relações com o Usuário cadastrado. Em relação ao Usuário não cadastrado, para o qual não há endereço de contato disponível, as notificações, avisos e comunicações de caráter geral serão válidas e eficazes quando realizadas por meio de publicação destacada na própria Plataforma, nos termos do item 14.2.',
         },
         {
           tipo: "paragrafo",

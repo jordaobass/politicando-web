@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import { CabecalhoPagina } from "@/components/comum/cabecalho-pagina";
 import { CompararView } from "@/components/comparar/comparar-view";
+import { GradeSkeleton } from "@/components/comum/estados";
 
 export const metadata: Metadata = {
   title: "Comparar candidatos",
@@ -28,13 +30,16 @@ export default async function CompararPage(props: {
         titulo="Comparar candidatos"
         descricao="Escolha dois candidatos e veja a comparação dos scores por categoria temática."
       />
-      <CompararView
-        aInicial={aInicial}
-        bInicial={bInicial}
-        cargoInicial={texto(cargo)}
-        ufAInicial={texto(ufA)}
-        ufBInicial={texto(ufB)}
-      />
+      {/* Suspense exigido pelo useSearchParams do hook de URL (Correções v7, item 2c). */}
+      <Suspense fallback={<GradeSkeleton quantidade={2} />}>
+        <CompararView
+          aInicial={aInicial}
+          bInicial={bInicial}
+          cargoInicial={texto(cargo)}
+          ufAInicial={texto(ufA)}
+          ufBInicial={texto(ufB)}
+        />
+      </Suspense>
     </div>
   );
 }

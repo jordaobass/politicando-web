@@ -1,7 +1,7 @@
 /**
  * Modelo dos documentos legais da plataforma.
  *
- * O conteúdo vem da conversão fiel dos .docx enviados pelo cliente em 17/08/2026
+ * O conteúdo vem da conversão fiel dos PDFs enviados pelo cliente em 26/08/2026
  * (Termo de Uso, Política de Privacidade, Política de Cookies e Termo de
  * Consentimento). Guardá-lo como dado — e não como JSX — permite renderizar as
  * quatro páginas por um componente único, gerar o índice automaticamente e citar
@@ -50,5 +50,11 @@ export const ESCOPO_PLATAFORMA = [
   "Demais Funcionalidades",
 ];
 
-/** Data de atualização comum aos quatro documentos desta versão. */
-export const ATUALIZADO_EM = "17 de agosto de 2026";
+/**
+ * Data de atualização comum aos quatro documentos desta versão.
+ * 26/08/2026 (2ª revisão): versões novas dos PDFs do cliente — as seções 8 do
+ * Termo de Consentimento e da Política de Cookies voltam (a remoção anterior
+ * foi superada) e o Encarregado (DPO) passa a estar preenchido nos quatro
+ * documentos (Pedro Weinberg Lima, politicandoapp26@gmail.com).
+ */
+export const ATUALIZADO_EM = "26 de agosto de 2026";

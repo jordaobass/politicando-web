@@ -5,7 +5,7 @@ import {
   type DocumentoLegal,
 } from "@/lib/legal/tipos";
 
-/** Política de Privacidade — conversão fiel do .docx do cliente (17/08/2026). */
+/** Política de Privacidade — conversão fiel do PDF do cliente (26/08/2026). */
 export const POLITICA_PRIVACIDADE: DocumentoLegal = {
   titulo: "Política de Privacidade",
   descricao:
@@ -354,14 +354,9 @@ export const POLITICA_PRIVACIDADE: DocumentoLegal = {
         {
           tipo: "lista",
           itens: [
-            "Encarregado(a): [PREENCHA: NOME DO(A) ENCARREGADO(A)]",
-            "E-mail de contato do DPO: [PREENCHA: e-mail do DPO/Encarregado, ex.: dpo@politicando.site]",
+            "Encarregado(a): Pedro Weinberg Lima",
+            "E-mail de contato do DPO: politicandoapp26@gmail.com",
           ],
-        },
-        {
-          tipo: "paragrafo",
-          texto:
-            '13.2. Alternativamente, o Usuário poderá utilizar o canal de suporte geral da Plataforma, disponível pelo e-mail "politicando@gmail.com", indicado na Cláusula 15 do Termo de Uso, que será respondido em até 72 (setenta e duas) horas.',
         },
       ],
     },

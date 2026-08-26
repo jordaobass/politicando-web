@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 /**
@@ -82,4 +82,21 @@ export function useEstadoNaUrl() {
   );
 
   return { params, sincronizar };
+}
+
+/**
+ * Memoriza a URL atual (caminho + query) em sessionStorage a cada mudança. Botões "Voltar"
+ * de outras páginas leem a chave (via `useArmazenamento("session", ...)`) para restaurar a
+ * listagem exatamente como estava — inclusive quando o histórico do navegador não ajuda
+ * (F5 no perfil, link aberto de novo na mesma aba). Correções v7, item 2a. SessionStorage
+ * de propósito: a memória é por aba e não deve sobreviver ao fechamento.
+ */
+export function useMemorizarUrlRetorno(chave: string) {
+  const pathname = usePathname();
+  const params = useSearchParams();
+
+  useEffect(() => {
+    const query = params.toString();
+    sessionStorage.setItem(chave, query ? `${pathname}?${query}` : pathname);
+  }, [chave, pathname, params]);
 }

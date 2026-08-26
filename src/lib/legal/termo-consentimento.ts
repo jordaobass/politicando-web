@@ -7,7 +7,7 @@ import {
 
 /**
  * Termo de Consentimento para Tratamento de Dados Pessoais e Sensíveis —
- * conversão fiel do .docx do cliente (17/08/2026). É o documento citado no
+ * conversão fiel do PDF do cliente (26/08/2026). É o documento citado no
  * aceite do cadastro e no consentimento do quiz sem login (LGPD, art. 11, I).
  */
 export const TERMO_CONSENTIMENTO: DocumentoLegal = {
@@ -211,8 +211,8 @@ export const TERMO_CONSENTIMENTO: DocumentoLegal = {
         {
           tipo: "lista",
           itens: [
-            "Encarregado(a): [PREENCHER]",
-            "E-mail de contato: [PREENCHER]",
+            "Encarregado(a): Pedro Weinberg Lima",
+            "E-mail de contato: politicandoapp26@gmail.com",
           ],
         },
         {

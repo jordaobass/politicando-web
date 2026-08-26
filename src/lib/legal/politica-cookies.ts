@@ -5,7 +5,7 @@ import {
   type DocumentoLegal,
 } from "@/lib/legal/tipos";
 
-/** Política de Cookies — conversão fiel do .docx do cliente (17/08/2026). */
+/** Política de Cookies — conversão fiel do PDF do cliente (26/08/2026). */
 export const POLITICA_COOKIES: DocumentoLegal = {
   titulo: "Política de Cookies",
   descricao:
@@ -179,14 +179,9 @@ export const POLITICA_COOKIES: DocumentoLegal = {
         {
           tipo: "lista",
           itens: [
-            "Encarregado(a): [PREENCHA: NOME DO(A) ENCARREGADO(A)]",
-            "E-mail de contato do DPO: [PREENCHA: e-mail do DPO/Encarregado, ex.: dpo@politicando.site]",
+            "Encarregado(a): Pedro Weinberg Lima",
+            "E-mail de contato do DPO: politicandoapp26@gmail.com",
           ],
-        },
-        {
-          tipo: "paragrafo",
-          texto:
-            '8.2. Alternativamente, o Usuário poderá utilizar o canal de suporte geral da Plataforma, disponível pelo e-mail "politicando@gmail.com", que será respondido em até 72 (setenta e duas) horas.',
         },
       ],
     },
