@@ -21,6 +21,12 @@ interface BuscaCandidatoProps {
   excluirId?: string;
   className?: string;
   autoFocus?: boolean;
+  /** Termo inicial do input (ex.: restaurado da URL ao voltar — Correções v7, item 2b). */
+  termoInicial?: string;
+  /** Chamado com o termo JÁ debounced — quem usa espelha na URL sem troca de rota por tecla. */
+  aoMudarTermo?: (termo: string) => void;
+  /** Por padrão o input limpa ao escolher; a landing mantém, para o back restaurar o termo. */
+  limparAoSelecionar?: boolean;
 }
 
 /**
@@ -34,8 +40,11 @@ export function BuscaCandidato({
   excluirId,
   className,
   autoFocus,
+  termoInicial,
+  aoMudarTermo,
+  limparAoSelecionar = true,
 }: BuscaCandidatoProps) {
-  const [termo, setTermo] = useState("");
+  const [termo, setTermo] = useState(termoInicial ?? "");
   const [aberto, setAberto] = useState(false);
   const [destacado, setDestacado] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -44,6 +53,11 @@ export function BuscaCandidato({
   const { data, isFetching } = useBuscaCandidatos(termoDebounced);
   const itens = (data?.itens ?? []).filter((c) => c.id !== excluirId);
   const mostrar = aberto && termoDebounced.trim().length >= 2;
+
+  // Só o termo debounced sobe — cada tecla digitada não pode virar troca de rota.
+  useEffect(() => {
+    aoMudarTermo?.(termoDebounced);
+  }, [aoMudarTermo, termoDebounced]);
 
   useEffect(() => {
     function aoClicarFora(e: MouseEvent) {
@@ -57,7 +71,7 @@ export function BuscaCandidato({
 
   function escolher(candidato: CandidaturaResumo) {
     setAberto(false);
-    setTermo("");
+    if (limparAoSelecionar) setTermo("");
     setDestacado(-1);
     onSelecionar(candidato);
   }

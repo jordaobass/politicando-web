@@ -51,6 +51,12 @@ export const CHAVE_UF = "politicando:uf";
 /** Última página "real" visitada — usada para voltar a ela após o login (returnTo). */
 export const CHAVE_ULTIMA_PAGINA = "politicando:ultima-pagina";
 
+/**
+ * URL da lista de candidatos (com busca/filtros/página) memorizada por aba — o botão
+ * "Voltar para candidatos" do perfil restaura a lista como estava (Correções v7, item 2a).
+ */
+export const CHAVE_RETORNO_CANDIDATOS = "politicando:retorno-candidatos";
+
 /** Decisão do banner de cookies ("aceitos" | "recusados"); ausente = ainda não decidiu. */
 export const CHAVE_COOKIES = "politicando:cookies";
 

@@ -19,6 +19,7 @@ import {
 import { EstadoVazio } from "@/components/comum/estados";
 import { FotoCandidato } from "@/components/comum/foto-candidato";
 import { useComparacoesSalvas, useExcluirComparacao } from "@/hooks/use-api";
+import { lerNumero, useEstadoNaUrl } from "@/hooks/use-estado-na-url";
 import type { CandidaturaMini, ComparacaoSalva } from "@/lib/types";
 
 function ResumoCandidato({ candidato }: { candidato: CandidaturaMini }) {
@@ -70,10 +71,17 @@ function ItemComparacao({
 
 /** Bloco "Minhas comparações salvas": lista paginada (10/pág), navegação e exclusão. */
 export function ComparacoesSalvas({ token }: { token: string }) {
-  const [pagina, setPagina] = useState(1);
+  // Página na URL (Correções v7, item 2e / v6 §3.5): abrir uma comparação e voltar mantém a página.
+  const { params, sincronizar } = useEstadoNaUrl();
+  const [pagina, setPagina] = useState(() => lerNumero(params, "pagina", 1));
   const [selecionado, setSelecionado] = useState<ComparacaoSalva | null>(null);
   const { data, isLoading } = useComparacoesSalvas(pagina, token);
   const exclusao = useExcluirComparacao(token);
+
+  function mudarPagina(proxima: number) {
+    setPagina(proxima);
+    sincronizar({ pagina: proxima === 1 ? null : proxima });
+  }
 
   async function confirmarExclusao() {
     if (!selecionado) return;
@@ -122,7 +130,7 @@ export function ComparacoesSalvas({ token }: { token: string }) {
                   variant="outline"
                   size="sm"
                   disabled={pagina <= 1}
-                  onClick={() => setPagina((p) => p - 1)}
+                  onClick={() => mudarPagina(pagina - 1)}
                 >
                   Anterior
                 </Button>
@@ -133,7 +141,7 @@ export function ComparacoesSalvas({ token }: { token: string }) {
                   variant="outline"
                   size="sm"
                   disabled={pagina >= totalPaginas}
-                  onClick={() => setPagina((p) => p + 1)}
+                  onClick={() => mudarPagina(pagina + 1)}
                 >
                   Próxima
                 </Button>
