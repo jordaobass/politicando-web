@@ -5,7 +5,7 @@ import {
   type DocumentoLegal,
 } from "@/lib/legal/tipos";
 
-/** Política de Cookies — conversão fiel do .docx do cliente (17/08/2026). */
+/** Política de Cookies — conversão fiel do PDF do cliente (26/08/2026). */
 export const POLITICA_COOKIES: DocumentoLegal = {
   titulo: "Política de Cookies",
   descricao:
@@ -167,7 +167,23 @@ export const POLITICA_COOKIES: DocumentoLegal = {
         },
       ],
     },
-    // Ponto 8 (Canais de Contato) removido a pedido do cliente (Correções v7, item 1);
-    // era a última seção — nada a renumerar depois dela.
+    {
+      id: "contato",
+      titulo: "8. CANAIS DE CONTATO",
+      blocos: [
+        {
+          tipo: "paragrafo",
+          texto:
+            "8.1. Em caso de dúvidas sobre esta Política de Cookies, o Usuário poderá entrar em contato com o(a) Encarregado(a) pelo Tratamento de Dados Pessoais (DPO):",
+        },
+        {
+          tipo: "lista",
+          itens: [
+            "Encarregado(a): Pedro Weinberg Lima",
+            "E-mail de contato do DPO: politicandoapp26@gmail.com",
+          ],
+        },
+      ],
+    },
   ],
 };
