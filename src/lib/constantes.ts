@@ -64,11 +64,13 @@ export const CHAVE_COOKIES = "politicando:cookies";
 export const CHAVE_CONSENTIMENTO_QUIZ = "politicando:consentimento-quiz";
 
 /**
- * Versão dos documentos legais em vigor (data de atualização dos .docx do cliente).
+ * Versão dos documentos legais em vigor (data de atualização dos PDFs do cliente).
  * Vai junto do consentimento registrado no servidor: sem saber QUAL texto a pessoa
  * aceitou, o registro não prova nada (LGPD, art. 8º, § 1º).
+ * O sufixo ".2" distingue esta revisão (PDFs de 26/08 com as seções 8 mantidas e
+ * o DPO preenchido) da anterior de mesma data, que havia removido essas seções.
  */
-export const VERSAO_DOCUMENTOS_LEGAIS = "2026-08-26";
+export const VERSAO_DOCUMENTOS_LEGAIS = "2026-08-26.2";
 
 /**
  * Rotas dos documentos legais. Ficam acessíveis mesmo com o site em modo "em breve"
