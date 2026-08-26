@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronLeftIcon } from "lucide-react";
 
+import { BotaoVoltarCandidatos } from "@/components/candidatos/botao-voltar-candidatos";
 import { DetalheCandidato } from "@/components/candidatos/detalhe-candidato";
 import { Button } from "@/components/ui/button";
 
@@ -15,12 +16,17 @@ export default async function CandidatoPage(props: {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 px-4 py-10">
-      <Button asChild variant="ghost" size="sm" className="px-0">
-        <Link href={voltarComparacao ?? "/candidatos"}>
-          <ChevronLeftIcon className="size-4" aria-hidden="true" />
-          {voltarComparacao ? "Voltar para comparação" : "Voltar para candidatos"}
-        </Link>
-      </Button>
+      {voltarComparacao ? (
+        <Button asChild variant="ghost" size="sm" className="px-0">
+          <Link href={voltarComparacao}>
+            <ChevronLeftIcon className="size-4" aria-hidden="true" />
+            Voltar para comparação
+          </Link>
+        </Button>
+      ) : (
+        // Sem origem explícita, volta para a lista COMO ELA ESTAVA (Correções v7, item 2a).
+        <BotaoVoltarCandidatos />
+      )}
       <DetalheCandidato id={id} />
     </div>
   );

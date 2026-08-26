@@ -21,7 +21,9 @@ import {
   lerNumero,
   lerTexto,
   useEstadoNaUrl,
+  useMemorizarUrlRetorno,
 } from "@/hooks/use-estado-na-url";
+import { CHAVE_RETORNO_CANDIDATOS } from "@/lib/constantes";
 
 const TAMANHO_PAGINA = 12;
 
@@ -36,6 +38,8 @@ const ORDENACAO_INICIAL: ValoresOrdenacao = { por: "", desc: true };
  */
 export function ListaCandidatos() {
   const { params, sincronizar } = useEstadoNaUrl();
+  // O botão "Voltar para candidatos" do perfil restaura esta URL (Correções v7, item 2a).
+  useMemorizarUrlRetorno(CHAVE_RETORNO_CANDIDATOS);
   const [filtros, setFiltros] = useState<ValoresFiltro>(() => ({
     q: lerTexto(params, "q"),
     cargos: lerLista(params, "cargos"),

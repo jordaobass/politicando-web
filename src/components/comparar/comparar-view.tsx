@@ -25,6 +25,7 @@ import { BotaoSalvarComparacao } from "@/components/comparar/botao-salvar-compar
 import { EstadoErro } from "@/components/comum/estados";
 import { CARGOS, UFS } from "@/lib/constantes";
 import { useCandidatura, useComparar } from "@/hooks/use-api";
+import { useEstadoNaUrl } from "@/hooks/use-estado-na-url";
 import { useSessao } from "@/hooks/use-sessao";
 import type { CandidaturaResumo } from "@/lib/types";
 
@@ -63,21 +64,26 @@ export function CompararView({
   // Troca (cargo/estado) pendente de confirmação quando limparia um candidato já escolhido.
   const [pendente, setPendente] = useState<Pendente | null>(null);
 
+  // Os ids vindos da URL são congelados no primeiro render: o `sincronizar` abaixo atualiza a
+  // query, o Server Component re-renderiza com novas props, e sem o congelamento o
+  // pré-preenchimento reentraria a cada seleção do usuário.
+  const [idsIniciais] = useState({ a: aInicial, b: bInicial });
+
   // Pré-preenchimento ao chegar do card/perfil ou de uma comparação salva (US-COMP-01, cenário 4).
   // Ajuste de estado na fase de render (padrão React p/ sincronizar dado externo uma vez), sem effect.
-  const { data: detalheA } = useCandidatura(aInicial);
-  const { data: detalheB } = useCandidatura(bInicial);
+  const { data: detalheA } = useCandidatura(idsIniciais.a);
+  const { data: detalheB } = useCandidatura(idsIniciais.b);
   const [preenchidoDe, setPreenchidoDe] = useState<string | null>(null);
-  if (aInicial && detalheA && preenchidoDe !== aInicial) {
-    setPreenchidoDe(aInicial);
+  if (idsIniciais.a && detalheA && preenchidoDe !== idsIniciais.a) {
+    setPreenchidoDe(idsIniciais.a);
     setCargo(detalheA.cargo);
     setUfA(exigeEstado(detalheA.cargo) ? detalheA.uf : "");
     setA(resumoDe(detalheA.id, detalheA.cargo, detalheA.uf, detalheA.politico.nomeUrna,
       detalheA.partidoSigla, detalheA.partidoLogoUrl, detalheA.politico.fotoUrl));
   }
   const [preenchidoBDe, setPreenchidoBDe] = useState<string | null>(null);
-  if (bInicial && detalheB && preenchidoBDe !== bInicial) {
-    setPreenchidoBDe(bInicial);
+  if (idsIniciais.b && detalheB && preenchidoBDe !== idsIniciais.b) {
+    setPreenchidoBDe(idsIniciais.b);
     setUfB(exigeEstado(detalheB.cargo) ? detalheB.uf : "");
     setB(resumoDe(detalheB.id, detalheB.cargo, detalheB.uf, detalheB.politico.nomeUrna,
       detalheB.partidoSigla, detalheB.partidoLogoUrl, detalheB.politico.fotoUrl));
@@ -87,20 +93,20 @@ export function CompararView({
   const aHabilitado = Boolean(cargo) && (!precisaEstado || Boolean(ufA));
   const bHabilitado = aHabilitado && Boolean(a) && (!precisaEstado || Boolean(ufB));
 
-  // Reflete a seleção na URL (sem re-render) para que, ao abrir um perfil e voltar, a
-  // comparação seja restaurada em vez de vir vazia (correção do card v2, obs. da Ricella).
-  // `replaceState` em vez do router: gravar por aqui não remonta o Server Component nem
-  // reentra no pré-preenchimento de A/B logo acima.
+  // Reflete a seleção na URL para que, ao abrir um perfil e voltar, a comparação seja
+  // restaurada em vez de vir vazia (v6 §3.3, concluído no v7 item 2c: o `replaceState`
+  // manual saiu — o hook usa `router.replace` e o congelamento de `idsIniciais` acima
+  // impede o pré-preenchimento de reentrar quando o Server Component re-renderiza).
+  const { sincronizar } = useEstadoNaUrl();
   useEffect(() => {
-    const params = new URLSearchParams();
-    if (cargo) params.set("cargo", cargo);
-    if (ufA) params.set("ufA", ufA);
-    if (ufB) params.set("ufB", ufB);
-    if (a) params.set("a", a.id);
-    if (b) params.set("b", b.id);
-    const qs = params.toString();
-    window.history.replaceState(null, "", qs ? `/comparar?${qs}` : "/comparar");
-  }, [a, b, cargo, ufA, ufB]);
+    sincronizar({
+      cargo,
+      ufA,
+      ufB,
+      a: a?.id ?? null,
+      b: b?.id ?? null,
+    });
+  }, [a, b, cargo, ufA, ufB, sincronizar]);
 
   /** Troca o cargo: se já houver candidato, confirma (limpa tudo); senão aplica direto. */
   function trocarCargo(valor: string) {

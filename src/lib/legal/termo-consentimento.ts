@@ -194,47 +194,21 @@ export const TERMO_CONSENTIMENTO: DocumentoLegal = {
         },
       ],
     },
-    {
-      id: "direitos-do-titular",
-      titulo: "8. DIREITOS DO TITULAR E CANAL DE CONTATO",
-      blocos: [
-        {
-          tipo: "paragrafo",
-          texto:
-            "8.1. Nos termos do art. 18 da LGPD, o Usuário poderá, a qualquer tempo e mediante solicitação gratuita, requerer ao Politicando a confirmação da existência de tratamento, o acesso aos dados, a correção de dados incompletos, inexatos ou desatualizados, a anonimização, o bloqueio ou a eliminação de dados desnecessários, a portabilidade dos dados, a eliminação dos dados tratados com base no consentimento, a informação sobre compartilhamento de dados e a revogação do consentimento.",
-        },
-        {
-          tipo: "paragrafo",
-          texto:
-            "8.2. As solicitações relativas ao exercício destes direitos, inclusive a revogação do consentimento tratado na Cláusula 5, poderão ser encaminhadas ao(à) Encarregado(a) de Proteção de Dados (DPO) do Politicando:",
-        },
-        {
-          tipo: "lista",
-          itens: [
-            "Encarregado(a): [PREENCHER]",
-            "E-mail de contato: [PREENCHER]",
-          ],
-        },
-        {
-          tipo: "paragrafo",
-          texto:
-            "8.3. Alternativamente, o Usuário poderá utilizar o canal de suporte geral da Plataforma, indicado na Cláusula 15 do Termo de Uso.",
-        },
-      ],
-    },
+    // Ponto 8 (Direitos do Titular e Canal de Contato) removido a pedido do cliente
+    // (Correções v7, item 1); o antigo ponto 9 (Aceite) foi renumerado para 8.
     {
       id: "aceite",
-      titulo: "9. ACEITE",
+      titulo: "8. ACEITE",
       blocos: [
         {
           tipo: "paragrafo",
           texto:
-            "9.1. Ao marcar a caixa de consentimento no formulário de cadastro, o Usuário declara ter lido, compreendido e concordado integralmente com este Termo de Consentimento, com o Termo de Uso e com a Política de Privacidade da Plataforma.",
+            "8.1. Ao marcar a caixa de consentimento no formulário de cadastro, o Usuário declara ter lido, compreendido e concordado integralmente com este Termo de Consentimento, com o Termo de Uso e com a Política de Privacidade da Plataforma.",
         },
         {
           tipo: "paragrafo",
           texto:
-            "9.2. Este Termo poderá ser atualizado pelo Politicando sempre que houver alteração relevante nas finalidades ou na forma de tratamento dos dados pessoais, hipótese em que novo consentimento específico poderá ser solicitado ao Usuário, conforme aplicável.",
+            "8.2. Este Termo poderá ser atualizado pelo Politicando sempre que houver alteração relevante nas finalidades ou na forma de tratamento dos dados pessoais, hipótese em que novo consentimento específico poderá ser solicitado ao Usuário, conforme aplicável.",
         },
       ],
     },

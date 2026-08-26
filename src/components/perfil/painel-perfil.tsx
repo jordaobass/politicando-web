@@ -1,8 +1,10 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { EstadoVazio } from "@/components/comum/estados";
 import { DadosUsuario, mesclarUsuario } from "@/components/perfil/dados-usuario";
 import { UltimoQuiz } from "@/components/perfil/ultimo-quiz";
@@ -44,7 +46,10 @@ export function PainelPerfil() {
       />
       <div className="space-y-6">
         <UltimoQuiz token={sessao.token} />
-        <ComparacoesSalvas token={sessao.token} />
+        {/* Suspense exigido pelo useSearchParams (página das comparações na URL — v7, item 2e). */}
+        <Suspense fallback={<Skeleton className="h-40 w-full rounded-xl" />}>
+          <ComparacoesSalvas token={sessao.token} />
+        </Suspense>
       </div>
     </div>
   );
