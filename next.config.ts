@@ -1,8 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Build enxuto para container (gera .next/standalone com server.js)
-  output: "standalone",
+  // Build enxuto para container (gera .next/standalone com server.js) — usado pelo Dockerfile.
+  // Na Vercel NÃO se usa: lá o empacotamento é da própria plataforma, e o modo standalone
+  // reorganiza os arquivos de rastreamento (.nft.json) que o builder dela espera achar na raiz
+  // do .next. Foi assim que o deploy quebrou com "ENOENT ... next-server.js.nft.json" ao subir
+  // o Next para 16.3.3. A variável VERCEL é definida pela plataforma durante o build.
+  output: process.env.VERCEL ? undefined : "standalone",
   // Um único domínio público: /api/* é reescrito para o backend (rede interna).
   // Evita CORS e dispensa um segundo subdomínio. O destino vem de BACKEND_INTERNAL_URL
   // (ex.: http://backend:8080 dentro do docker compose); fallback p/ dev local.
