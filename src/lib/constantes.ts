@@ -73,6 +73,30 @@ export const CHAVE_CONSENTIMENTO_QUIZ = "politicando:consentimento-quiz";
 export const VERSAO_DOCUMENTOS_LEGAIS = "2026-08-26.2";
 
 /**
+ * Mensagem padrão para bloco de perfil sem dado suficiente (Correções v7, item 4).
+ * O texto é EXATAMENTE o pedido pelo cliente — não reformular. Todos os blocos que antes
+ * sumiam ou tinham textos de vazio próprios convergem para esta frase.
+ */
+export const MENSAGEM_SEM_DADOS =
+  "Não foram encontrados dados públicos confiáveis para exibir a informação";
+
+/**
+ * Texto do card informativo de candidato despublicado por curadoria na página do partido
+ * (Correções v7, item 6; grafia corrigida do card do cliente — decisão E16).
+ */
+export const MENSAGEM_SEM_ANALISE = "Sem dados suficientes para análise";
+
+/**
+ * Disclaimer da busca de candidatos (Correções v7, item 7).
+ * ⚠️ COPY PROPOSTA, ainda NÃO aprovada pelo dono (decisão C6 do DECISOES.md) — trocar AQUI
+ * quando a redação final chegar; é o único ponto do código com este texto.
+ */
+export const DISCLAIMER_HISTORICO =
+  "Exibimos apenas candidatos com histórico de vida pública registrado em plataformas " +
+  "oficiais (Câmara, Senado e TSE). Assim mantemos a consistência, a confiança e a " +
+  "imparcialidade das análises.";
+
+/**
  * Rotas dos documentos legais. Ficam acessíveis mesmo com o site em modo "em breve"
  * (ver `src/middleware.ts`) e entram no sitemap.
  */
