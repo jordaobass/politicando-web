@@ -17,11 +17,11 @@ export default function RedefinirSenhaPage() {
       <div className="w-full max-w-md space-y-6">
         <Link href="/" className="flex items-center justify-center gap-2.5">
           <Image
-            src="/logo-politicando.jpeg"
+            src="/logo-vertical-escura.png"
             alt=""
-            width={40}
-            height={40}
-            className="size-10 rounded"
+            width={512}
+            height={551}
+            className="h-12 w-auto"
             unoptimized
           />
           <span className="text-2xl font-bold text-primary">Politicando</span>

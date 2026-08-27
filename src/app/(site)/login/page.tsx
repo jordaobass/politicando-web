@@ -31,11 +31,11 @@ export default async function LoginPage({
           className="animate-in fade-in slide-in-from-top-2 mb-6 flex items-center justify-center gap-2.5 duration-500"
         >
           <Image
-            src="/logo-politicando.jpeg"
+            src="/logo-vertical-escura.png"
             alt="Politicando"
-            width={40}
-            height={40}
-            className="size-10 rounded-md"
+            width={512}
+            height={551}
+            className="h-12 w-auto"
             priority
           />
           <span className="text-2xl font-bold text-primary">Politicando</span>

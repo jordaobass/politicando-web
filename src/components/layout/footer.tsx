@@ -34,13 +34,12 @@ export function Footer() {
         <div className="space-y-2">
           <p className="flex items-center gap-2 text-lg font-bold">
             <Image
-              src="/logo-politicando.jpeg"
+              src="/logo-vertical-clara.png"
               alt="Politicando"
-              width={32}
-              height={32}
-              className="size-8 rounded-md"
+              width={512}
+              height={551}
+              className="h-12 w-auto"
             />
-            Politicando
           </p>
           <p className="text-sm text-primary-foreground/70">
             Match eleitoral para as Eleições 2026. Sem vínculo oficial com o TSE.
