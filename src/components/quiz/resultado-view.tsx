@@ -150,9 +150,21 @@ export function ResultadoView() {
           />
         ) : (
           <Tabs value={cargoAtivo} onValueChange={trocarAba}>
-            <TabsList variant="line" className="h-auto w-full flex-wrap justify-start">
+            {/* No celular os quatro cargos não cabem numa linha e quebram para a segunda. A
+                altura precisa do prefixo `group-data-horizontal` para vencer o `h-8` da
+                variante — sem ele a lista fica presa em 32px e a segunda linha invade o
+                conteúdo abaixo. O espaçamento vertical dá lugar ao sublinhado da aba ativa,
+                que fica 5px abaixo do rótulo. */}
+            <TabsList
+              variant="line"
+              className="grid h-auto w-full grid-cols-2 justify-start gap-x-4 gap-y-3 group-data-horizontal/tabs:h-auto sm:flex sm:flex-wrap sm:gap-x-1"
+            >
               {cargosDisponiveis.map((c) => (
-                <TabsTrigger key={c.valor} value={c.valor} className="flex-none">
+                <TabsTrigger
+                  key={c.valor}
+                  value={c.valor}
+                  className="h-auto min-h-9 w-fit justify-start px-2 py-1.5 sm:flex-none sm:justify-center"
+                >
                   {c.rotulo}
                 </TabsTrigger>
               ))}
