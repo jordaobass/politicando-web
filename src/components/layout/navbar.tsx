@@ -19,7 +19,7 @@ const LINKS = [
   { href: "/partidos", rotulo: "Partidos", navegavel: true },
 ];
 
-/** Barra de navegação global (tema navy do protótipo) com links e CTA de login. */
+/** Barra de navegação global (tema navy) com links e CTA de login. */
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();

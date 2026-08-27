@@ -26,7 +26,7 @@ const COLUNAS = [
   },
 ];
 
-/** Rodapé global (tema navy) com colunas institucionais e aviso de protótipo. */
+/** Rodapé global (tema navy) com colunas institucionais. */
 export function Footer() {
   return (
     <footer className="mt-auto bg-primary text-primary-foreground">
@@ -43,8 +43,7 @@ export function Footer() {
             Politicando
           </p>
           <p className="text-sm text-primary-foreground/70">
-            Match eleitoral para as Eleições 2026. Protótipo sem vínculo oficial
-            com o TSE.
+            Match eleitoral para as Eleições 2026. Sem vínculo oficial com o TSE.
           </p>
         </div>
 

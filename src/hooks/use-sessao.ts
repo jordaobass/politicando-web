@@ -6,7 +6,7 @@ import { logout } from "@/lib/api";
 import { CHAVE_SESSAO, CHAVE_RESULTADO_QUIZ } from "@/lib/constantes";
 import type { AuthResponse, Usuario } from "@/lib/types";
 
-// Store externa simples sobre o localStorage para a sessão (mock do protótipo).
+// Store externa simples sobre o localStorage para a sessão.
 // Em produção isto seria substituído por cookies httpOnly / provedor de auth real.
 
 type Ouvinte = () => void;

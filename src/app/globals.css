@@ -53,7 +53,7 @@
 }
 
 :root {
-  /* Paleta extraída do protótipo original (300software): azul-marinho + verde, fundo claro. */
+  /* Paleta extraída do desenho original da 300 Software: azul-marinho + verde, fundo claro. */
   --background: #f7f8fa;
   --foreground: #111827;
   --card: #ffffff;
@@ -97,7 +97,7 @@
 }
 
 .dark {
-  --background: #0b0d17;         /* navy escuro (barra do protótipo) */
+  --background: #0b0d17;         /* navy escuro (barra de navegação) */
   --foreground: #f7f8fa;
   --card: #131725;
   --card-foreground: #f7f8fa;
