@@ -42,7 +42,7 @@ export const ESCALA_RESPOSTAS = [
 /** Chave usada para guardar o resultado do quiz no sessionStorage entre /quiz e /quiz/resultado. */
 export const CHAVE_RESULTADO_QUIZ = "politicando:resultado-quiz";
 
-/** Chave de armazenamento da sessão de autenticação (mock no protótipo). */
+/** Chave de armazenamento da sessão de autenticação. */
 export const CHAVE_SESSAO = "politicando:sessao";
 
 /** Chave da UF do eleitor (filtro dos cargos estaduais no resultado do quiz). */
