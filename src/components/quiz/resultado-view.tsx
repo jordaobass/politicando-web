@@ -33,7 +33,11 @@ const VISIVEIS_SEM_LOGIN = 3;
 const CLASSE_SELECT =
   "h-9 rounded-md border bg-field px-3 text-sm text-field-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
-export function ResultadoView() {
+/**
+ * @param ufSugerida Estado provável de quem acessa, inferido na borda (ver a página). É só um
+ *   palpite para a primeira visita: perde para a UF da URL e para a última escolhida.
+ */
+export function ResultadoView({ ufSugerida = null }: { ufSugerida?: string | null }) {
   const router = useRouter();
   const { params, sincronizar } = useEstadoNaUrl();
   const cargoParam = params.get("cargo");
@@ -44,7 +48,9 @@ export function ResultadoView() {
   // Aba e UF vivem na URL (Correções v7, item 2d): abrir um perfil e voltar mantém as duas.
   // O localStorage segue como espelho da UF — vira o default da próxima visita.
   const [cargoAba, setCargoAba] = useState(cargoParam ?? "");
-  const uf = ufParam && ufParam !== "BR" ? ufParam : ufLocal;
+  // Precedência: o que a pessoa pediu na URL, depois o que ela escolheu da última vez, e só
+  // então o palpite da borda. O palpite nunca sobrescreve escolha — é o vazio que ele preenche.
+  const uf = (ufParam && ufParam !== "BR" ? ufParam : ufLocal) || ufSugerida;
 
   function trocarAba(valor: string) {
     setCargoAba(valor);
