@@ -119,6 +119,12 @@ export interface CandidaturaResumo {
   fotoUrl: string | null;
   origem: OrigemCandidatura;
   scores: ScoreResumo[];
+  nomeCivil?: string | null;
+  /**
+   * true = despublicada por curadoria (Correções v7, item 6): aparece na página do partido só
+   * como card informativo — sem link de perfil (o backend responde 404) e sem comparar.
+   */
+  somenteInformativo?: boolean;
 }
 
 export interface PaginaResultado<T> {
@@ -463,6 +469,8 @@ export interface FiltrosCandidatura {
   desc?: boolean;
   pagina?: number;
   tamanho?: number;
+  /** Inclui despublicados por curadoria como cards informativos (página do partido — item 6). */
+  incluirInformativos?: boolean;
 }
 
 export interface AdminDashboard {
