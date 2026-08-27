@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 
 import { CardCandidato } from "@/components/candidatos/card-candidato";
+import { CardCandidatoInformativo } from "@/components/candidatos/card-candidato-informativo";
+import { DisclaimerHistorico } from "@/components/candidatos/disclaimer-historico";
 import { Paginacao } from "@/components/comum/paginacao";
 import { GradeSkeleton, EstadoErro, EstadoVazio } from "@/components/comum/estados";
 import { Button } from "@/components/ui/button";
@@ -33,6 +35,9 @@ export function CandidatosDoPartido({ sigla }: { sigla: string }) {
     cargos: cargo ? [cargo] : undefined,
     pagina,
     tamanho: TAMANHO_PAGINA,
+    // Correções v7, item 6: os despublicados por curadoria continuam vinculados ao partido,
+    // mas apenas como card informativo (sem link para o perfil, que responde 404).
+    incluirInformativos: true,
   });
 
   const itens = data?.itens ?? [];
@@ -108,10 +113,16 @@ export function CandidatosDoPartido({ sigla }: { sigla: string }) {
         />
       ) : (
         <>
+          {/* Item 7: o aviso vale também aqui — a lista mistura analisados e informativos. */}
+          <DisclaimerHistorico />
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {itens.map((candidato) => (
-              <CardCandidato key={candidato.id} candidato={candidato} />
-            ))}
+            {itens.map((candidato) =>
+              candidato.somenteInformativo ? (
+                <CardCandidatoInformativo key={candidato.id} candidato={candidato} />
+              ) : (
+                <CardCandidato key={candidato.id} candidato={candidato} />
+              ),
+            )}
           </div>
           <Paginacao pagina={pagina} totalPaginas={totalPaginas} onMudar={setPagina} />
         </>
