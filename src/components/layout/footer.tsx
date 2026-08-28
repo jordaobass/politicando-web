@@ -34,7 +34,7 @@ export function Footer() {
         <div className="space-y-2">
           <p className="flex items-center gap-2 text-lg font-bold">
             <Image
-              src="/logo-vertical-clara.png"
+              src="/logo-vertical-verde.png"
               alt="Politicando"
               width={512}
               height={551}
