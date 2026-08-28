@@ -31,11 +31,11 @@ export default async function LoginPage({
           className="animate-in fade-in slide-in-from-top-2 mb-6 flex items-center justify-center gap-2.5 duration-500"
         >
           <Image
-            src="/logo-vertical-escura.png"
+            src="/logo-h2-escura.png"
             alt="Politicando"
-            width={512}
-            height={551}
-            className="h-20 w-auto"
+            width={900}
+            height={104}
+            className="h-12 w-auto"
             priority
           />
         </Link>
