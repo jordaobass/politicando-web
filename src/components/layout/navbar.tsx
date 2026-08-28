@@ -59,7 +59,7 @@ export function Navbar() {
         <Link href="/" className="flex items-center gap-2 text-lg font-bold">
           {/* O lockup já traz a palavra "Politicando"; repetir em texto duplicaria o nome. */}
           <Image
-            src="/logo-h2-clara.png"
+            src="/logo-h2-escura.png"
             alt="Politicando"
             width={900}
             height={104}
