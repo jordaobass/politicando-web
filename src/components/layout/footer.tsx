@@ -32,17 +32,14 @@ export function Footer() {
     <footer className="mt-auto bg-primary text-primary-foreground">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-2">
-          {/* Mesma base clara da navbar: a tinta verde do arquivo não aparece sobre o navy. */}
           <p className="flex">
-            <span className="inline-flex rounded-lg bg-card px-3 py-2">
-              <Image
-                src="/logo-h2-escura.png"
-                alt="Politicando"
-                width={900}
-                height={104}
-                className="h-8 w-auto"
-              />
-            </span>
+            <Image
+              src="/logo-h2-verde.png"
+              alt="Politicando"
+              width={900}
+              height={104}
+              className="h-9 w-auto"
+            />
           </p>
           <p className="text-sm text-primary-foreground/70">
             Match eleitoral para as Eleições 2026. Sem vínculo oficial com o TSE.

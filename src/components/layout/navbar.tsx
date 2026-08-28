@@ -56,20 +56,14 @@ export function Navbar() {
       )}
     >
       <nav className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-4 px-4">
-        {/* O lockup já traz a palavra "Politicando"; repetir em texto duplicaria o nome.
-            A tinta do arquivo é verde-escuro e a barra é navy — 1,00:1, some. Em vez de
-            recolorir a marca, ela ganha uma base clara: o verde original aparece com
-            11,25:1 e o logo vira o elemento de maior destaque da barra. */}
-        <Link
-          href="/"
-          className="flex items-center rounded-lg bg-card px-3 py-1.5 shadow-sm transition-shadow hover:shadow-md"
-        >
+        {/* O lockup já traz a palavra "Politicando"; repetir em texto duplicaria o nome. */}
+        <Link href="/" className="flex items-center">
           <Image
-            src="/logo-h2-escura.png"
+            src="/logo-h2-verde.png"
             alt="Politicando"
             width={900}
             height={104}
-            className="h-7 w-auto"
+            className="h-8 w-auto"
             priority
           />
         </Link>
