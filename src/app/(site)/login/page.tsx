@@ -31,7 +31,7 @@ export default async function LoginPage({
           className="animate-in fade-in slide-in-from-top-2 mb-6 flex items-center justify-center gap-2.5 duration-500"
         >
           <Image
-            src="/logo-h2-escura.png"
+            src="/logo-h2-verde.png"
             alt="Politicando"
             width={900}
             height={104}

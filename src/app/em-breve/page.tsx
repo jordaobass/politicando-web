@@ -20,7 +20,7 @@ export default function EmBrevePage() {
   return (
     <main className="flex min-h-[100svh] flex-col items-center justify-center gap-8 overflow-hidden bg-gradient-to-b from-secondary to-background px-6 text-center">
       <Image
-        src="/logo-h2-escura.png"
+        src="/logo-h2-verde.png"
         alt="Politicando"
         width={900}
         height={104}

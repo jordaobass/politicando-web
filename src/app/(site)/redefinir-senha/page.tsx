@@ -17,7 +17,7 @@ export default function RedefinirSenhaPage() {
       <div className="w-full max-w-md space-y-6">
         <Link href="/" className="flex items-center justify-center gap-2.5">
           <Image
-            src="/logo-h2-escura.png"
+            src="/logo-h2-verde.png"
             alt=""
             width={900}
             height={104}
