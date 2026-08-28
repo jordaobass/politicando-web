@@ -35,10 +35,9 @@ export default async function LoginPage({
             alt="Politicando"
             width={512}
             height={551}
-            className="h-12 w-auto"
+            className="h-20 w-auto"
             priority
           />
-          <span className="text-2xl font-bold text-primary">Politicando</span>
         </Link>
 
         <CardAutenticacao abaInicial={abaInicial} />
