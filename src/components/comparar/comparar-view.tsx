@@ -29,11 +29,17 @@ import { useEstadoNaUrl } from "@/hooks/use-estado-na-url";
 import { useSessao } from "@/hooks/use-sessao";
 import type { CandidaturaResumo } from "@/lib/types";
 
-/** Cargos comparáveis (US-COMP-01). Estado só é exigido por Governador e Deputado Federal. */
+/** Cargos comparáveis (US-COMP-01). Só Presidente é nacional; o resto se elege por estado. */
 const CARGOS_COMPARACAO = CARGOS.filter((c) =>
   ["Presidente", "Governador", "Senador", "DeputadoFederal"].includes(c.valor),
 );
-const exigeEstado = (cargo: string) => cargo === "Governador" || cargo === "DeputadoFederal";
+
+/**
+ * Senador entrou aqui nas Correções v8 (item 2): a bancada é estadual como a de governador e
+ * deputado federal, mas o cargo estava fora da regra — sem o campo de estado, a lista de
+ * candidatos vinha do país inteiro.
+ */
+const exigeEstado = (cargo: string) => cargo !== "" && cargo !== "Presidente";
 
 interface CompararViewProps {
   aInicial?: string;
