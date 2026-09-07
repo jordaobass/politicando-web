@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LockIcon } from "lucide-react";
+import { InfoIcon, LockIcon } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,13 +27,15 @@ interface Props {
 }
 
 /**
- * Bloco de match (cartões US-DEP-02 / US-SEN-02), em 3 estados:
+ * Bloco de match (cartões US-DEP-02 / US-SEN-02), em 4 estados:
  *  1. fez o quiz → percentual real + "Ver detalhes" (verde);
- *  2. logado sem quiz → incentivo + "Fazer o teste" (azul);
- *  3. não logado → valor ofuscado + "Fazer o quiz" (azul).
+ *  2. fez o quiz mas o candidato ficou FORA do ranking (sem dados suficientes — Correções v7,
+ *     item 5) → mensagem honesta, sem % e sem CTA de refazer o teste;
+ *  3. logado sem quiz → incentivo + "Fazer o teste" (azul);
+ *  4. não logado → valor ofuscado + "Fazer o quiz" (azul).
  */
 export function CardCompatibilidade({ candidaturaId, nomeUrna, cargo, uf }: Props) {
-  const { carregado, candidato } = useCompatibilidadeCandidato(candidaturaId);
+  const { carregado, candidato, temResultado } = useCompatibilidadeCandidato(candidaturaId);
   const { autenticado } = useSessao();
 
   // Pré-hidratação: não decide o estado para evitar flicker.
@@ -80,7 +82,34 @@ export function CardCompatibilidade({ candidaturaId, nomeUrna, cargo, uf }: Prop
     );
   }
 
-  // Estado 2 — logado, sem quiz: incentivo a fazer o teste.
+  // Estado 2 — o usuário TEM resultado de quiz, mas este candidato ficou fora do ranking por
+  // falta de dados (item 5): dizer isso é o honesto — nem %, nem "Fazer o teste" (o print do
+  // card mostrava exatamente esse CTA mentiroso para quem já tinha feito o quiz).
+  if (temResultado && !candidato) {
+    return (
+      <Card data-testid="card-match-sem-dados">
+        <CardContent className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <InfoIcon className="mt-0.5 size-5 shrink-0 text-muted-foreground" aria-hidden="true" />
+            <div className="space-y-1">
+              <p className="font-semibold text-foreground">
+                Não há dados suficientes para avaliar o match com este candidato.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Sem registro público de atuação, não calculamos um percentual — mostrar um número
+                aqui seria chute, não análise.
+              </p>
+            </div>
+          </div>
+          <Button asChild variant="outline">
+            <Link href="/como-calculamos#secao-sem-historico">Entenda</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Estado 3 — logado, sem quiz: incentivo a fazer o teste.
   if (autenticado) {
     return (
       <Card>
@@ -99,7 +128,7 @@ export function CardCompatibilidade({ candidaturaId, nomeUrna, cargo, uf }: Prop
     );
   }
 
-  // Estado 3 — não logado: valor ofuscado (blur). Se JÁ fez o quiz (tem cache), pede login para
+  // Estado 4 — não logado: valor ofuscado (blur). Se JÁ fez o quiz (tem cache), pede login para
   // exibir; senão, incentiva a fazer o quiz.
   const jaFezQuiz = Boolean(candidato);
   return (

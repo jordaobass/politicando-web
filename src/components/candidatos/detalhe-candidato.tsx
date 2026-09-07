@@ -1,39 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import {
-  CircleCheckBigIcon,
-  ClockIcon,
-  GitCompareIcon,
-  LandmarkIcon,
-  ScrollTextIcon,
-  WalletIcon,
-  SparklesIcon,
-  XCircleIcon,
-} from "lucide-react";
+import { GitCompareIcon, LandmarkIcon, WalletIcon } from "lucide-react";
 
 import Image from "next/image";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FotoCandidato } from "@/components/comum/foto-candidato";
-import { TextoRico, textoSimples } from "@/components/comum/texto-rico";
 import { BadgeOrigem } from "@/components/comum/badge-origem";
 import { IconeInstagram } from "@/components/comum/icone-instagram";
 import { CardCompatibilidade } from "@/components/candidatos/card-compatibilidade";
 import { formatarCargo, formatarReais } from "@/lib/format";
-import { cn } from "@/lib/utils";
 import { EstadoErro } from "@/components/comum/estados";
-import { CartaoContagem } from "@/components/candidatos/atividade/cartao-contagem";
-import { PainelPresenca } from "@/components/candidatos/atividade/painel-presenca";
-import { PainelGabinete } from "@/components/candidatos/atividade/painel-gabinete";
-import { PainelComissoes } from "@/components/candidatos/atividade/painel-comissoes";
 import { PerfilGovernador } from "@/components/candidatos/perfil-governador";
 import { PerfilPresidente } from "@/components/candidatos/perfil-presidente";
-import { PainelAnaliseTematica } from "@/components/candidatos/painel-analise-tematica";
-import { BlocoBloqueado } from "@/components/candidatos/bloco-bloqueado";
+import { PerfilParlamentar } from "@/components/candidatos/perfil-parlamentar";
 import { useAtividade, useCandidatura } from "@/hooks/use-api";
 import { useSessao } from "@/hooks/use-sessao";
 
@@ -78,26 +62,12 @@ export function DetalheCandidato({ id }: { id: string }) {
   }
 
   const { politico } = data;
-  const resumo = atividade?.resumo;
   const gabinetes = (atividade?.gabinetes ?? []).filter((g) => g.total > 0);
   // Chip do hero: prioriza o mandato corrente (2026); cai para o ano mais recente com dado.
   const gabineteRecente = gabinetes.find((g) => g.ano === 2026) ?? gabinetes[0];
-  const temGabinete = gabinetes.length > 0;
-  const temComissoes = (atividade?.comissoes?.length ?? 0) > 0;
-  const ehSenador = (data.cargo ?? "").toLowerCase().includes("senador");
   const ehGovernador = (data.cargo ?? "").toLowerCase().includes("governador");
   const ehPresidente = (data.cargo ?? "").toLowerCase().includes("presidente");
   const tipoHistoricoRotulo = ROTULO_TIPO_HISTORICO[data.tipoHistorico ?? ""] ?? null;
-  // Bloco "Score por tema" exibe os 8 temas gerais do card (US-*-03); o eixo
-  // institucional fica fora DESTE bloco — segue contando no match e na análise temática.
-  const scoresDoScore = data.scores.filter((s) => s.categoria !== "Instituições e Democracia");
-  const temAtividade =
-    !!resumo &&
-    (resumo.projetosTotal > 0 ||
-      resumo.votacoes > 0 ||
-      resumo.relatorias > 0 ||
-      resumo.presencaPercentual !== null ||
-      temGabinete);
 
   return (
     <div className="space-y-6">
@@ -239,229 +209,10 @@ export function DetalheCandidato({ id }: { id: string }) {
         /* Perfil de Presidente nos blocos da spec (US-PRES-02..06). */
         <PerfilPresidente data={data} />
       ) : (
-        <>
-      {/* Resumo da análise (observação da IA). Para cargos com atividade legislativa ele aparece
-          dentro do card "Projetos de lei"; sem atividade (Presidente/Governador), ganha card próprio
-          para não sumir da tela. */}
-      {!temAtividade && data.observacaoIa && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <SparklesIcon className="size-4 text-primary" aria-hidden="true" />
-              Resumo da análise
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <TextoRico texto={data.observacaoIa} className="text-sm text-muted-foreground" />
-            {data.propostasResumo && (
-              <div className="text-sm text-muted-foreground">
-                <span className="font-medium text-foreground">Propostas: </span>
-                <TextoRico texto={data.propostasResumo} className="mt-1 text-sm text-muted-foreground" />
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        /* Deputados e senadores na MESMA espinha visual de Presidente/Governador
+           (Correções v7, item 3): card "Score por tema" 0–5 — a régua ideológica saiu do perfil. */
+        <PerfilParlamentar data={data} atividade={atividade} autenticado={autenticado} />
       )}
-
-      {/* Score + Projetos de lei (só métricas) — cards visuais lado a lado (sem abas).
-          Sem items-start + h-full nos cards => os dois ficam com a mesma altura. */}
-      {temAtividade ? (
-        <div className="grid gap-6 lg:grid-cols-2">
-          <Card className="h-full" data-testid="bloco-score">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <SparklesIcon className="size-4 text-primary" aria-hidden="true" />
-                Posição e atuação por tema
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Onde {politico.nomeUrna} se posiciona em cada tema (esquerda ↔ direita) e o quanto
-                atua nele. Só a posição entra no cálculo de match.
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {data.propostasResumo && (
-                <p className="line-clamp-4 text-sm text-muted-foreground">
-                  {textoSimples(data.propostasResumo)}
-                </p>
-              )}
-              {scoresDoScore.length === 0 ? (
-                <p className="text-sm text-muted-foreground">
-                  Ainda não há scores calculados para este candidato.
-                </p>
-              ) : (
-                /* Mesmo painel de Presidente/Governador (Correções v6, item 4): antes daqui saía
-                   só a barra de engajamento, sem a posição — foi essa tela que fez o número ser
-                   lido como "o quanto o candidato concorda comigo". */
-                <PainelAnaliseTematica scores={scoresDoScore} />
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Proposições Legislativas (US-SEN-03 / US-DEP-03): um bloco com os grupos
-              Projetos de Lei e — para senadores — Fiscalização e Controle, + um resumo de IA. */}
-          {resumo && (
-            <Card className="h-full" data-testid="bloco-proposicoes">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <ScrollTextIcon className="size-4 text-primary" aria-hidden="true" />
-                  Proposições legislativas
-                </CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Matérias de autoria de {politico.nomeUrna} e seu desfecho.
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-5">
-                <GrupoProposicao
-                  titulo="Projetos de Lei"
-                  total={resumo.projetosTotal}
-                  aprovados={resumo.projetosAprovados}
-                  emTramitacao={resumo.projetosEmTramitacao}
-                  rejeitados={resumo.projetosRejeitados}
-                />
-
-                {ehSenador && (
-                  <GrupoProposicao
-                    titulo="Fiscalização e Controle"
-                    descricao="Requerimentos e indicações (RQS/REQ/IND)."
-                    total={resumo.fiscalizacaoTotal}
-                    aprovados={resumo.fiscalizacaoAprovadas}
-                    emTramitacao={resumo.fiscalizacaoEmTramitacao}
-                    rejeitados={resumo.fiscalizacaoRejeitadas}
-                  />
-                )}
-
-                <div className="rounded-xl border border-border bg-muted/30 p-4">
-                  <p className="mb-1 flex items-center gap-2 text-sm font-medium text-foreground">
-                    <SparklesIcon className="size-4 text-primary" aria-hidden="true" />
-                    Resumo
-                  </p>
-                  <TextoRico
-                    texto={
-                      resumo.projetosTotal + (ehSenador ? resumo.fiscalizacaoTotal : 0) === 0
-                        ? `${ehSenador ? "Este senador" : politico.nomeUrna} não possui proposições cadastradas.`
-                        : (data.observacaoIa ?? "Resumo temporariamente indisponível.")
-                    }
-                    className="text-sm text-muted-foreground"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      ) : (
-        /* Sem atividade legislativa (Presidente/Governador): a substância vem da análise temática —
-           posição (esquerda↔direita), síntese e justificativa por eixo. */
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <SparklesIcon className="size-4 text-primary" aria-hidden="true" />
-              Posição e atuação por tema
-            </CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Onde {politico.nomeUrna} se posiciona em cada tema (esquerda ↔ direita) e o quanto
-              prioriza cada um, pela análise de IA.
-            </p>
-          </CardHeader>
-          <CardContent>
-            <PainelAnaliseTematica scores={data.scores} />
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Presença + Gastos do mandato — cards de meia tela lado a lado. Fechados sem login. */}
-      {temAtividade && atividade && (
-        <div className={cn("grid gap-6", temGabinete && "lg:grid-cols-2")}>
-          {!autenticado ? (
-            <BlocoBloqueado titulo="Presença em plenário" />
-          ) : (
-            <Card className="h-full">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Presença em plenário</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  {data.cargo?.toLowerCase().includes("senador")
-                    ? "Comparecimento às votações nominais — total do mandato e últimos anos."
-                    : "Comparecimento às sessões — total do mandato e últimos anos."}
-                </p>
-              </CardHeader>
-              <CardContent>
-                <PainelPresenca presencas={atividade.presencas} cargo={data.cargo} />
-              </CardContent>
-            </Card>
-          )}
-
-          {temGabinete &&
-            (!autenticado ? (
-              <BlocoBloqueado titulo="Gastos do mandato" />
-            ) : (
-              <Card className="h-full">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg">Gastos do mandato</CardTitle>
-                  <p className="text-sm text-muted-foreground">
-                    Cota parlamentar (CEAP) — economia estimada e despesas por ano.
-                  </p>
-                </CardHeader>
-                <CardContent>
-                  <PainelGabinete gabinetes={gabinetes} uf={data.uf} cargo={data.cargo} />
-                </CardContent>
-              </Card>
-            ))}
-        </div>
-      )}
-
-      {/* Atuação em comissões (senadores) — largura cheia, fechado sem login. */}
-      {temComissoes && atividade &&
-        (!autenticado ? (
-          <BlocoBloqueado titulo="Atuação em comissões" />
-        ) : (
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Atuação em comissões</CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Comissões de {politico.nomeUrna} por ano, como titular ou suplente.
-              </p>
-            </CardHeader>
-            <CardContent>
-              <PainelComissoes comissoes={atividade.comissoes} />
-            </CardContent>
-          </Card>
-        ))}
-        </>
-      )}
-    </div>
-  );
-}
-
-/**
- * Grupo de proposições dentro do bloco "Proposições legislativas": título opcional +
- * grade de 4 contadores (Total/Aprovados/Em tramitação/Rejeitados).
- */
-function GrupoProposicao({
-  titulo,
-  descricao,
-  total,
-  aprovados,
-  emTramitacao,
-  rejeitados,
-}: {
-  titulo: string;
-  descricao?: string;
-  total: number;
-  aprovados: number;
-  emTramitacao: number;
-  rejeitados: number;
-}) {
-  return (
-    <div className="space-y-2">
-      <div>
-        <p className="text-sm font-semibold text-foreground">{titulo}</p>
-        {descricao && <p className="text-xs text-muted-foreground">{descricao}</p>}
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <CartaoContagem rotulo="Total" valor={total} icone={ScrollTextIcon} />
-        <CartaoContagem rotulo="Aprovados" valor={aprovados} icone={CircleCheckBigIcon} destaque />
-        <CartaoContagem rotulo="Em tramitação" valor={emTramitacao} icone={ClockIcon} />
-        <CartaoContagem rotulo="Rejeitados" valor={rejeitados} icone={XCircleIcon} />
-      </div>
     </div>
   );
 }

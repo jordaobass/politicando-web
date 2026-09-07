@@ -3,9 +3,9 @@ import { rotuloPosicao } from "@/lib/format";
 import type { PerfilCategoria } from "@/lib/types";
 
 /**
- * Perfil político do usuário: posição por categoria na MESMA régua esquerda↔direita usada no
- * perfil do candidato (PainelAnaliseTematica), para que os dois scores fiquem visualmente
- * alinhados e comparáveis. A nota chega 0..100 (50 = centro), igual à do candidato.
+ * Perfil político do usuário: posição por categoria na régua esquerda↔direita.
+ * A nota chega 0..100 (50 = centro), igual à do candidato — a posição do candidato segue
+ * alimentando o match, mesmo sem régua no perfil dele (Correções v7, item 3).
  */
 export function PerfilPolitico({ perfil }: { perfil: PerfilCategoria[] }) {
   return (

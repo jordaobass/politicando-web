@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { CardCandidato } from "@/components/candidatos/card-candidato";
+import { DisclaimerHistorico } from "@/components/candidatos/disclaimer-historico";
 import { Paginacao } from "@/components/comum/paginacao";
 import {
   FiltrosCandidatos,
@@ -113,6 +114,10 @@ export function ListaCandidatos() {
           Explore e compare candidatos brasileiros
         </p>
       </header>
+
+      {/* Item 7 (Correções v7): a vitrine só exibe quem tem histórico público — dizer isso aqui
+          é o que evita a leitura de que candidatos "sumiram" sem explicação. */}
+      <DisclaimerHistorico />
 
       <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
         <FiltrosCandidatos valores={filtros} onChange={aplicarFiltros} />

@@ -60,10 +60,15 @@ export function useResultadoEfetivo(): {
  * Atalho: devolve o resultado do quiz para uma candidatura específica (ou null).
  * O cache é por aba (sessionStorage); para o usuário LOGADO, se não houver cache (ex.: nova guia,
  * link "abrir em outra guia"), busca o último resultado do servidor. Correção do card v2.
+ *
+ * `temResultado` distingue "fez o quiz mas este candidato ficou fora do ranking" (sem dados
+ * suficientes — Correções v7, item 5) de "nunca fez o quiz": antes os dois caíam no CTA
+ * "Fazer o teste", que mentia para quem já tinha feito.
  */
 export function useCompatibilidadeCandidato(candidaturaId: string): {
   carregado: boolean;
   candidato: ResultadoCandidato | null;
+  temResultado: boolean;
 } {
   const { carregado, resultado } = useResultadoQuiz();
   const { sessao } = useSessao();
@@ -74,5 +79,5 @@ export function useCompatibilidadeCandidato(candidaturaId: string): {
 
   const efetivo = resultado ?? ultimo?.resultado ?? null;
   const candidato = efetivo?.resultado.find((r) => r.candidaturaId === candidaturaId) ?? null;
-  return { carregado: carregado && !isLoading, candidato };
+  return { carregado: carregado && !isLoading, candidato, temResultado: efetivo !== null };
 }

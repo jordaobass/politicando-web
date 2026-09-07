@@ -5,6 +5,7 @@ import { FileTextIcon, LockIcon } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { MensagemSemDados } from "@/components/comum/bloco-sem-dados";
 import { TextoRico } from "@/components/comum/texto-rico";
 import { useSessao } from "@/hooks/use-sessao";
 import type { PlanoGoverno } from "@/lib/types";
@@ -52,9 +53,8 @@ export function PlanoGovernoBloco({
             </div>
           </div>
         ) : !plano ? (
-          <p className="text-sm text-muted-foreground">
-            Plano de governo não disponível para este candidato.
-          </p>
+          /* Bloco nunca some: sem plano do pleito, vale a mensagem padrão (Correções v7, item 4). */
+          <MensagemSemDados />
         ) : (
           <ul className="space-y-4">
             {plano.temas.map((t) => (
