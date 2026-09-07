@@ -14,6 +14,7 @@ import { BadgeOrigem } from "@/components/comum/badge-origem";
 import { IconeInstagram } from "@/components/comum/icone-instagram";
 import { CardCompatibilidade } from "@/components/candidatos/card-compatibilidade";
 import { formatarCargo, formatarReais } from "@/lib/format";
+import { perfilInstagram } from "@/lib/instagram";
 import { EstadoErro } from "@/components/comum/estados";
 import { PerfilGovernador } from "@/components/candidatos/perfil-governador";
 import { PerfilPresidente } from "@/components/candidatos/perfil-presidente";
@@ -62,6 +63,7 @@ export function DetalheCandidato({ id }: { id: string }) {
   }
 
   const { politico } = data;
+  const instagram = perfilInstagram(politico.instagram);
   const gabinetes = (atividade?.gabinetes ?? []).filter((g) => g.total > 0);
   // Chip do hero: prioriza o mandato corrente (2026); cai para o ano mais recente com dado.
   const gabineteRecente = gabinetes.find((g) => g.ano === 2026) ?? gabinetes[0];
@@ -167,15 +169,18 @@ export function DetalheCandidato({ id }: { id: string }) {
                 </div>
               )}
 
-              {politico.instagram && (
-                <Button asChild variant="ghost" size="sm" className="h-auto w-fit px-0">
+              {/* Só o ícone leva ao perfil (v8, item 1): a URL do TSE vem inteira e gritada,
+                  e escrevê-la por extenso dominava o cabeçalho. */}
+              {instagram && (
+                <Button asChild variant="ghost" size="icon" className="w-fit">
                   <a
-                    href={`https://instagram.com/${politico.instagram.replace("@", "")}`}
+                    href={instagram.url}
                     target="_blank"
                     rel="noopener noreferrer"
+                    title={`@${instagram.handle}`}
+                    aria-label={`Instagram de ${politico.nomeUrna}`}
                   >
-                    <IconeInstagram className="size-4" />
-                    {politico.instagram}
+                    <IconeInstagram className="size-5" />
                   </a>
                 </Button>
               )}
