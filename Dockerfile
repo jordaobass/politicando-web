@@ -12,6 +12,10 @@ ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 # rewrites() é avaliado no build -> o destino /api precisa existir já aqui
 ARG BACKEND_INTERNAL_URL
 ENV BACKEND_INTERNAL_URL=$BACKEND_INTERNAL_URL
+# Medição de audiência (GA4). Vazio = sem medição. Como todo NEXT_PUBLIC_*, o valor é
+# EMBUTIDO no bundle agora: mudá-lo depois exige reconstruir a imagem, não reiniciar.
+ARG NEXT_PUBLIC_GA_ID
+ENV NEXT_PUBLIC_GA_ID=$NEXT_PUBLIC_GA_ID
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build

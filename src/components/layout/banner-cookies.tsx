@@ -7,6 +7,7 @@ import { CookieIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useArmazenamento, useHidratado } from "@/hooks/use-storage";
 import { CHAVE_COOKIES } from "@/lib/constantes";
+import { GA_ID } from "@/lib/analytics";
 
 /** Rotas em que o banner não aparece (painel admin e a tela de site fechado). */
 const ROTAS_SEM_BANNER = ["/admin", "/em-breve"];
@@ -14,13 +15,14 @@ const ROTAS_SEM_BANNER = ["/admin", "/em-breve"];
 /**
  * Barra de consentimento de cookies (Correções v6, item 5).
  *
- * NÃO bloqueia a navegação (decisão E1 do DECISOES.md): a plataforma hoje só usa
- * armazenamento próprio essencial — não há cookie de terceiro nem analytics —,
- * então travar a tela seria atrito sem contrapartida. Também não há "Personalizar":
- * sem categorias de terceiros, não existe o que personalizar.
+ * NÃO bloqueia a navegação (decisão E1 do DECISOES.md): travar a tela seria atrito sem
+ * contrapartida, já que nada de terceiro é carregado antes da escolha. Também não há
+ * "Personalizar": só existe uma finalidade não essencial, a medição de audiência.
  *
- * A decisão fica no localStorage e o banner não volta depois de tomada. Se um dia
- * entrar analytics, o carregamento dele passa a depender de `cookiesAceitos()`.
+ * O texto acompanha a configuração do ambiente: sem `NEXT_PUBLIC_GA_ID` não há terceiro
+ * nenhum, e prometer o contrário seria informação falsa ao titular. Com o identificador
+ * configurado, o Google Analytics só é carregado depois do "Aceitar todos" — ver
+ * `components/analytics/google-analytics.tsx`, que lê esta mesma decisão.
  */
 export function BannerCookies() {
   const pathname = usePathname();
@@ -49,8 +51,18 @@ export function BannerCookies() {
             aria-hidden="true"
           />
           <span>
-            Usamos armazenamento próprio para manter sua sessão e lembrar
-            preferências. Não usamos cookies de publicidade nem de terceiros.{" "}
+            {GA_ID ? (
+              <>
+                Usamos armazenamento próprio para manter sua sessão e lembrar
+                preferências e, se você aceitar, o Google Analytics para medir a
+                audiência. Não usamos cookies de publicidade.{" "}
+              </>
+            ) : (
+              <>
+                Usamos armazenamento próprio para manter sua sessão e lembrar
+                preferências. Não usamos cookies de publicidade nem de terceiros.{" "}
+              </>
+            )}
             <Link
               href="/cookies"
               className="font-medium text-accent underline underline-offset-4"
