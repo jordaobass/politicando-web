@@ -19,11 +19,32 @@ percentual de compatibilidade por categoria temática.
 
 ## Configuração
 
-Variável de ambiente da API (já em `.env.local` / `.env.example`):
+Variáveis de ambiente (em `.env.local` / `.env.example`):
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:5080/api
+
+# Medição de audiência (Google Analytics 4). Vazio = nenhum script de terceiro carrega.
+NEXT_PUBLIC_GA_ID=
 ```
+
+### Medição de audiência
+
+O Google Analytics só entra em cena com `NEXT_PUBLIC_GA_ID` preenchido (formato
+`G-XXXXXXXXXX`) **e** depois do "Aceitar todos" no banner de cookies — medir audiência é
+finalidade não essencial, então nada é pedido ao Google antes da decisão do visitante. Quem
+recusa nunca carrega o script, e `/admin` e `/em-breve` ficam fora da medição por construção
+(estão fora do grupo de rotas `(site)`).
+
+> ⚠️ Como todo `NEXT_PUBLIC_*`, o valor é resolvido **no build** e embutido no bundle. Trocar a
+> variável no painel do provedor não muda o que já está publicado: é preciso reconstruir (novo
+> deploy na Vercel, rebuild da imagem no Docker). Para conferir o que está no ar, procure o
+> identificador dentro do bundle servido, não no `.env`.
+
+Ao ligar a medição, o texto do banner de cookies passa sozinho a mencionar o Google Analytics
+— mas as páginas `/cookies` e `/privacidade` têm texto jurídico fixo, redigido pelo cliente,
+que afirma não haver cookie de terceiro. **Esse texto precisa ser revisado pelo cliente antes
+de ligar a medição em produção.**
 
 ## Comandos
 
