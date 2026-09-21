@@ -5,6 +5,7 @@ import { FotoCandidato } from "@/components/comum/foto-candidato";
 import { SeloPartido } from "@/components/comum/selo-partido";
 import { BarraScore } from "@/components/comum/barra-score";
 import { formatarCargo } from "@/lib/format";
+import { registrarCliqueCandidato } from "@/lib/analytics";
 import type { CandidaturaResumo } from "@/lib/types";
 
 /**
@@ -12,6 +13,16 @@ import type { CandidaturaResumo } from "@/lib/types";
  * com os dados ao lado e as métricas (scores) por categoria em duas colunas abaixo.
  */
 export function CardCandidato({ candidato }: { candidato: CandidaturaResumo }) {
+  // Os três alvos do card (foto, nome e botão) levam ao mesmo perfil: um handler só, usado
+  // nos três, para a métrica não depender de qual deles a pessoa acertou.
+  const aoAbrirPerfil = () =>
+    registrarCliqueCandidato({
+      id: candidato.id,
+      nome: candidato.nomeUrna,
+      cargo: candidato.cargo,
+      origem: "listagem",
+    });
+
   const rotuloCargo =
     candidato.uf && candidato.uf !== "BR"
       ? `${formatarCargo(candidato.cargo)} · ${candidato.uf}`
@@ -26,6 +37,7 @@ export function CardCandidato({ candidato }: { candidato: CandidaturaResumo }) {
             href={`/candidatos/${candidato.id}`}
             aria-label={`Ver perfil de ${candidato.nomeUrna}`}
             className="shrink-0"
+            onClick={aoAbrirPerfil}
           >
             <FotoCandidato
               fotoUrl={candidato.fotoUrl}
@@ -36,7 +48,7 @@ export function CardCandidato({ candidato }: { candidato: CandidaturaResumo }) {
             />
           </Link>
           <div className="min-w-0 space-y-0.5">
-            <Link href={`/candidatos/${candidato.id}`} className="block">
+            <Link href={`/candidatos/${candidato.id}`} className="block" onClick={aoAbrirPerfil}>
               <p className="truncate font-bold text-foreground hover:underline">
                 {candidato.nomeUrna}
               </p>
@@ -74,7 +86,9 @@ export function CardCandidato({ candidato }: { candidato: CandidaturaResumo }) {
 
       <div className="mt-auto flex gap-2 border-t border-border p-4">
         <Button asChild variant="outline" className="flex-1">
-          <Link href={`/candidatos/${candidato.id}`}>Ver perfil</Link>
+          <Link href={`/candidatos/${candidato.id}`} onClick={aoAbrirPerfil}>
+            Ver perfil
+          </Link>
         </Button>
         <Button
           asChild
