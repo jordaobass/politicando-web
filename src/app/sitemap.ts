@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 
 import { ROTAS_LEGAIS } from "@/lib/constantes";
+import { listarNoticias } from "@/lib/noticias";
 import { SITE_URL } from "@/lib/site";
 
 /** Páginas públicas estáveis do site (as dinâmicas de candidato/partido ficam fora). */
@@ -8,6 +9,7 @@ const PAGINAS_PUBLICAS = [
   { caminho: "/", prioridade: 1 },
   { caminho: "/quiz", prioridade: 0.9 },
   { caminho: "/candidatos", prioridade: 0.8 },
+  { caminho: "/noticias", prioridade: 0.8 },
   { caminho: "/partidos", prioridade: 0.7 },
   { caminho: "/comparar", prioridade: 0.7 },
   { caminho: "/como-calculamos", prioridade: 0.6 },
@@ -16,11 +18,21 @@ const PAGINAS_PUBLICAS = [
 /**
  * /sitemap.xml — inclui as quatro páginas legais: publicidade legal que o buscador
  * não encontra não cumpre a função de dar publicidade.
+ *
+ * As matérias entram com a data REAL do frontmatter: `lastModified` carimbado com "agora"
+ * em conteúdo que não mudou ensina o buscador a ignorar o campo.
  */
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const agora = new Date();
+  const noticias = await listarNoticias();
 
   return [
+    ...noticias.map((noticia) => ({
+      url: `${SITE_URL}/noticias/${noticia.slug}`,
+      lastModified: noticia.atualizadoEm ?? noticia.publicadoEm,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
     ...PAGINAS_PUBLICAS.map((pagina) => ({
       url: `${SITE_URL}${pagina.caminho}`,
       lastModified: agora,
