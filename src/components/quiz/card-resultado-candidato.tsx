@@ -16,6 +16,7 @@ import {
   nivelPorValor,
 } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { registrarCliqueCandidato } from "@/lib/analytics";
 import type { ResultadoCandidato } from "@/lib/types";
 
 /** Card de candidato com o percentual de match obtido no quiz (identidade única). */
@@ -26,12 +27,20 @@ export function CardResultadoCandidato({
 }) {
   const [aberto, setAberto] = useState(false);
   const idTemas = useId();
+  // Clique vindo do resultado do quiz — origem distinta da listagem no relatório do GA.
+  const aoAbrirPerfil = () =>
+    registrarCliqueCandidato({
+      id: candidato.candidaturaId,
+      nome: candidato.nomeUrna,
+      cargo: candidato.cargo,
+      origem: "resultado-quiz",
+    });
   const temBreakdown = candidato.porCategoria.length > 0;
 
   return (
     <Card className="transition-colors hover:border-primary/40">
       <CardContent className="space-y-3">
-        <Link href={`/candidatos/${candidato.candidaturaId}`} className="block">
+        <Link href={`/candidatos/${candidato.candidaturaId}`} className="block" onClick={aoAbrirPerfil}>
           <CabecalhoPolitico
             nomeUrna={candidato.nomeUrna}
             fotoUrl={candidato.fotoUrl}
@@ -137,7 +146,7 @@ export function CardResultadoCandidato({
             comparação já com este candidato no slot A). */}
         <div className="flex gap-2">
           <Button asChild size="sm" className="flex-1">
-            <Link href={`/candidatos/${candidato.candidaturaId}`}>
+            <Link href={`/candidatos/${candidato.candidaturaId}`} onClick={aoAbrirPerfil}>
               Ver perfil
               <ArrowRightIcon className="size-4" aria-hidden="true" />
             </Link>
