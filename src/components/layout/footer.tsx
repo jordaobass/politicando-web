@@ -66,12 +66,25 @@ export function Footer() {
       </div>
 
       <div className="border-t border-white/10">
-        <p className="mx-auto max-w-7xl px-4 py-4 text-xs text-primary-foreground/60">
-          O Politicando é uma plataforma independente e apartidária. As análises
-          são geradas por inteligência artificial com base em dados públicos e não
-          representam indicação, endorsement ou posição política de qualquer
-          natureza.
-        </p>
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
+          <p className="text-xs text-primary-foreground/60">
+            O Politicando é uma plataforma independente e apartidária. As análises
+            são geradas por inteligência artificial com base em dados públicos e não
+            representam indicação, endorsement ou posição política de qualquer
+            natureza.
+          </p>
+          <p className="shrink-0 text-xs text-primary-foreground/60">
+            Desenvolvido por{" "}
+            <a
+              href="https://300software.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-primary-foreground/80 underline decoration-white/30 underline-offset-2 transition-colors hover:text-white hover:decoration-white"
+            >
+              300 Software
+            </a>
+          </p>
+        </div>
       </div>
     </footer>
   );

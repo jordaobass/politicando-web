@@ -1,6 +1,6 @@
 # Politicando — Frontend
 
-[![CI](https://github.com/300-Software/politicando-web/actions/workflows/ci.yml/badge.svg)](https://github.com/300-Software/politicando-web/actions/workflows/ci.yml)
+[![CI](https://github.com/politicando-br/politicando-web/actions/workflows/ci.yml/badge.svg)](https://github.com/politicando-br/politicando-web/actions/workflows/ci.yml)
 
 Frontend da plataforma de match eleitoral **Politicando** (Eleições 2026, Brasil).
 Conecta eleitores a candidatos por meio de um quiz de afinidade que gera um
