@@ -46,6 +46,12 @@ const Frontmatter = z.object({
    */
   capaCredito: z.string().min(1).optional(),
   rascunho: z.boolean().default(false),
+  /**
+   * Manchete da capa. É decisão editorial, não consequência do relógio: seis matérias
+   * publicadas no mesmo dia empatam na data, e sem isto quem vira destaque é o acaso da
+   * ordem do diretório. Mais de uma marcada, vale a mais recente.
+   */
+  destaque: z.boolean().default(false),
   tags: z.array(z.string()).default([]),
   // Exigido pelo produto: toda matéria leva a um candidato e ao quiz. Lista vazia é erro de
   // build, não matéria sem link — é a regra virando estrutura, para não depender de lembrar.
@@ -107,7 +113,14 @@ export async function listarNoticias(): Promise<Noticia[]> {
 
   return noticias
     .filter(ehPublicavel)
-    .sort((a, b) => b.publicadoEm.getTime() - a.publicadoEm.getTime());
+    .sort(
+      (a, b) =>
+        Number(b.destaque) - Number(a.destaque) ||
+        b.publicadoEm.getTime() - a.publicadoEm.getTime() ||
+        // Desempate estável pelo slug: sem ele, matérias do mesmo dia trocam de posição
+        // conforme a ordem em que o sistema de arquivos devolve os nomes.
+        a.slug.localeCompare(b.slug, "pt-BR"),
+    );
 }
 
 export async function obterNoticia(slug: string): Promise<Noticia | null> {
@@ -115,12 +128,66 @@ export async function obterNoticia(slug: string): Promise<Noticia | null> {
   return noticias.find((n) => n.slug === slug) ?? null;
 }
 
-/** Data por extenso em pt-BR, como o leitor espera ver numa matéria. */
+/**
+ * Data por extenso em pt-BR, como o leitor espera ver numa matéria.
+ *
+ * ⚠️ Formatado em **UTC**, não em America/Sao_Paulo. O frontmatter traz uma data de calendário
+ * ("2026-10-02"), que o YAML lê como meia-noite UTC; convertida para o fuso de Brasília, ela
+ * volta um dia e a matéria publicada no dia 2 aparece como dia 1 — foi exatamente o que a
+ * primeira captura da capa mostrou. Data sem hora não tem fuso: exibe-se como está escrita.
+ */
 export function formatarData(data: Date): string {
   return new Intl.DateTimeFormat("pt-BR", {
     day: "2-digit",
     month: "long",
     year: "numeric",
-    timeZone: "America/Sao_Paulo",
+    timeZone: "UTC",
   }).format(data);
+}
+
+/**
+ * Data curta para a lista de chamadas ("29 ago").
+ *
+ * O formato pronto do Intl em pt-BR devolve "29 de ago." — preposição e ponto que, repetidos
+ * em cada linha da capa, só gastam espaço. Aqui as partes são montadas à mão.
+ */
+export function formatarDataCurta(data: Date): string {
+  const partes = new Intl.DateTimeFormat("pt-BR", {
+    day: "numeric",
+    month: "short",
+    timeZone: "UTC",
+  }).formatToParts(data);
+
+  const dia = partes.find((p) => p.type === "day")?.value ?? "";
+  const mes = (partes.find((p) => p.type === "month")?.value ?? "").replace(".", "");
+
+  return `${dia} ${mes}`;
+}
+
+/** Matérias por página da capa. */
+export const TAMANHO_PAGINA = 10;
+
+export interface PaginaDeNoticias {
+  /** A manchete da página: só a primeira da primeira página ganha destaque. */
+  manchete: Noticia | null;
+  chamadas: Noticia[];
+  pagina: number;
+  totalPaginas: number;
+}
+
+/**
+ * Fatia a lista para uma página da capa.
+ *
+ * Página fora do intervalo devolve `null` em vez de lista vazia: a rota precisa responder 404
+ * de verdade, e não uma capa em branco com status 200.
+ */
+export function paginarNoticias(noticias: Noticia[], pagina: number): PaginaDeNoticias | null {
+  const totalPaginas = Math.max(1, Math.ceil(noticias.length / TAMANHO_PAGINA));
+  if (pagina < 1 || pagina > totalPaginas) return null;
+
+  const fatia = noticias.slice((pagina - 1) * TAMANHO_PAGINA, pagina * TAMANHO_PAGINA);
+
+  return pagina === 1
+    ? { manchete: fatia[0] ?? null, chamadas: fatia.slice(1), pagina, totalPaginas }
+    : { manchete: null, chamadas: fatia, pagina, totalPaginas };
 }
