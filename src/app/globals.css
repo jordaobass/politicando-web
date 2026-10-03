@@ -94,6 +94,17 @@
   --sidebar-accent-foreground: #1b3a6b;
   --sidebar-border: #e5e7eb;
   --sidebar-ring: #1b3a6b;
+  /* Seleção de texto: o azul da marca rebaixado sobre --secondary em vez de --primary cheio,
+     para o trecho selecionado manter a MESMA polaridade do parágrafo (escuro sobre claro) —
+     inverter no meio da leitura cansa. Texto selecionado = --foreground: 6,37:1.
+     A ordem dos argumentos importa e não é estética: em navegador sem color-mix o compilador
+     degrada para a PRIMEIRA cor da mistura. Com --secondary na frente o pior caso é um azul
+     claro legível; invertido viraria --primary puro, e aí --foreground cai para 1,57:1. */
+  --selecao-fundo: color-mix(in oklab, var(--secondary) 55%, var(--primary));
+  --selecao-texto: var(--foreground);
+  /* Polegar da barra de rolagem: --muted-foreground rebaixado no fundo até ficar discreto
+     mas ainda ≥ 3:1 contra a trilha (3,21:1) — barra invisível é controle que não se acha. */
+  --rolagem-polegar: color-mix(in oklab, var(--muted-foreground) 80%, var(--background));
 }
 
 .dark {
@@ -131,6 +142,12 @@
   --sidebar-accent-foreground: #dbe6fb;
   --sidebar-border: #ffffff1a;
   --sidebar-ring: #4f82d4;
+  /* Mesma ideia do tema claro, com 5 pontos a mais de azul: no escuro --card e --secondary
+     são vizinhos, e abaixo disso a seleção não se destaca do cartão. Texto = 7,48:1.
+     Declarado aqui (e não só em :root) para funcionar também se .dark vier num subelemento. */
+  --selecao-fundo: color-mix(in oklab, var(--secondary) 50%, var(--primary));
+  --selecao-texto: var(--foreground);
+  --rolagem-polegar: color-mix(in oklab, var(--muted-foreground) 80%, var(--background));
 }
 
 @layer base {
@@ -143,6 +160,50 @@
   html {
     @apply font-sans;
   }
+
+  /* As quatro superfícies abaixo são desenhadas pelo navegador; sem isso cada um usa o azul
+     padrão dele, que não pertence a nenhuma paleta nossa. Ficam no layer `base` de propósito:
+     qualquer utilitário do Tailwind (layer `utilities`) continua ganhando destas regras. */
+
+  /* Regras separadas: seletor inválido na lista derrubaria a regra inteira nos dois motores. */
+  ::selection {
+    background-color: var(--selecao-fundo);
+    color: var(--selecao-texto);
+  }
+  ::-moz-selection {
+    background-color: var(--selecao-fundo);
+    color: var(--selecao-texto);
+  }
+
+  /* Rede de segurança do teclado: os componentes shadcn já trazem o próprio anel
+     (`focus-visible:ring-*` + `outline-none`, que vence por estar em `utilities`), mas link de
+     texto, <details> e qualquer elemento com tabIndex caíam no anel padrão do navegador.
+     Sem transição: anel de foco animado chega atrasado para quem navega rápido no Tab. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    /* Afasta o anel da borda do elemento para ele não se confundir com a própria borda. */
+    outline-offset: 2px;
+  }
+
+  /* Só a propriedade padrão (herdada pelas áreas roláveis internas): ::-webkit-scrollbar exige
+     recriar seta, trilha e canto à mão e quebra o scroll overlay do macOS/Android. */
+  html {
+    scrollbar-color: var(--rolagem-polegar) var(--background);
+    scrollbar-width: thin;
+  }
+
+  /* Dado que vive em grade: data em <time> e coluna de tabela. Dígito de largura fixa evita o
+     número "dançar" quando o valor muda. `:where` mantém especificidade 0 — qualquer classe no
+     componente sobrepõe. Não vale para o corpo do texto: ali o dígito proporcional lê melhor. */
+  :where(time, td, th) {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Placar, percentual de match e contagem: use esta classe quando o número troca no lugar
+   (polling, animação de contagem, troca de filtro) e o salto de largura apareceria. */
+@utility numero-tabular {
+  font-variant-numeric: tabular-nums;
 }
 
 /* Blobs flutuantes do fundo (tela de login) */
