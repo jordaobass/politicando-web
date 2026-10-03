@@ -17,8 +17,7 @@ const LINKS = [
   { href: "/candidatos", rotulo: "Candidatos", navegavel: true },
   { href: "/comparar", rotulo: "Comparar", navegavel: true },
   { href: "/partidos", rotulo: "Partidos", navegavel: true },
-  // "Notícias" fica fora do menu por ora: a seção existe e responde em /noticias, mas só por
-  // URL direta — entra aqui quando o dono decidir anunciá-la.
+  { href: "/noticias", rotulo: "Notícias", navegavel: true },
 ];
 
 /** Barra de navegação global (tema navy) com links e CTA de login. */
